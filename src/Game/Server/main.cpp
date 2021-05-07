@@ -1,4 +1,4 @@
-﻿#include "../Common/common.hpp"
+#include "../Common/common.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <string>
@@ -24,7 +24,9 @@ int main()
             break;
         }
 
-        // TODO move (de-)serialization into common
+        std::cout << "received packet from " << sender.toString() << ":" << sender_port
+                  << std::endl;
+
         // TODO reuse socket for sending data
         try {
             Network::Packets::receiveTestPacket(packet, id, string);
