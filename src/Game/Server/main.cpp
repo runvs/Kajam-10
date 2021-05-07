@@ -23,12 +23,14 @@ int main()
             std::cout << "connection terminated\n";
             break;
         }
-        // TODO move (de-)serialization into common
-        // TODO check if deserialization has been successful
-        // TODO reuse socket for sending data
-        packet >> id >> string;
 
-        std::cout << "received message:\n\t" << id << "\t" << string << std::endl;
+        // TODO move (de-)serialization into common
+        // TODO reuse socket for sending data
+        try {
+            Network::Packets::receiveTestPacket(packet, id, string);
+        } catch (std::exception const& e) {
+            std::cout << e.what() << std::endl;
+        }
     }
     return 0;
 }
