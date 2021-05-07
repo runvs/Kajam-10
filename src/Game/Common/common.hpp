@@ -12,8 +12,8 @@ public:
 };
 
 namespace Packets {
-sf::Packet createTestPacket(std::size_t, std::string);
-void receiveTestPacket(sf::Packet, std::size_t&, std::string&);
+sf::Packet serializeTestPacket(std::size_t, std::string);
+void deserializeTestPacket(sf::Packet, std::size_t&, std::string&);
 } // namespace Packets
 
 } // namespace Network

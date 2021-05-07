@@ -39,16 +39,26 @@ int main()
 
     // TODO refactor threading
     std::thread thread([]() {
-        // TODO reuse socket for receiving data
         std::cout << "thread started\n";
         sf::UdpSocket socket;
 
-        auto packet = Network::Packets::createTestPacket(1, "ABCD");
+        socket.bind(Network::NetworkProperties::port() - 1);
+
+        auto packet = Network::Packets::serializeTestPacket(1, "ABCD");
         if (socket.send(packet, sf::IpAddress("127.0.0.1"), Network::NetworkProperties::port())
             != sf::Socket::Done) {
             std::cout << "error sending data\n";
         }
         std::cout << "data send\n";
+
+        sf::Packet packet2;
+        sf::IpAddress sender;
+        unsigned short sender_port;
+        socket.receive(packet2, sender, sender_port);
+        std::size_t id;
+        std::string message;
+        Network::Packets::deserializeTestPacket(packet2, id, message);
+        std::cout << "received answer " << id << std::endl;
     });
     thread.join();
     game->startGame(std::make_shared<StateMenu>(), gameloop);

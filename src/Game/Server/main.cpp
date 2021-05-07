@@ -1,4 +1,4 @@
-#include "../Common/common.hpp"
+﻿#include "../Common/common.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <string>
@@ -27,9 +27,11 @@ int main()
         std::cout << "received packet from " << sender.toString() << ":" << sender_port
                   << std::endl;
 
-        // TODO reuse socket for sending data
         try {
-            Network::Packets::receiveTestPacket(packet, id, string);
+            Network::Packets::deserializeTestPacket(packet, id, string);
+            auto packet2 = Network::Packets::serializeTestPacket(++id, "Hans Wurst");
+            socket.send(packet2, sender, Network::NetworkProperties::port() - 1);
+
         } catch (std::exception const& e) {
             std::cout << e.what() << std::endl;
         }
