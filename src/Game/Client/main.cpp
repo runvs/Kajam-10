@@ -37,7 +37,9 @@ int main()
         GP::GetZoom(), input, std::make_shared<jt::MusicPlayer>());
     game->setupRenderTarget();
 
+    // TODO refactor threading
     std::thread thread([]() {
+        // TODO reuse socket for receiving data
         std::cout << "thread started\n";
         sf::UdpSocket socket;
         sf::Packet packet;

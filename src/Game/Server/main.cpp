@@ -16,7 +16,6 @@ int main()
         std::string string;
 
         sf::Packet packet;
-        sf::SocketSelector selector();
         sf::IpAddress sender;
         unsigned short sender_port;
         auto const result = socket.receive(packet, sender, sender_port);
@@ -24,7 +23,9 @@ int main()
             std::cout << "connection terminated\n";
             break;
         }
-
+        // TODO move (de-)serialization into common
+        // TODO check if deserialization has been successful
+        // TODO reuse socket for sending data
         packet >> id >> string;
 
         std::cout << "received message:\n\t" << id << "\t" << string << std::endl;
