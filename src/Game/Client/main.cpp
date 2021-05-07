@@ -42,8 +42,8 @@ int main()
         // TODO reuse socket for receiving data
         std::cout << "thread started\n";
         sf::UdpSocket socket;
-        sf::Packet packet;
-        packet << std::size_t { 1 } << std::string { "ABCD" };
+
+        auto packet = Network::Packets::createTestPacket(1, "ABCD");
         if (socket.send(packet, sf::IpAddress("127.0.0.1"), Network::NetworkProperties::port())
             != sf::Socket::Done) {
             std::cout << "error sending data\n";
