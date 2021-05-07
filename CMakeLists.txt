@@ -187,16 +187,16 @@ target_link_libraries(JamTemplate Box2D)
 #####################################################
 
 file(GLOB COMMONFILES src/Game/Common/*)
-add_library(Game_Common ${COMMONFILES})
-target_link_libraries(Game_Common JamTemplate)
+add_library(${PROJECTNAME}_Common ${COMMONFILES})
+target_link_libraries(${PROJECTNAME}_Common JamTemplate)
 
 file(GLOB CLIENTFILES src/Game/Client/*)
 add_executable(${PROJECTNAME}_Client  ${CLIENTFILES})
-target_link_libraries(${PROJECTNAME}_Client Game_Common)
+target_link_libraries(${PROJECTNAME}_Client ${PROJECTNAME}_Common)
 
 file(GLOB SERVERFILES src/Game/Server/*)
 add_executable(${PROJECTNAME}_Server  ${SERVERFILES})
-target_link_libraries(${PROJECTNAME}_Server Game_Common)
+target_link_libraries(${PROJECTNAME}_Server ${PROJECTNAME}_Common)
 
 jt_use_assets(${PROJECTNAME}_Client)
 jt_use_assets(${PROJECTNAME}_Server)
