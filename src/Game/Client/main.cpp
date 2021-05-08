@@ -6,6 +6,7 @@
 #include "KeyboardInput.hpp"
 #include "MouseInput.hpp"
 #include "MusicPlayer.hpp"
+#include "NetworkClient.hpp"
 #include "Random.hpp"
 #include "RenderWindow.hpp"
 #include "StateMenu.hpp"
@@ -36,31 +37,13 @@ int main()
         GP::GetZoom(), input, std::make_shared<jt::MusicPlayer>());
     game->setupRenderTarget();
 
-    // TODO refactor threading
-    std::thread thread([]() {
-        std::cout << "thread started\n";
-        sf::UdpSocket socket;
+    NetworkClient client(sf::IpAddress("127.0.0.1"));
+    client.send("Test string: 1234");
+    // TODO actually return data
+    client.getData();
 
-        socket.bind(Network::NetworkProperties::port() - 1);
-        auto packet = Network::Packets::serializeTestPacket(10, "ABCD");
-        if (socket.send(packet, sf::IpAddress("127.0.0.1"), Network::NetworkProperties::port())
-            != sf::Socket::Done) {
-            std::cout << "error sending data\n";
-        }
-        std::cout << "data send\n";
-
-        sf::Packet packet2;
-        sf::IpAddress sender;
-        unsigned short sender_port;
-        socket.receive(packet2, sender, sender_port);
-        std::size_t id;
-        std::string message;
-        Network::Packets::deserializeTestPacket(packet2, id, message);
-        std::cout << "received answer " << id << std::endl;
-    });
     game->startGame(std::make_shared<StateMenu>(), gameloop);
 
-    thread.join();
     std::cout << "thread ended\n";
     return 0;
 }
