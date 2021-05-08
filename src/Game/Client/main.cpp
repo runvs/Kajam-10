@@ -9,7 +9,6 @@
 #include "Random.hpp"
 #include "RenderWindow.hpp"
 #include "StateMenu.hpp"
-
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <thread>
@@ -43,8 +42,7 @@ int main()
         sf::UdpSocket socket;
 
         socket.bind(Network::NetworkProperties::port() - 1);
-
-        auto packet = Network::Packets::serializeTestPacket(1, "ABCD");
+        auto packet = Network::Packets::serializeTestPacket(10, "ABCD");
         if (socket.send(packet, sf::IpAddress("127.0.0.1"), Network::NetworkProperties::port())
             != sf::Socket::Done) {
             std::cout << "error sending data\n";
@@ -60,9 +58,9 @@ int main()
         Network::Packets::deserializeTestPacket(packet2, id, message);
         std::cout << "received answer " << id << std::endl;
     });
-    thread.join();
     game->startGame(std::make_shared<StateMenu>(), gameloop);
 
+    thread.join();
     std::cout << "thread ended\n";
     return 0;
 }
