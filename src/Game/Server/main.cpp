@@ -12,7 +12,7 @@ int main()
     NetworkServer server;
     char a;
     std::cin >> a;
-    server.send(Payload { 0, "WaddAYaDo?" });
+    server.send(convert(PayloadWelcomeResponse { 15 }));
     std::cin >> a;
     return 0;
 }

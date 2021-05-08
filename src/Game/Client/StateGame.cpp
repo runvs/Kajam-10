@@ -58,7 +58,9 @@ void StateGame::doInternalUpdate(float const elapsed)
         m_world->Step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
         auto payload = m_client->getData();
-        if (payload.message == "WaddAYaDo?") {
+        PayloadWelcomeResponse response;
+        convert(payload, response);
+        if (response.id == 15) {
             m_background->setColor(jt::colors::Black);
         }
     }

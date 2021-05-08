@@ -21,4 +21,7 @@ struct PayloadWelcomeResponse {
     size_t id;
 };
 
+Payload convert(PayloadWelcomeResponse const& payload);
+void convert(Payload const& payloadIn, PayloadWelcomeResponse& payloadOut);
+
 #endif // PAYLOADS_HPP_GUARD
