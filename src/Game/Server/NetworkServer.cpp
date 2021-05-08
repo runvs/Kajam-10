@@ -40,20 +40,21 @@ void NetworkServer::startThread()
 
 NetworkServer::~NetworkServer() { stopThread(); }
 
-void NetworkServer::getData()
+Payload NetworkServer::getData()
 {
     std::lock_guard const lock { m_dataMutex };
     if (m_newDataReceived) {
-
         m_newDataReceived = false;
+        return m_received_data;
     }
+    return Payload { 0, "" };
 }
 
-void NetworkServer::send(std::string const& message)
+void NetworkServer::send(Payload const& payload)
 {
     std::lock_guard const lock { m_dataMutex };
     m_newDataToSend = true;
-    m_dataToSend = message;
+    m_dataToSend = payload;
 }
 
 void NetworkServer::internalReceiveData()
@@ -71,6 +72,7 @@ void NetworkServer::internalReceiveData()
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
+        packet >> m_received_data;
         // TODO if new connection, send back "welcome" packet
 
         m_connections.updateConnection(sender_address, sender_port);
@@ -84,7 +86,8 @@ void NetworkServer::internalSendData()
 {
     std::unique_lock lock { m_dataMutex };
     if (m_newDataToSend) {
-        auto packet = Network::Packets::serializeTestPacket(1, m_dataToSend);
+        sf::Packet packet;
+        packet << m_dataToSend;
         lock.unlock();
 
         for (auto con : m_connections.getAllActiveConnections()) {

@@ -1,6 +1,7 @@
 ﻿#ifndef NETWORK_SERVER_HPP_GUARD
 #define NETWORK_SERVER_HPP_GUARD
 
+#include "../Common/Payloads.hpp"
 #include "ConnectionManager.hpp"
 
 #include <SFML/Network.hpp>
@@ -13,9 +14,9 @@ public:
     ~NetworkServer();
 
     // TODO access data
-    void getData();
+    Payload getData();
     // TODO switch to actual data structs
-    void send(std::string const& message);
+    void send(Payload const&);
 
 private:
     std::thread m_thread;
@@ -27,9 +28,10 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
+    Payload m_received_data;
 
     bool m_newDataToSend;
-    std::string m_dataToSend;
+    Payload m_dataToSend;
 
     void stopThread();
     void startThread();

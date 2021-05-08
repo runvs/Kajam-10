@@ -1,4 +1,5 @@
-﻿#include "../Common/common.hpp"
+﻿#include "../Common/Payloads.hpp"
+#include "../Common/common.hpp"
 #include "NetworkServer.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
@@ -11,7 +12,7 @@ int main()
     NetworkServer server;
     char a;
     std::cin >> a;
-    server.send("WaddAYaDo?");
+    server.send(Payload { 0, "WaddAYaDo?" });
     std::cin >> a;
     return 0;
 }

@@ -5,15 +5,17 @@
 #include <future>
 #include <thread>
 
+#include "../Common/Payloads.hpp"
+
 class NetworkClient {
 public:
     NetworkClient(sf::IpAddress address);
     ~NetworkClient();
 
     // TODO access data
-    std::string getData();
+    Payload getData();
     // TODO switch to actual data structs
-    void send(std::string const& message);
+    void send(Payload const&);
 
 private:
     sf::IpAddress m_serverAddress;
@@ -25,10 +27,10 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
-    std::string m_received_data;
+    Payload m_received_data;
 
     bool m_newDataToSend;
-    std::string m_dataToSend;
+    Payload m_dataToSend;
 
     void stopThread();
     void startThread();

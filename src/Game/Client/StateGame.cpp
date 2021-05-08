@@ -1,4 +1,5 @@
 ﻿#include "StateGame.hpp"
+#include "../Common/Payloads.hpp"
 #include "Box2D/Box2D.h"
 #include "Color.hpp"
 #include "GameInterface.hpp"
@@ -48,7 +49,7 @@ void StateGame::doInternalCreate()
     setAutoDraw(false);
 
     m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
-    m_client->send("hello there");
+    m_client->send(Payload { 0, "abcd" });
 }
 
 void StateGame::doInternalUpdate(float const elapsed)
@@ -56,7 +57,8 @@ void StateGame::doInternalUpdate(float const elapsed)
     if (m_running) {
         m_world->Step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
-        if (m_client->getData() == "WaddAYaDo?") {
+        auto payload = m_client->getData();
+        if (payload.message == "WaddAYaDo?") {
             m_background->setColor(jt::colors::Black);
         }
     }

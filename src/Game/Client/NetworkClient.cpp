@@ -41,21 +41,21 @@ void NetworkClient::startThread()
 
 NetworkClient::~NetworkClient() { stopThread(); }
 
-std::string NetworkClient::getData()
+Payload NetworkClient::getData()
 {
     std::lock_guard const lock { m_dataMutex };
     if (m_newDataReceived) {
         m_newDataReceived = false;
         return m_received_data;
     }
-    return "";
+    return Payload { 0, "" };
 }
 
-void NetworkClient::send(std::string const& message)
+void NetworkClient::send(Payload const& payload)
 {
     std::lock_guard const lock { m_dataMutex };
     m_newDataToSend = true;
-    m_dataToSend = message;
+    m_dataToSend = payload;
 }
 
 void NetworkClient::internalReceiveData()
@@ -73,8 +73,7 @@ void NetworkClient::internalReceiveData()
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
-        std::size_t message_id;
-        Network::Packets::deserializeTestPacket(packet, message_id, m_received_data);
+        packet >> m_received_data;
     } else if (status == sf::Socket::Status::Error) {
         std::cout << "network error\n";
     }
@@ -84,7 +83,8 @@ void NetworkClient::internalSendData()
 {
     std::unique_lock lock { m_dataMutex };
     if (m_newDataToSend) {
-        auto packet = Network::Packets::serializeTestPacket(1, m_dataToSend);
+        sf::Packet packet;
+        packet << m_dataToSend;
         lock.unlock();
 
         if (m_socket.send(packet, m_serverAddress, Network::NetworkProperties::port())
