@@ -41,6 +41,12 @@ void NetworkClient::startThread()
 
 NetworkClient::~NetworkClient() { stopThread(); }
 
+bool NetworkClient::isNewDataAvailable()
+{
+    std::lock_guard const lock { m_dataMutex };
+    return m_newDataReceived;
+}
+
 Payload NetworkClient::getData()
 {
     std::lock_guard const lock { m_dataMutex };

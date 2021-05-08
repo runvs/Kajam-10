@@ -57,11 +57,13 @@ void StateGame::doInternalUpdate(float const elapsed)
     if (m_running) {
         m_world->Step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
-        auto payload = m_client->getData();
-        PayloadWelcomeResponse response;
-        convert(payload, response);
-        if (response.id == 15) {
-            m_background->setColor(jt::colors::Black);
+        if (m_client->isNewDataAvailable()) {
+            auto payload = m_client->getData();
+            PayloadWelcomeResponse response;
+            convert(payload, response);
+            if (response.id == 15) {
+                m_background->setColor(jt::colors::Black);
+            }
         }
     }
 

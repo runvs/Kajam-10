@@ -12,6 +12,7 @@ public:
     NetworkClient(sf::IpAddress address);
     ~NetworkClient();
 
+    bool isNewDataAvailable();
     // TODO access data
     Payload getData();
     // TODO switch to actual data structs
