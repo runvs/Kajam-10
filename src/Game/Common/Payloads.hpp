@@ -1,4 +1,4 @@
-#ifndef PAYLOADS_HPP_GUARD
+﻿#ifndef PAYLOADS_HPP_GUARD
 #define PAYLOADS_HPP_GUARD
 
 #include <SFML/Network.hpp>
@@ -11,14 +11,14 @@ struct Payload {
     std::string message;
 };
 
+sf::Packet& operator<<(sf::Packet&, Payload&);
+sf::Packet& operator>>(sf::Packet&, Payload&);
+
 struct PayloadWelcomeRequest {
 };
 
 struct PayloadWelcomeResponse {
     size_t id;
 };
-
-sf::Packet& operator<<(sf::Packet&, Payload);
-sf::Packet& operator>>(sf::Packet&, Payload);
 
 #endif // PAYLOADS_HPP_GUARD
