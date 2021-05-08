@@ -1,4 +1,4 @@
-#include "NetworkClient.hpp"
+﻿#include "NetworkClient.hpp"
 #include "../Common/common.hpp"
 
 #include <iostream>
@@ -41,13 +41,14 @@ void NetworkClient::startThread()
 
 NetworkClient::~NetworkClient() { stopThread(); }
 
-void NetworkClient::getData()
+std::string NetworkClient::getData()
 {
     std::lock_guard const lock { m_dataMutex };
     if (m_newDataReceived) {
-
         m_newDataReceived = false;
+        return m_received_data;
     }
+    return "";
 }
 
 void NetworkClient::send(std::string const& message)
@@ -72,6 +73,8 @@ void NetworkClient::internalReceiveData()
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
+        std::size_t message_id;
+        Network::Packets::deserializeTestPacket(packet, message_id, m_received_data);
     } else if (status == sf::Socket::Status::Error) {
         std::cout << "network error\n";
     }

@@ -46,6 +46,9 @@ void StateGame::doInternalCreate()
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
+
+    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
+    m_client->send("hello there");
 }
 
 void StateGame::doInternalUpdate(float const elapsed)
@@ -53,6 +56,9 @@ void StateGame::doInternalUpdate(float const elapsed)
     if (m_running) {
         m_world->Step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
+        if (m_client->getData() == "WaddAYaDo?") {
+            m_background->setColor(jt::colors::Black);
+        }
     }
 
     m_background->update(elapsed);

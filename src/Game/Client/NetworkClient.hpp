@@ -1,4 +1,4 @@
-#ifndef NETWORKCLIENT_HPP_GUARD
+﻿#ifndef NETWORKCLIENT_HPP_GUARD
 #define NETWORKCLIENT_HPP_GUARD
 
 #include <SFML/Network.hpp>
@@ -11,7 +11,7 @@ public:
     ~NetworkClient();
 
     // TODO access data
-    void getData();
+    std::string getData();
     // TODO switch to actual data structs
     void send(std::string const& message);
 
@@ -25,6 +25,7 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
+    std::string m_received_data;
 
     bool m_newDataToSend;
     std::string m_dataToSend;

@@ -37,11 +37,6 @@ int main()
         GP::GetZoom(), input, std::make_shared<jt::MusicPlayer>());
     game->setupRenderTarget();
 
-    NetworkClient client(sf::IpAddress("127.0.0.1"));
-    client.send("Test string: 1234");
-    // TODO actually return data
-    client.getData();
-
     game->startGame(std::make_shared<StateMenu>(), gameloop);
 
     std::cout << "thread ended\n";

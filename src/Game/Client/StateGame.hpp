@@ -2,6 +2,8 @@
 #define GAME_STATE_GAME_HPP_INCLUDEGUARD
 
 #include "GameState.hpp"
+#include "NetworkClient.hpp"
+
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -23,6 +25,7 @@ private:
     std::shared_ptr<jt::Sprite> m_vignette;
     std::shared_ptr<Hud> m_hud;
     std::shared_ptr<b2World> m_world { nullptr };
+    std::shared_ptr<NetworkClient> m_client { nullptr };
     bool m_running { false };
     bool m_hasEnded { false };
 
