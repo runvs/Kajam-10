@@ -2,6 +2,8 @@
 #define CONNECTION_MANAGER_HPP_GUARD
 #include <SFML/Network.hpp>
 #include <chrono>
+#include <map>
+#include <mutex>
 
 struct Connection {
     sf::IpAddress address;
@@ -12,16 +14,15 @@ bool operator<(Connection const& a, Connection const& b);
 
 class ConnectionManager {
 public:
-    void addIfNewConnection(sf::IpAddress sender_address, unsigned short sender_port);
-    std::vector<Connection> getConnections();
-    void update();
+    void updateConnection(sf::IpAddress sender_address, unsigned short sender_port);
+    std::vector<Connection> getAllActiveConnections();
+    void removeInactiveConnections();
+    bool isNewConnection(Connection con);
 
 private:
     using MapType = std::map<Connection, std::chrono::time_point<std::chrono::system_clock>>;
     MapType m_connections;
-    int m_currentNewConnectionId = 0;
-
-    bool isNewConnection(Connection con);
+    std::mutex m_mutex;
 };
 
 #endif

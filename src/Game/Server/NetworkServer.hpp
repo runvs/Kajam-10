@@ -5,7 +5,6 @@
 
 #include <SFML/Network.hpp>
 #include <future>
-#include <map>
 #include <thread>
 
 class NetworkServer {
@@ -13,6 +12,7 @@ public:
     NetworkServer();
     ~NetworkServer();
 
+    // TODO access data
     void getData();
     // TODO switch to actual data structs
     void send(std::string const& message);
@@ -27,6 +27,7 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
+
     bool m_newDataToSend;
     std::string m_dataToSend;
 

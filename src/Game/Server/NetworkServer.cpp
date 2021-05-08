@@ -33,7 +33,7 @@ void NetworkServer::startThread()
 
             internalReceiveData();
             internalSendData();
-            m_connections.update();
+            m_connections.removeInactiveConnections();
         }
     });
 }
@@ -64,14 +64,17 @@ void NetworkServer::internalReceiveData()
 
     auto const status = m_socket.receive(packet, sender_address, sender_port);
 
-    if (status == sf::Socket::Status::NotReady) { /*nothing received, try again later*/
+    if (status == sf::Socket::Status::NotReady) { /*nothing received, try again in next iteration*/
         // std::cout << "not ready\n";
 
     } else if (status == sf::Socket::Status::Done) {
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
-        m_connections.addIfNewConnection(sender_address, sender_port);
+        // TODO if new connection, send back "welcome" packet
+
+        m_connections.updateConnection(sender_address, sender_port);
+
     } else if (status == sf::Socket::Status::Error) {
         std::cout << "network error\n";
     }
@@ -84,7 +87,7 @@ void NetworkServer::internalSendData()
         auto packet = Network::Packets::serializeTestPacket(1, m_dataToSend);
         lock.unlock();
 
-        for (auto con : m_connections.getConnections()) {
+        for (auto con : m_connections.getAllActiveConnections()) {
             std::cout << "send socket data to connection: " << con.address.toString() << ":"
                       << con.port << std::endl;
             if (m_socket.send(packet, con.address, con.port) != sf::Socket::Status::Done) {
