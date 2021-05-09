@@ -59,9 +59,20 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
-            if (payload.playerPositions.size() != 0) {
-                m_background->setColor(jt::colors::Black);
+            if (!payload.playerPositions.empty()) {
+                for (auto const& kvp : payload.playerPositions) {
+                    std::cout << kvp.first << " " << kvp.second << "\n";
+                }
+                std::cout << std::endl;
             }
+        }
+
+        if (getGame()->input()->keyboard()->pressed(jt::KeyCode::C)) {
+            std::map<int, int> inputmap;
+            inputmap[0] = 1;
+            inputmap[1] = 20;
+            const PayloadClient2Server payload { 0, inputmap };
+            m_client->send(payload);
         }
     }
 

@@ -106,3 +106,5 @@ void NetworkServer::internalSendData()
         m_newDataToSend = false;
     }
 }
+
+std::vector<int> NetworkServer::getAllPlayerIds() { return m_connections.getAllPlayerIds(); }

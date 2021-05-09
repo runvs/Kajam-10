@@ -19,7 +19,7 @@ sf::Packet& operator>>(sf::Packet&, PayloadClient2Server&);
 struct PayloadServer2Client {
     int playerID;
     // TODO use real position
-    std::map<std::size_t, int> playerPositions;
+    std::map<int, float> playerPositions;
     // TODO Enemy Positions
     // TODO ParticlePositions
 };

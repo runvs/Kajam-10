@@ -17,6 +17,7 @@ public:
     std::tuple<bool, PayloadClient2Server> getData(int playerId);
     // TODO switch to actual data structs
     void send(PayloadServer2Client const&);
+    std::vector<int> getAllPlayerIds();
 
 private:
     std::thread m_thread;

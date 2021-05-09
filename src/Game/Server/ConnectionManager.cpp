@@ -46,6 +46,14 @@ Connection ConnectionManager::getConnectionForPlayerId(int playerID)
     return Connection {};
 }
 
+std::vector<int> ConnectionManager::getAllPlayerIds()
+{
+    std::vector<int> out;
+    std::transform(m_connections.begin(), m_connections.end(), std::back_inserter(out),
+        [](auto kvp) { return kvp.second.playerId; });
+    return out;
+}
+
 bool ConnectionManager::isNewConnection(Connection newCon)
 {
     std::lock_guard lock { m_mutex };

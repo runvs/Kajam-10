@@ -26,6 +26,7 @@ public:
     bool isNewConnection(Connection con);
     int getPlayerIdForConnection(Connection con);
     Connection getConnectionForPlayerId(int playerID);
+    std::vector<int> getAllPlayerIds();
 
 private:
     using MapType = std::map<Connection, ConnectionInfo>;
