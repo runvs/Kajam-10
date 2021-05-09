@@ -14,7 +14,7 @@ public:
     ~NetworkServer();
 
     // TODO access data
-    PayloadClient2Server getData();
+    std::tuple<bool, PayloadClient2Server> getData(int playerId);
     // TODO switch to actual data structs
     void send(PayloadServer2Client const&);
 
@@ -28,7 +28,7 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
-    PayloadClient2Server m_received_data;
+    std::map<Connection, std::tuple<bool, PayloadClient2Server>> m_received_data;
 
     bool m_newDataToSend;
     PayloadServer2Client m_dataToSend;

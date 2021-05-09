@@ -3,7 +3,6 @@
 #include "NetworkServer.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
-#include <string>
 
 int main()
 {

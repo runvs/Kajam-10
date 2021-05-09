@@ -40,14 +40,17 @@ void NetworkServer::startThread()
 
 NetworkServer::~NetworkServer() { stopThread(); }
 
-PayloadClient2Server NetworkServer::getData()
+std::tuple<bool, PayloadClient2Server> NetworkServer::getData(int playerId)
 {
     std::lock_guard const lock { m_dataMutex };
+    auto data = std::make_tuple(false, PayloadClient2Server { 0, {} });
+    ;
     if (m_newDataReceived) {
         m_newDataReceived = false;
-        return m_received_data;
+        data = m_received_data[m_connections.getConnectionForPlayerId(playerId)];
+        std::get<0>(m_received_data[m_connections.getConnectionForPlayerId(playerId)]) = false;
     }
-    return PayloadClient2Server { 0, {} };
+    return data;
 }
 
 void NetworkServer::send(PayloadServer2Client const& payload)
@@ -72,7 +75,10 @@ void NetworkServer::internalReceiveData()
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
-        packet >> m_received_data;
+        Connection const con { sender_address, sender_port };
+        std::get<0>(m_received_data[con]) = true;
+        packet >> std::get<1>(m_received_data[con]);
+
         // TODO if new connection, send back "welcome" packet
 
         m_connections.updateConnection(sender_address, sender_port);

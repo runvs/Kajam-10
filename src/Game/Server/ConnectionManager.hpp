@@ -25,6 +25,7 @@ public:
     void removeInactiveConnections();
     bool isNewConnection(Connection con);
     int getPlayerIdForConnection(Connection con);
+    Connection getConnectionForPlayerId(int playerID);
 
 private:
     using MapType = std::map<Connection, ConnectionInfo>;
