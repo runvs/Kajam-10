@@ -54,7 +54,7 @@ PayloadServer2Client NetworkClient::getData()
         m_newDataReceived = false;
         return m_received_data;
     }
-    return PayloadServer2Client { {} };
+    return PayloadServer2Client { -1, {} };
 }
 
 void NetworkClient::send(PayloadClient2Server const& payload)

@@ -15,13 +15,26 @@ bool operator<(Connection const& a, Connection const& b)
 
 void ConnectionManager::updateConnection(sf::IpAddress sender_address, unsigned short sender_port)
 {
-    Connection con { sender_address, sender_port };
+    Connection const con { sender_address, sender_port };
     if (isNewConnection(con)) {
         std::cout << "add new connection: " << sender_address.toString() << ":" << sender_port
                   << std::endl;
+        std::lock_guard lock { m_mutex };
+        m_connections[con] = ConnectionInfo { currentPlayerId++, std::chrono::system_clock::now() };
+        return;
     }
     std::lock_guard lock { m_mutex };
-    m_connections[con] = std::chrono::system_clock::now();
+    m_connections[con]
+        = ConnectionInfo { getPlayerIdForConnection(con), std::chrono::system_clock::now() };
+}
+
+int ConnectionManager::getPlayerIdForConnection(Connection con)
+{
+    int playerId = -1;
+    if (m_connections.count(con)) {
+        return m_connections[con].playerId;
+    }
+    return -1;
 }
 
 bool ConnectionManager::isNewConnection(Connection newCon)
@@ -37,8 +50,9 @@ void ConnectionManager::removeInactiveConnections()
     auto now = std::chrono::system_clock::now();
     std::lock_guard lock { m_mutex };
     jt::SystemHelper::erase_if(m_connections, [&now](auto const kvp) {
-        float const elapsed_in_seconds
-            = std::chrono::duration_cast<std::chrono::microseconds>(now - kvp.second).count()
+        float const elapsed_in_seconds = std::chrono::duration_cast<std::chrono::microseconds>(
+                                             now - kvp.second.lastReceivedTime)
+                                             .count()
             / 1000.0f / 1000.0f;
         if (elapsed_in_seconds >= Network::NetworkProperties::serverTimeToClientTimeout()) {
             std::cout << "remove connection after timeout\n";

@@ -14,9 +14,7 @@ int main()
     std::cin >> a;
     std::map<std::size_t, int> positions;
     positions[0] = 100;
-    positions[1] = 220;
-    positions[2] = 330;
-    server.send(PayloadServer2Client { positions });
+    server.send(PayloadServer2Client { 0, positions });
     std::cin >> a;
     return 0;
 }

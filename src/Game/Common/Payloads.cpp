@@ -49,6 +49,15 @@ sf::Packet& operator>>(sf::Packet& packet, std::map<K, V>& map)
     return packet;
 }
 
+sf::Packet& operator<<(sf::Packet& packet, jt::Vector2& vec)
+{
+    return packet << vec.x() << vec.y();
+}
+
+sf::Packet& operator>>(sf::Packet& packet, jt::Vector2& vec)
+{
+    return packet >> vec.x() << vec.y();
+}
 sf::Packet& operator<<(sf::Packet& packet, PayloadClient2Server& payload)
 {
     return packet << payload.playerID << payload.input;
@@ -61,9 +70,9 @@ sf::Packet& operator>>(sf::Packet& packet, PayloadClient2Server& payload)
 
 sf::Packet& operator<<(sf::Packet& packet, PayloadServer2Client& payload)
 {
-    return packet << payload.playerPositions;
+    return packet << payload.playerID << payload.playerPositions;
 }
 sf::Packet& operator>>(sf::Packet& packet, PayloadServer2Client& payload)
 {
-    return packet >> payload.playerPositions;
+    return packet >> payload.playerID >> payload.playerPositions;
 }

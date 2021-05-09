@@ -8,7 +8,7 @@
 
 struct PayloadClient2Server {
 
-    std::size_t playerID;
+    int playerID;
     // TODO Real input data
     std::map<int, int> input;
 };
@@ -17,6 +17,7 @@ sf::Packet& operator<<(sf::Packet&, PayloadClient2Server&);
 sf::Packet& operator>>(sf::Packet&, PayloadClient2Server&);
 
 struct PayloadServer2Client {
+    int playerID;
     // TODO use real position
     std::map<std::size_t, int> playerPositions;
     // TODO Enemy Positions
