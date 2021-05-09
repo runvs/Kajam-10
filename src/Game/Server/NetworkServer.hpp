@@ -14,9 +14,9 @@ public:
     ~NetworkServer();
 
     // TODO access data
-    Payload getData();
+    PayloadClient2Server getData();
     // TODO switch to actual data structs
-    void send(Payload const&);
+    void send(PayloadServer2Client const&);
 
 private:
     std::thread m_thread;
@@ -28,10 +28,10 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
-    Payload m_received_data;
+    PayloadClient2Server m_received_data;
 
     bool m_newDataToSend;
-    Payload m_dataToSend;
+    PayloadServer2Client m_dataToSend;
 
     void stopThread();
     void startThread();

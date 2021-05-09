@@ -12,7 +12,11 @@ int main()
     NetworkServer server;
     char a;
     std::cin >> a;
-    server.send(convert(PayloadWelcomeResponse { 15 }));
+    std::map<std::size_t, int> positions;
+    positions[0] = 100;
+    positions[1] = 220;
+    positions[2] = 330;
+    server.send(PayloadServer2Client { positions });
     std::cin >> a;
     return 0;
 }

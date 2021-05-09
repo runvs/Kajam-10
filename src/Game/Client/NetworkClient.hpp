@@ -14,9 +14,9 @@ public:
 
     bool isNewDataAvailable();
     // TODO access data
-    Payload getData();
+    PayloadServer2Client getData();
     // TODO switch to actual data structs
-    void send(Payload const&);
+    void send(PayloadClient2Server const&);
 
 private:
     sf::IpAddress m_serverAddress;
@@ -28,10 +28,10 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
-    Payload m_received_data;
+    PayloadServer2Client m_received_data;
 
     bool m_newDataToSend;
-    Payload m_dataToSend;
+    PayloadClient2Server m_dataToSend;
 
     void stopThread();
     void startThread();

@@ -49,7 +49,7 @@ void StateGame::doInternalCreate()
     setAutoDraw(false);
 
     m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
-    m_client->send(Payload { 0, "abcd" });
+    m_client->send(PayloadClient2Server { 0, {} });
 }
 
 void StateGame::doInternalUpdate(float const elapsed)
@@ -59,9 +59,7 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
-            PayloadWelcomeResponse response;
-            convert(payload, response);
-            if (response.id == 15) {
+            if (payload.playerPositions.size() != 0) {
                 m_background->setColor(jt::colors::Black);
             }
         }

@@ -1,31 +1,69 @@
 ﻿#include "Payloads.hpp"
-#include <iostream>
-#include <sstream>
 
-sf::Packet& operator<<(sf::Packet& packet, Payload& payload)
+template <typename T>
+sf::Packet& operator<<(sf::Packet& packet, std::vector<T>& vec)
 {
-    return packet << payload.payloadType << payload.message;
-}
-
-sf::Packet& operator>>(sf::Packet& packet, Payload& payload)
-{
-    return packet >> payload.payloadType >> payload.message;
-}
-
-std::size_t getPayloadType(PayloadWelcomeResponse /*unused*/) { return 1; }
-
-Payload convert(PayloadWelcomeResponse const& payload)
-{
-    Payload payloadOut { getPayloadType(payload), std::to_string(payload.id) };
-    return payloadOut;
-}
-
-void convert(Payload const& payloadIn, PayloadWelcomeResponse& payloadOut)
-{
-    if (payloadIn.payloadType == getPayloadType(payloadOut)) {
-        std::stringstream sstream(payloadIn.message);
-        sstream >> payloadOut.id;
-    } else {
-        std::cout << "cannot convert payload. Types do not match\n";
+    packet << vec.size();
+    for (auto const& i : vec) {
+        packet << i;
     }
+    return packet;
+}
+
+template <typename T>
+sf::Packet& operator>>(sf::Packet& packet, std::vector<T>& vec)
+{
+    std::size_t size;
+    packet >> size;
+
+    for (std::size_t i = 0; i != size; ++i) {
+        T obj;
+        packet >> obj;
+        vec.emplace_back(obj);
+    }
+    return packet;
+}
+
+template <typename K, typename V>
+sf::Packet& operator<<(sf::Packet& packet, std::map<K, V>& map)
+{
+    packet << map.size();
+    for (auto const& kvp : map) {
+        packet << kvp.first << kvp.second;
+    }
+    return packet;
+}
+
+template <typename K, typename V>
+sf::Packet& operator>>(sf::Packet& packet, std::map<K, V>& map)
+{
+    std::size_t size;
+    packet >> size;
+
+    for (std::size_t i = 0; i != size; ++i) {
+        K key;
+        V value;
+        packet >> key >> value;
+        map[key] = value;
+    }
+    return packet;
+}
+
+sf::Packet& operator<<(sf::Packet& packet, PayloadClient2Server& payload)
+{
+    return packet << payload.playerID << payload.input;
+    // << payload.input;
+}
+sf::Packet& operator>>(sf::Packet& packet, PayloadClient2Server& payload)
+{
+    return packet >> payload.playerID >> payload.input;
+}
+
+sf::Packet& operator<<(sf::Packet& packet, PayloadServer2Client& payload)
+{
+    return packet << payload.playerPositions;
+}
+sf::Packet& operator>>(sf::Packet& packet, PayloadServer2Client& payload)
+{
+    return packet >> payload.playerPositions;
 }

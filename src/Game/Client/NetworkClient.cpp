@@ -47,17 +47,17 @@ bool NetworkClient::isNewDataAvailable()
     return m_newDataReceived;
 }
 
-Payload NetworkClient::getData()
+PayloadServer2Client NetworkClient::getData()
 {
     std::lock_guard const lock { m_dataMutex };
     if (m_newDataReceived) {
         m_newDataReceived = false;
         return m_received_data;
     }
-    return Payload { 0, "" };
+    return PayloadServer2Client { {} };
 }
 
-void NetworkClient::send(Payload const& payload)
+void NetworkClient::send(PayloadClient2Server const& payload)
 {
     std::lock_guard const lock { m_dataMutex };
     m_newDataToSend = true;
