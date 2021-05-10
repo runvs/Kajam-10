@@ -9,7 +9,7 @@ namespace Network {
 class NetworkProperties {
 public:
     static unsigned short port() { return 53000; }
-    static float serverTimeToClientTimeout() { return 20.0f; }
+    static float serverTimeToClientTimeout() { return 10.0f; }
 };
 
 namespace Packets {

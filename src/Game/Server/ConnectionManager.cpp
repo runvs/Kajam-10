@@ -3,32 +3,32 @@
 #include "SystemHelper.hpp"
 #include <iostream>
 
-bool operator==(Connection const& a, Connection const& b)
+bool operator==(IP_Endpoint const& a, IP_Endpoint const& b)
 {
     return a.port == b.port && a.address == b.address;
 }
 
-bool operator<(Connection const& a, Connection const& b)
+bool operator<(IP_Endpoint const& a, IP_Endpoint const& b)
 {
     return a.port < b.port && a.address.toInteger() < b.address.toInteger();
 }
 
 void ConnectionManager::updateConnection(sf::IpAddress sender_address, unsigned short sender_port)
 {
-    Connection const con { sender_address, sender_port };
+    IP_Endpoint const con { sender_address, sender_port };
     if (isNewConnection(con)) {
         std::cout << "add new connection: " << sender_address.toString() << ":" << sender_port
                   << std::endl;
         std::lock_guard lock { m_mutex };
-        m_connections[con] = ConnectionInfo { currentPlayerId++, std::chrono::system_clock::now() };
+        m_connections[con] = ConnectionInfo { currentPlayerId++, std::chrono::steady_clock::now() };
         return;
     }
     std::lock_guard lock { m_mutex };
     m_connections[con]
-        = ConnectionInfo { getPlayerIdForConnection(con), std::chrono::system_clock::now() };
+        = ConnectionInfo { getPlayerIdForConnection(con), std::chrono::steady_clock::now() };
 }
 
-int ConnectionManager::getPlayerIdForConnection(Connection con)
+int ConnectionManager::getPlayerIdForConnection(IP_Endpoint con)
 {
     int playerId = -1;
     if (m_connections.count(con)) {
@@ -37,13 +37,13 @@ int ConnectionManager::getPlayerIdForConnection(Connection con)
     return -1;
 }
 
-Connection ConnectionManager::getConnectionForPlayerId(int playerID)
+IP_Endpoint ConnectionManager::getConnectionForPlayerId(int playerID)
 {
     for (auto kvp : m_connections) {
         if (kvp.second.playerId == playerID)
             return kvp.first;
     }
-    return Connection {};
+    return IP_Endpoint {};
 }
 
 std::vector<int> ConnectionManager::getAllPlayerIds()
@@ -54,7 +54,7 @@ std::vector<int> ConnectionManager::getAllPlayerIds()
     return out;
 }
 
-bool ConnectionManager::isNewConnection(Connection newCon)
+bool ConnectionManager::isNewConnection(IP_Endpoint newCon)
 {
     std::lock_guard lock { m_mutex };
     bool const alreadyPresent = std::any_of(m_connections.begin(), m_connections.end(),
@@ -64,7 +64,7 @@ bool ConnectionManager::isNewConnection(Connection newCon)
 
 void ConnectionManager::removeInactiveConnections()
 {
-    auto now = std::chrono::system_clock::now();
+    auto now = std::chrono::steady_clock::now();
     std::lock_guard lock { m_mutex };
     jt::SystemHelper::erase_if(m_connections, [&now](auto const kvp) {
         float const elapsed_in_seconds = std::chrono::duration_cast<std::chrono::microseconds>(
@@ -79,9 +79,9 @@ void ConnectionManager::removeInactiveConnections()
     });
 }
 
-std::vector<Connection> ConnectionManager::getAllActiveConnections()
+std::vector<IP_Endpoint> ConnectionManager::getAllActiveConnections()
 {
-    std::vector<Connection> connections;
+    std::vector<IP_Endpoint> connections;
     std::lock_guard lock { m_mutex };
     std::transform(m_connections.begin(), m_connections.end(), std::back_inserter(connections),
         [](auto kvp) { return kvp.first; });

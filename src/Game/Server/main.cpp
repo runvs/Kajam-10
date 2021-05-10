@@ -19,36 +19,36 @@ int main()
 
     NetworkServer server;
 
-    std::map<int, jt::Vector2> playerPositions;
+    std::map<int, jt::Vector2> playerStates;
 
     while (true) {
-        auto now = std::chrono::system_clock::now();
+        auto now = std::chrono::steady_clock::now();
         float const elapsed = 0.04f;
         auto next = now + std::chrono::milliseconds { static_cast<long long>(elapsed * 1000) };
 
         auto playerIds = server.getAllPlayerIds();
 
         for (auto pid : playerIds) {
-            if (playerPositions.count(pid) == 0) {
-                playerPositions[pid].x() = 0;
-                playerPositions[pid].y() = 0;
+            if (playerStates.count(pid) == 0) {
+                playerStates[pid].x() = 0;
+                playerStates[pid].y() = 0;
             }
             auto playerData = server.getData(pid);
             if (std::get<0>(playerData)) {
                 auto playerInput = std::get<1>(playerData);
                 if (playerInput.input[jt::KeyCode::D])
-                    playerPositions[pid].x() += elapsed * 100;
+                    playerStates[pid].x() += elapsed * 100;
                 else if (playerInput.input[jt::KeyCode::A])
-                    playerPositions[pid].x() -= elapsed * 100;
+                    playerStates[pid].x() -= elapsed * 100;
 
                 if (playerInput.input[jt::KeyCode::W])
-                    playerPositions[pid].y() -= elapsed * 100;
+                    playerStates[pid].y() -= elapsed * 100;
                 else if (playerInput.input[jt::KeyCode::S])
-                    playerPositions[pid].y() += elapsed * 100;
+                    playerStates[pid].y() += elapsed * 100;
             }
         }
 
-        PayloadServer2Client payload { 0, playerPositions };
+        PayloadServer2Client payload { 0, playerStates };
         server.send(payload);
 
         std::this_thread::sleep_until(next);

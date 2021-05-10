@@ -29,7 +29,7 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
-    std::map<Connection, std::tuple<bool, PayloadClient2Server>> m_received_data;
+    std::map<IP_Endpoint, std::tuple<bool, PayloadClient2Server>> m_received_data;
 
     bool m_newDataToSend;
     PayloadServer2Client m_dataToSend;

@@ -75,7 +75,7 @@ void NetworkServer::internalReceiveData()
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
-        Connection const con { sender_address, sender_port };
+        IP_Endpoint const con { sender_address, sender_port };
         std::get<0>(m_received_data[con]) = true;
         packet >> std::get<1>(m_received_data[con]);
 

@@ -66,7 +66,7 @@ endfunction()
 
 if (WIN32)
 	set (SFML_DIR "${SFML_DIR_ROOT}/lib/cmake/SFML")
-	find_package(SFML COMPONENTS graphics window system audio network REQUIRED)
+#	find_package(SFML COMPONENTS graphics window system audio network REQUIRED)
 endif()
 #####################################################
 ## Other variables and compiler setup
@@ -79,7 +79,7 @@ add_compile_definitions(DISABLE_CPP17_FILESYSTEM)
 if(WIN32)
 	## nasty warning 5205 from tileson should not show up,
 	## so the warning level of this one is set to 4 and the global warning level is set to three
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w45205 /W3 /EHsc")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w45205 /W3 /Ox /EHsc")
 else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O3 --std=c++17 -fpermissive -lstdc++fs")
 endif()

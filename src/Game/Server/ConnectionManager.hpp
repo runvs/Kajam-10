@@ -5,31 +5,32 @@
 #include <map>
 #include <mutex>
 
-struct Connection {
+struct IP_Endpoint {
     sf::IpAddress address;
     unsigned short port;
 };
-using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
+
+using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
 struct ConnectionInfo {
     int playerId;
     TimePoint lastReceivedTime;
 };
 
-bool operator==(Connection const& a, Connection const& b);
-bool operator<(Connection const& a, Connection const& b);
+bool operator==(IP_Endpoint const& a, IP_Endpoint const& b);
+bool operator<(IP_Endpoint const& a, IP_Endpoint const& b);
 
 class ConnectionManager {
 public:
     void updateConnection(sf::IpAddress sender_address, unsigned short sender_port);
-    std::vector<Connection> getAllActiveConnections();
+    std::vector<IP_Endpoint> getAllActiveConnections();
     void removeInactiveConnections();
-    bool isNewConnection(Connection con);
-    int getPlayerIdForConnection(Connection con);
-    Connection getConnectionForPlayerId(int playerID);
+    bool isNewConnection(IP_Endpoint con);
+    int getPlayerIdForConnection(IP_Endpoint con);
+    IP_Endpoint getConnectionForPlayerId(int playerID);
     std::vector<int> getAllPlayerIds();
 
 private:
-    using MapType = std::map<Connection, ConnectionInfo>;
+    using MapType = std::map<IP_Endpoint, ConnectionInfo>;
     MapType m_connections;
     std::mutex m_mutex;
     int currentPlayerId = 0;
