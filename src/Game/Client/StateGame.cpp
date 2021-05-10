@@ -65,6 +65,19 @@ void StateGame::doInternalUpdate(float const elapsed)
             auto playerId = payload.playerID;
             auto pos = payload.playerPositions.at(playerId);
             m_player->m_shape->setPosition(pos);
+        } else {
+            auto pos = m_player->m_shape->getPosition();
+            if (getGame()->input()->keyboard()->pressed(jt::KeyCode::D))
+                pos.x() += elapsed * 100;
+            else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::A))
+                pos.x() -= elapsed * 100;
+
+            if (getGame()->input()->keyboard()->pressed(jt::KeyCode::W))
+                pos.y() -= elapsed * 100;
+            else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::S))
+                pos.y() += elapsed * 100;
+
+            m_player->m_shape->setPosition(pos);
         }
 
         const PayloadClient2Server payload { 0, m_player->getInput() };
