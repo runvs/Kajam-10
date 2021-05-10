@@ -92,10 +92,9 @@ void NetworkServer::internalSendData()
 {
     std::unique_lock lock { m_dataMutex };
     if (m_newDataToSend) {
-
         for (auto con : m_connections.getAllActiveConnections()) {
-            std::cout << "send socket data to connection: " << con.address.toString() << ":"
-                      << con.port << std::endl;
+            // std::cout << "send socket data to connection: " << con.address.toString() << ":"
+            //<< con.port << std::endl;
             m_dataToSend.playerID = m_connections.getPlayerIdForConnection(con);
             sf::Packet packet;
             packet << m_dataToSend;
