@@ -3,6 +3,7 @@
 
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
+#include "Player.hpp"
 
 #include <iostream>
 #include <memory>
@@ -26,6 +27,7 @@ private:
     std::shared_ptr<Hud> m_hud;
     std::shared_ptr<b2World> m_world { nullptr };
     std::shared_ptr<NetworkClient> m_client { nullptr };
+    std::shared_ptr<Player> m_player { nullptr };
     bool m_running { false };
     bool m_hasEnded { false };
 

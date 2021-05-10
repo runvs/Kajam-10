@@ -42,6 +42,9 @@ void StateGame::doInternalCreate()
     m_vignette->setIgnoreCamMovement(true);
     m_vignette->setColor({ 255, 255, 255, 100 });
 
+    m_player = std::make_shared<Player>();
+    add(m_player);
+
     m_hud = std::make_shared<Hud>();
     add(m_hud);
 
@@ -59,21 +62,13 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
-            if (!payload.playerPositions.empty()) {
-                for (auto const& kvp : payload.playerPositions) {
-                    std::cout << kvp.first << " " << kvp.second << "\n";
-                }
-                std::cout << std::endl;
-            }
+            auto playerId = payload.playerID;
+            auto pos = payload.playerPositions.at(playerId);
+            m_player->m_shape->setPosition(pos);
         }
 
-        if (getGame()->input()->keyboard()->pressed(jt::KeyCode::C)) {
-            std::map<int, int> inputmap;
-            inputmap[0] = 1;
-            inputmap[1] = 20;
-            const PayloadClient2Server payload { 0, inputmap };
-            m_client->send(payload);
-        }
+        const PayloadClient2Server payload { 0, m_player->getInput() };
+        m_client->send(payload);
     }
 
     m_background->update(elapsed);
@@ -85,6 +80,7 @@ void StateGame::doInternalDraw() const
 {
     m_background->draw(getGame()->getRenderTarget());
     drawObjects();
+    m_player->draw();
     m_vignette->draw(getGame()->getRenderTarget());
     m_hud->draw();
     m_overlay->draw(getGame()->getRenderTarget());
