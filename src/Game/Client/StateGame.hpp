@@ -38,6 +38,7 @@ private:
     void spawnNewPlayer(int newPlayerId);
     void UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload);
     void InterpolateActivePlayer(float elapsed);
+    void removeLocalOnlyPlayers(PayloadServer2Client payload);
     void doInternalUpdate(float const elapsed) override;
     void doInternalDraw() const override;
 

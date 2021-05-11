@@ -8,6 +8,7 @@
 #include "Shape.hpp"
 #include "Sprite.hpp"
 #include "StateMenu.hpp"
+#include "SystemHelper.hpp"
 #include "TweenAlpha.hpp"
 
 void StateGame::doInternalCreate()
@@ -102,6 +103,15 @@ void StateGame::InterpolateActivePlayer(float const elapsed)
     m_player->m_shape->setPosition(pos);
 }
 
+void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
+{
+    if (m_players.size() == payload.playerPositions.size()) {
+        return;
+    }
+    jt::SystemHelper::erase_if(m_players,
+        [&payload](auto const kvp) { return payload.playerPositions.count(kvp.first) == 0; });
+}
+
 void StateGame::doInternalUpdate(float const elapsed)
 {
     if (m_running) {
@@ -110,7 +120,7 @@ void StateGame::doInternalUpdate(float const elapsed)
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
             UpdateAllPlayerPositionsFromServer(payload);
-
+            removeLocalOnlyPlayers(payload);
         } else {
             InterpolateActivePlayer(elapsed);
         }
