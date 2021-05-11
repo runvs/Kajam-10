@@ -42,7 +42,7 @@ void StateGame::doInternalCreate()
     m_vignette->setIgnoreCamMovement(true);
     m_vignette->setColor({ 255, 255, 255, 100 });
 
-    m_player = std::make_shared<Player>();
+    m_player = std::make_shared<Player>(true);
     add(m_player);
 
     m_hud = std::make_shared<Hud>();
@@ -55,6 +55,18 @@ void StateGame::doInternalCreate()
     m_client->send(PayloadClient2Server { 0, {} });
 }
 
+void StateGame::updatePositionForPlayer(
+    int playerID, std::shared_ptr<Player> player, std::map<int, jt::Vector2> playerPositions)
+{
+    auto pos = playerPositions.at(playerID);
+    player->m_shape->setPosition(pos);
+}
+
+void StateGame::spawnNewPlayer(int newPlayerId)
+{
+    m_players[newPlayerId] = std::make_shared<Player>(false);
+}
+
 void StateGame::doInternalUpdate(float const elapsed)
 {
     if (m_running) {
@@ -62,9 +74,22 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
-            auto playerId = payload.playerID;
-            auto pos = payload.playerPositions.at(playerId);
-            m_player->m_shape->setPosition(pos);
+            auto activePlayerId = payload.playerID;
+
+            auto playerPositions = payload.playerPositions;
+
+            for (auto kvp : playerPositions) {
+                if (kvp.first == activePlayerId) {
+                    m_player->m_shape->setPosition(kvp.second);
+                } else {
+                    if (m_players.count(kvp.first) == 0) {
+                        spawnNewPlayer(kvp.first);
+                    }
+                    m_players[kvp.first]->m_shape->setPosition(kvp.second);
+                }
+            }
+            updatePositionForPlayer(activePlayerId, m_player, playerPositions);
+
         } else {
             auto pos = m_player->m_shape->getPosition();
             if (getGame()->input()->keyboard()->pressed(jt::KeyCode::D))

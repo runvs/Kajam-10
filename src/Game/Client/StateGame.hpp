@@ -28,10 +28,14 @@ private:
     std::shared_ptr<b2World> m_world { nullptr };
     std::shared_ptr<NetworkClient> m_client { nullptr };
     std::shared_ptr<Player> m_player { nullptr };
+    std::map<int, std::shared_ptr<Player>> m_players;
     bool m_running { false };
     bool m_hasEnded { false };
 
     void doInternalCreate() override;
+    void updatePositionForPlayer(
+        int playerID, std::shared_ptr<Player> player, std::map<int, jt::Vector2> playerPositions);
+    void spawnNewPlayer(int newPlayerId);
     void doInternalUpdate(float const elapsed) override;
     void doInternalDraw() const override;
 
