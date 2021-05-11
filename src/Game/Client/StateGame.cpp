@@ -55,7 +55,7 @@ void StateGame::doInternalCreate()
     m_client->send(PayloadClient2Server { 0, {} });
 }
 
-void StateGame::updatePositionForPlayer(
+void StateGame::updateActivePlayerPositionFromServer(
     int playerID, std::shared_ptr<Player> player, std::map<int, jt::Vector2> playerPositions)
 {
     auto pos = playerPositions.at(playerID);
@@ -67,6 +67,41 @@ void StateGame::spawnNewPlayer(int newPlayerId)
     m_players[newPlayerId] = std::make_shared<Player>(false);
 }
 
+void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
+{
+    auto activePlayerId = payload.playerID;
+
+    auto playerPositions = payload.playerPositions;
+
+    for (auto kvp : playerPositions) {
+        if (kvp.first == activePlayerId) {
+            m_player->m_shape->setPosition(kvp.second);
+        } else {
+            if (m_players.count(kvp.first) == 0) {
+                spawnNewPlayer(kvp.first);
+            }
+            m_players[kvp.first]->m_shape->setPosition(kvp.second);
+        }
+    }
+    updateActivePlayerPositionFromServer(activePlayerId, m_player, playerPositions);
+}
+
+void StateGame::InterpolateActivePlayer(float const elapsed)
+{
+    auto pos = m_player->m_shape->getPosition();
+    if (getGame()->input()->keyboard()->pressed(jt::KeyCode::D))
+        pos.x() += elapsed * 100;
+    else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::A))
+        pos.x() -= elapsed * 100;
+
+    if (getGame()->input()->keyboard()->pressed(jt::KeyCode::W))
+        pos.y() -= elapsed * 100;
+    else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::S))
+        pos.y() += elapsed * 100;
+
+    m_player->m_shape->setPosition(pos);
+}
+
 void StateGame::doInternalUpdate(float const elapsed)
 {
     if (m_running) {
@@ -74,35 +109,10 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
-            auto activePlayerId = payload.playerID;
-
-            auto playerPositions = payload.playerPositions;
-
-            for (auto kvp : playerPositions) {
-                if (kvp.first == activePlayerId) {
-                    m_player->m_shape->setPosition(kvp.second);
-                } else {
-                    if (m_players.count(kvp.first) == 0) {
-                        spawnNewPlayer(kvp.first);
-                    }
-                    m_players[kvp.first]->m_shape->setPosition(kvp.second);
-                }
-            }
-            updatePositionForPlayer(activePlayerId, m_player, playerPositions);
+            UpdateAllPlayerPositionsFromServer(payload);
 
         } else {
-            auto pos = m_player->m_shape->getPosition();
-            if (getGame()->input()->keyboard()->pressed(jt::KeyCode::D))
-                pos.x() += elapsed * 100;
-            else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::A))
-                pos.x() -= elapsed * 100;
-
-            if (getGame()->input()->keyboard()->pressed(jt::KeyCode::W))
-                pos.y() -= elapsed * 100;
-            else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::S))
-                pos.y() += elapsed * 100;
-
-            m_player->m_shape->setPosition(pos);
+            InterpolateActivePlayer(elapsed);
         }
 
         const PayloadClient2Server payload { 0, m_player->getInput() };

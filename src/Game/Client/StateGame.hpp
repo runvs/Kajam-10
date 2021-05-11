@@ -33,9 +33,11 @@ private:
     bool m_hasEnded { false };
 
     void doInternalCreate() override;
-    void updatePositionForPlayer(
+    void updateActivePlayerPositionFromServer(
         int playerID, std::shared_ptr<Player> player, std::map<int, jt::Vector2> playerPositions);
     void spawnNewPlayer(int newPlayerId);
+    void UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload);
+    void InterpolateActivePlayer(float elapsed);
     void doInternalUpdate(float const elapsed) override;
     void doInternalDraw() const override;
 
