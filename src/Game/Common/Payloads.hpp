@@ -12,6 +12,7 @@ struct PayloadClient2Server {
     InputState input;
     float dt;
     std::size_t currentPredictionId;
+    bool disconnect;
 };
 
 sf::Packet& operator<<(sf::Packet&, PayloadClient2Server&);

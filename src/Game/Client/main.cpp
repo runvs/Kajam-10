@@ -25,7 +25,7 @@ void gameloop()
 
 int main()
 {
-    hideConsoleInRelease();
+    // hideConsoleInRelease();
 
     jt::Random::useTimeAsRandomSeed();
     auto const mouse = std::make_shared<jt::MouseInput>();

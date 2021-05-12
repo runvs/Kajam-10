@@ -47,9 +47,13 @@ int main()
 
             auto dataForPlayer = server.getData(currentPlayerId);
             // TODO Sort dataForPlayer by message id
-            for (auto& playerData : dataForPlayer) {
-                updatePlayerState(playerStates[currentPlayerId], playerData.dt, playerData.input);
-                player_prediction_id[currentPlayerId] = playerData.currentPredictionId;
+            for (auto& payload : dataForPlayer) {
+                if (payload.disconnect == true) {
+                    server.closeConnectionTo(currentPlayerId);
+                    break;
+                }
+                updatePlayerState(playerStates[currentPlayerId], payload.dt, payload.input);
+                player_prediction_id[currentPlayerId] = payload.currentPredictionId;
             }
         }
 

@@ -53,7 +53,7 @@ void StateGame::doInternalCreate()
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
 
-    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "217.80.132.122" });
+    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
     m_client->send(PayloadClient2Server { 0, {} });
 }
 
@@ -108,7 +108,8 @@ void StateGame::doInternalUpdate(float const elapsed)
         auto inputState = m_localPlayer->getInput();
 
         // TODO use correct predictionId
-        const PayloadClient2Server payload { 0, inputState, elapsed, 0 };
+        // TODO use correct player id
+        const PayloadClient2Server payload { 0, inputState, elapsed, 0, false };
         m_client->send(payload);
 
         if (m_client->isNewDataAvailable()) {

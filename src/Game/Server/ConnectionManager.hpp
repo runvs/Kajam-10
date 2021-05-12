@@ -28,6 +28,7 @@ public:
     int getPlayerIdForConnection(IP_Endpoint con);
     IP_Endpoint getConnectionForPlayerId(int playerID);
     std::vector<int> getAllPlayerIds();
+    void closeConnection(IP_Endpoint const& ip_endpoint);
 
 private:
     using MapType = std::map<IP_Endpoint, ConnectionInfo>;

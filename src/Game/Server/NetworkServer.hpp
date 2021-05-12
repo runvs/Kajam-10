@@ -16,6 +16,8 @@ public:
     void sendToClient(int playerId, PayloadServer2Client const& payload);
     std::vector<int> getAllPlayerIds();
 
+    void closeConnectionTo(int playerId);
+
 private:
     std::thread m_thread;
     std::atomic_bool m_stopThread;

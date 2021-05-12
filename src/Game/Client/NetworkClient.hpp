@@ -31,6 +31,7 @@ private:
     PayloadClient2Server m_dataToSend;
 
     void stopThread();
+    void sendDisconnectMessage();
     void startThread();
 
     void internalReceiveData();

@@ -101,3 +101,8 @@ void NetworkServer::internalSendData()
 }
 
 std::vector<int> NetworkServer::getAllPlayerIds() { return m_connections.getAllPlayerIds(); }
+
+void NetworkServer::closeConnectionTo(int playerId)
+{
+    m_connections.closeConnection(m_connections.getConnectionForPlayerId(playerId));
+}

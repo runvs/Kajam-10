@@ -23,12 +23,28 @@ void NetworkClient::stopThread()
     m_thread.join();
 }
 
+void NetworkClient::sendDisconnectMessage()
+{
+    PayloadClient2Server payload { 0, {}, 0, 0, true };
+    sf::Packet packet;
+    packet << payload;
+
+    if (m_socket.send(packet, m_serverAddress, Network::NetworkProperties::port())
+        != sf::Socket::Status::Done) {
+        std::cout << "error sending data\n";
+    } else {
+        std::cout << "client disconnected\n";
+    }
+}
+
 void NetworkClient::startThread()
 {
+
     m_thread = std::thread([this]() {
         while (true) {
             // exit thread
             if (m_stopThread.load()) {
+                sendDisconnectMessage();
                 std::cout << "kill thread" << std::endl;
                 break;
             }
