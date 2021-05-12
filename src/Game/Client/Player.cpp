@@ -26,6 +26,7 @@ void Player::doUpdate(float const elapsed)
 {
     if (m_isActivePlayer) {
         updateInput();
+        m_shape->setColor(jt::colors::Green);
     }
     m_shape->update(elapsed);
 }
