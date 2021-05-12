@@ -41,6 +41,7 @@ int main()
 
         removeInactivePlayers(playerStates, allPlayerIds);
 
+        std::vector<int> playersToDisconnect {};
         for (auto currentPlayerId : allPlayerIds) {
 
             createNewPlayerIfNotKnownToServer(playerStates, currentPlayerId);
@@ -49,12 +50,15 @@ int main()
             // TODO Sort dataForPlayer by message id
             for (auto& payload : dataForPlayer) {
                 if (payload.disconnect == true) {
-                    server.closeConnectionTo(currentPlayerId);
+                    playersToDisconnect.push_back(currentPlayerId);
                     break;
                 }
                 updatePlayerState(playerStates[currentPlayerId], payload.dt, payload.input);
                 player_prediction_id[currentPlayerId] = payload.currentPredictionId;
             }
+        }
+        for (auto playerToDisconnectId : playersToDisconnect) {
+            server.closeConnectionTo(playerToDisconnectId);
         }
 
         // TODO pass player_prediction id for the correct player

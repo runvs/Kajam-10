@@ -17,6 +17,12 @@ NetworkClient::NetworkClient(sf::IpAddress address)
     startThread();
 }
 
+NetworkClient::~NetworkClient()
+{
+    sendDisconnectMessage();
+    stopThread();
+}
+
 void NetworkClient::stopThread()
 {
     m_stopThread.store(true);
@@ -54,8 +60,6 @@ void NetworkClient::startThread()
         }
     });
 }
-
-NetworkClient::~NetworkClient() { stopThread(); }
 
 bool NetworkClient::isNewDataAvailable()
 {

@@ -104,5 +104,6 @@ std::vector<int> NetworkServer::getAllPlayerIds() { return m_connections.getAllP
 
 void NetworkServer::closeConnectionTo(int playerId)
 {
+    std::lock_guard const lockData { m_dataMutex };
     m_connections.closeConnection(m_connections.getConnectionForPlayerId(playerId));
 }

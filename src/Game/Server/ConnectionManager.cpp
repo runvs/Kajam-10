@@ -56,6 +56,7 @@ std::vector<int> ConnectionManager::getAllPlayerIds()
 
 void ConnectionManager::closeConnection(IP_Endpoint const& ip_endpoint)
 {
+    std::lock_guard lock { m_mutex };
     std::cout << "erase connection for " << ip_endpoint.address << ":" << ip_endpoint.port
               << std::endl;
     m_connections.erase(m_connections.find(ip_endpoint));
