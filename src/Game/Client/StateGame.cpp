@@ -53,7 +53,7 @@ void StateGame::doInternalCreate()
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
 
-    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
+    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "217.80.132.122" });
     m_client->send(PayloadClient2Server { 0, {} });
 }
 
@@ -92,9 +92,6 @@ void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
 
 void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
 {
-    if (m_remotePlayers.size() == payload.playerStates.size()) {
-        return;
-    }
     jt::SystemHelper::erase_if(m_remotePlayers,
         [&payload](auto const kvp) { return payload.playerStates.count(kvp.first) == 0; });
 }

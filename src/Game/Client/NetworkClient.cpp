@@ -72,7 +72,9 @@ PayloadServer2Client NetworkClient::getData()
     std::lock_guard const lock { m_dataMutex };
     if (m_newDataReceived) {
         m_newDataReceived = false;
-        return m_received_data;
+        auto temp = m_received_data;
+        m_received_data.playerStates.clear();
+        return temp;
     }
     return PayloadServer2Client { -1, {} };
 }
