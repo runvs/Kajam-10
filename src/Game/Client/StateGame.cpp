@@ -89,18 +89,18 @@ void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
 
 void StateGame::InterpolateActivePlayer(float const elapsed)
 {
-    auto pos = m_player->m_shape->getPosition();
-    if (getGame()->input()->keyboard()->pressed(jt::KeyCode::D))
-        pos.x() += elapsed * 100;
-    else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::A))
-        pos.x() -= elapsed * 100;
+    /*   auto pos = m_player->m_shape->getPosition();
+       if (getGame()->input()->keyboard()->pressed(jt::KeyCode::D))
+           pos.x() += elapsed * 100;
+       else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::A))
+           pos.x() -= elapsed * 100;
 
-    if (getGame()->input()->keyboard()->pressed(jt::KeyCode::W))
-        pos.y() -= elapsed * 100;
-    else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::S))
-        pos.y() += elapsed * 100;
+       if (getGame()->input()->keyboard()->pressed(jt::KeyCode::W))
+           pos.y() -= elapsed * 100;
+       else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::S))
+           pos.y() += elapsed * 100;
 
-    m_player->m_shape->setPosition(pos);
+       m_player->m_shape->setPosition(pos);*/
 }
 
 void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)

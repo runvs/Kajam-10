@@ -1,5 +1,6 @@
 ﻿#ifndef PAYLOADS_HPP_GUARD
 #define PAYLOADS_HPP_GUARD
+
 #include "KeyCodes.hpp"
 #include "PlayerState.hpp"
 #include <SFML/Network.hpp>
@@ -16,7 +17,6 @@ sf::Packet& operator>>(sf::Packet&, PayloadClient2Server&);
 
 struct PayloadServer2Client {
     int playerID;
-    // TODO use PlayerState class
     PlayerMap playerStates;
     // TODO Enemy Positions
     // TODO ParticlePositions
