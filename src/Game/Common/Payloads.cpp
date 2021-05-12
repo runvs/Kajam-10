@@ -3,12 +3,12 @@
 
 sf::Packet& operator<<(sf::Packet& packet, PayloadClient2Server& payload)
 {
-    return packet << payload.playerID << payload.input;
+    return packet << payload.playerID << payload.input << payload.dt << payload.currentPredictionId;
 }
 
 sf::Packet& operator>>(sf::Packet& packet, PayloadClient2Server& payload)
 {
-    return packet >> payload.playerID >> payload.input;
+    return packet >> payload.playerID >> payload.input >> payload.dt >> payload.currentPredictionId;
 }
 
 sf::Packet& operator<<(sf::Packet& packet, PayloadServer2Client& payload)

@@ -37,15 +37,7 @@ int main()
             auto playerData = server.getData(pid);
             if (std::get<0>(playerData)) {
                 auto playerInput = std::get<1>(playerData);
-                if (playerInput.input[jt::KeyCode::D])
-                    playerStates[pid].position.x() += elapsed * 100;
-                else if (playerInput.input[jt::KeyCode::A])
-                    playerStates[pid].position.x() -= elapsed * 100;
-
-                if (playerInput.input[jt::KeyCode::W])
-                    playerStates[pid].position.y() -= elapsed * 100;
-                else if (playerInput.input[jt::KeyCode::S])
-                    playerStates[pid].position.y() += elapsed * 100;
+                updatePlayerState(playerStates[pid], elapsed, playerInput.input);
             }
         }
 

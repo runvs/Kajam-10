@@ -1,9 +1,10 @@
 ﻿#include "StateGame.hpp"
 #include "../Common/Payloads.hpp"
+#include "../Common/PlayerState.hpp"
 #include "Box2D/Box2D.h"
+#include "ClientProperties.hpp"
 #include "Color.hpp"
 #include "GameInterface.hpp"
-#include "GameProperties.hpp"
 #include "Hud.hpp"
 #include "Shape.hpp"
 #include "Sprite.hpp"
@@ -59,8 +60,8 @@ void StateGame::doInternalCreate()
 void StateGame::updateActivePlayerPositionFromServer(
     int playerID, std::shared_ptr<Player> player, PlayerMap playerPositions)
 {
-    auto pos = playerPositions.at(playerID).position;
-    player->m_shape->setPosition(pos);
+    player_state = playerPositions.at(playerID);
+    player->m_shape->setPosition(player_state.position);
 }
 
 void StateGame::spawnNewPlayer(int newPlayerId)
@@ -87,22 +88,6 @@ void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
     updateActivePlayerPositionFromServer(activePlayerId, m_player, playerPositions);
 }
 
-void StateGame::InterpolateActivePlayer(float const elapsed)
-{
-    /*   auto pos = m_player->m_shape->getPosition();
-       if (getGame()->input()->keyboard()->pressed(jt::KeyCode::D))
-           pos.x() += elapsed * 100;
-       else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::A))
-           pos.x() -= elapsed * 100;
-
-       if (getGame()->input()->keyboard()->pressed(jt::KeyCode::W))
-           pos.y() -= elapsed * 100;
-       else if (getGame()->input()->keyboard()->pressed(jt::KeyCode::S))
-           pos.y() += elapsed * 100;
-
-       m_player->m_shape->setPosition(pos);*/
-}
-
 void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
 {
     if (m_players.size() == payload.playerStates.size()) {
@@ -115,18 +100,29 @@ void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
 void StateGame::doInternalUpdate(float const elapsed)
 {
     if (m_running) {
-        m_world->Step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
+        // TODO Reneable box2d update only if required
+        // m_world->Step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
+        auto inputState = m_player->getInput();
+
+        // TODO use correct predictionId
+        const PayloadClient2Server payload { 0, inputState, 0.0f, 0 };
+        m_client->send(payload);
+
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
             UpdateAllPlayerPositionsFromServer(payload);
             removeLocalOnlyPlayers(payload);
         } else {
-            InterpolateActivePlayer(elapsed);
+            updatePlayerState(player_state, elapsed, inputState);
+            m_player->m_shape->setPosition(player_state.position);
         }
 
-        const PayloadClient2Server payload { 0, m_player->getInput() };
-        m_client->send(payload);
+        const std::size_t buffer_index = current_prediction_id & c_buffer_mask;
+        predicted_move[buffer_index].dt = elapsed;
+        predicted_move[buffer_index].input = inputState;
+        predicted_move_result[buffer_index] = player_state;
+        ++current_prediction_id;
     }
 
     m_background->update(elapsed);

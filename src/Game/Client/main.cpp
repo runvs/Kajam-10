@@ -1,7 +1,7 @@
 ﻿#include "main.hpp"
 #include "../common/common.hpp"
+#include "ClientProperties.hpp"
 #include "Game.hpp"
-#include "GameProperties.hpp"
 #include "InputManager.hpp"
 #include "KeyboardInput.hpp"
 #include "MouseInput.hpp"

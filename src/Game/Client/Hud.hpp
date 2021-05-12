@@ -2,10 +2,8 @@
 #define GAME_HUD_HPP_INCLUDEGUARD
 
 #include "GameObject.hpp"
-#include "GameProperties.hpp"
 #include "Sprite.hpp"
 #include "Text.hpp"
-#include <string>
 
 class Hud : public jt::GameObject {
 public:

@@ -1,7 +1,7 @@
 ﻿#ifndef PAYLOADS_HPP_GUARD
 #define PAYLOADS_HPP_GUARD
 
-#include "KeyCodes.hpp"
+#include "InputState.hpp"
 #include "PlayerState.hpp"
 #include <SFML/Network.hpp>
 #include <map>
@@ -9,7 +9,9 @@
 struct PayloadClient2Server {
 
     int playerID;
-    std::map<jt::KeyCode, bool> input;
+    InputState input;
+    float dt;
+    std::size_t currentPredictionId;
 };
 
 sf::Packet& operator<<(sf::Packet&, PayloadClient2Server&);
