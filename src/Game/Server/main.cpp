@@ -55,7 +55,12 @@ int main()
 
         // TODO pass player_prediction id for the correct player
         PayloadServer2Client payload { 0, playerStates };
-        server.sendToAllClients(payload);
+        // server.sendToAllClients(payload);
+        for (auto& kvp : playerStates) {
+            PayloadServer2Client payload { kvp.first, playerStates,
+                player_prediction_id[kvp.first] };
+            server.sendToClient(kvp.first, payload);
+        }
 
         std::this_thread::sleep_until(next);
     }

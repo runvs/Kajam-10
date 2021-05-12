@@ -12,10 +12,8 @@ public:
     NetworkServer();
     ~NetworkServer();
 
-    // TODO with the vector, the bool is no longer needed.
     std::vector<PayloadClient2Server> getData(int playerId);
-    // TODO switch to actual data structs
-    void sendToAllClients(PayloadServer2Client const&);
+    void sendToClient(int playerId, PayloadServer2Client const& payload);
     std::vector<int> getAllPlayerIds();
 
 private:
@@ -31,7 +29,7 @@ private:
     std::map<IP_Endpoint, std::vector<PayloadClient2Server>> m_received_data;
 
     bool m_newDataToSend;
-    PayloadServer2Client m_dataToSend;
+    std::map<IP_Endpoint, PayloadServer2Client> m_dataToSend;
 
     void stopThread();
     void startThread();

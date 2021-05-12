@@ -53,11 +53,11 @@ std::vector<PayloadClient2Server> NetworkServer::getData(int playerId)
     return data;
 }
 
-void NetworkServer::sendToAllClients(PayloadServer2Client const& payload)
+void NetworkServer::sendToClient(int playerId, PayloadServer2Client const& payload)
 {
     std::lock_guard const lock { m_dataMutex };
+    m_dataToSend[m_connections.getConnectionForPlayerId(playerId)] = payload;
     m_newDataToSend = true;
-    m_dataToSend = payload;
 }
 
 void NetworkServer::internalReceiveData()
@@ -79,7 +79,7 @@ void NetworkServer::internalReceiveData()
 
         PayloadClient2Server payload;
         packet >> payload;
-        m_received_data[con].emplace_back(payload);
+        m_received_data[con].emplace_back(std::move(payload));
 
         // TODO if new connection, send back "welcome" packet
 
@@ -94,16 +94,13 @@ void NetworkServer::internalSendData()
 {
     std::unique_lock lock { m_dataMutex };
     if (m_newDataToSend) {
-        for (auto con : m_connections.getAllActiveConnections()) {
-            // std::cout << "send socket data to connection: " << con.address.toString() << ":"
-            //<< con.port << std::endl;
-            m_dataToSend.playerID = m_connections.getPlayerIdForConnection(con);
+        for (auto& kvp : m_dataToSend) {
             sf::Packet packet;
-            packet << m_dataToSend;
-            if (m_socket.send(packet, con.address, con.port) != sf::Socket::Status::Done) {
-                std::cout << "error sending data\n";
-            }
+            packet << kvp.second;
+            m_socket.send(packet, kvp.first.address, kvp.first.port);
         }
+
+        m_dataToSend.clear();
         m_newDataToSend = false;
     }
 }
