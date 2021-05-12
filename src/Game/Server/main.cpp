@@ -61,9 +61,6 @@ int main()
             server.closeConnectionTo(playerToDisconnectId);
         }
 
-        // TODO pass player_prediction id for the correct player
-        PayloadServer2Client payload { 0, playerStates };
-        // server.sendToAllClients(payload);
         for (auto& kvp : playerStates) {
             PayloadServer2Client payload { kvp.first, playerStates,
                 player_prediction_id[kvp.first] };
