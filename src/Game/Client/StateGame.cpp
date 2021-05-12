@@ -44,8 +44,8 @@ void StateGame::doInternalCreate()
     m_vignette->setIgnoreCamMovement(true);
     m_vignette->setColor({ 255, 255, 255, 100 });
 
-    m_player = std::make_shared<Player>(true);
-    add(m_player);
+    m_localPlayer = std::make_shared<Player>(true);
+    add(m_localPlayer);
 
     m_hud = std::make_shared<Hud>();
     add(m_hud);
@@ -53,7 +53,7 @@ void StateGame::doInternalCreate()
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
 
-    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
+    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "217.80.132.122" });
     m_client->send(PayloadClient2Server { 0, {} });
 }
 
@@ -66,7 +66,9 @@ void StateGame::updateActivePlayerPositionFromServer(
 
 void StateGame::spawnNewPlayer(int newPlayerId)
 {
-    m_players[newPlayerId] = std::make_shared<Player>(false);
+    m_remotePlayers[newPlayerId] = std::make_shared<Player>(false);
+    m_remotePlayers[newPlayerId]->create();
+    m_remotePlayers[newPlayerId]->setGameInstance(getGame());
 }
 
 void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
@@ -77,23 +79,23 @@ void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
 
     for (auto kvp : playerPositions) {
         if (kvp.first == activePlayerId) {
-            m_player->m_shape->setPosition(kvp.second.position);
+            m_localPlayer->m_shape->setPosition(kvp.second.position);
         } else {
-            if (m_players.count(kvp.first) == 0) {
+            if (m_remotePlayers.count(kvp.first) == 0) {
                 spawnNewPlayer(kvp.first);
             }
-            m_players[kvp.first]->m_shape->setPosition(kvp.second.position);
+            m_remotePlayers[kvp.first]->m_shape->setPosition(kvp.second.position);
         }
     }
-    updateActivePlayerPositionFromServer(activePlayerId, m_player, playerPositions);
+    updateActivePlayerPositionFromServer(activePlayerId, m_localPlayer, playerPositions);
 }
 
 void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
 {
-    if (m_players.size() == payload.playerStates.size()) {
+    if (m_remotePlayers.size() == payload.playerStates.size()) {
         return;
     }
-    jt::SystemHelper::erase_if(m_players,
+    jt::SystemHelper::erase_if(m_remotePlayers,
         [&payload](auto const kvp) { return payload.playerStates.count(kvp.first) == 0; });
 }
 
@@ -103,7 +105,7 @@ void StateGame::doInternalUpdate(float const elapsed)
         // TODO Reneable box2d update only if required
         // m_world->Step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
-        auto inputState = m_player->getInput();
+        auto inputState = m_localPlayer->getInput();
 
         // TODO use correct predictionId
         const PayloadClient2Server payload { 0, inputState, elapsed, 0 };
@@ -116,7 +118,7 @@ void StateGame::doInternalUpdate(float const elapsed)
         } else {
             updatePlayerState(player_state, elapsed, inputState);
 
-            m_player->m_shape->setPosition(player_state.position);
+            m_localPlayer->m_shape->setPosition(player_state.position);
         }
 
         const std::size_t buffer_index
@@ -130,13 +132,19 @@ void StateGame::doInternalUpdate(float const elapsed)
     m_background->update(elapsed);
     m_vignette->update(elapsed);
     m_overlay->update(elapsed);
+    for (auto p : m_remotePlayers) {
+        p.second->update(elapsed);
+    }
 }
 
 void StateGame::doInternalDraw() const
 {
     m_background->draw(getGame()->getRenderTarget());
     drawObjects();
-    m_player->draw();
+    m_localPlayer->draw();
+    for (auto p : m_remotePlayers) {
+        p.second->draw();
+    }
     m_vignette->draw(getGame()->getRenderTarget());
     m_hud->draw();
     m_overlay->draw(getGame()->getRenderTarget());

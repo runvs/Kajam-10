@@ -28,8 +28,8 @@ private:
     std::shared_ptr<Hud> m_hud;
     std::shared_ptr<b2World> m_world { nullptr };
     std::shared_ptr<NetworkClient> m_client { nullptr };
-    std::shared_ptr<Player> m_player { nullptr };
-    std::map<int, std::shared_ptr<Player>> m_players;
+    std::shared_ptr<Player> m_localPlayer { nullptr };
+    std::map<int, std::shared_ptr<Player>> m_remotePlayers;
     bool m_running { false };
     bool m_hasEnded { false };
 
