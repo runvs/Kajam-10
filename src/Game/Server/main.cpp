@@ -34,7 +34,7 @@ int main()
 
     while (true) {
         auto now = std::chrono::steady_clock::now();
-        float const elapsed = 0.04f;
+        float const elapsed = 0.01f;
         auto next = now + std::chrono::milliseconds { static_cast<long long>(elapsed * 1000) };
 
         auto allPlayerIds = server.getAllPlayerIds();
