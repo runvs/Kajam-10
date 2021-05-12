@@ -25,7 +25,6 @@ private:
     ConnectionManager m_connections;
 
     std::mutex m_dataMutex;
-    bool m_newDataReceived;
     std::map<IP_Endpoint, std::vector<PayloadClient2Server>> m_received_data;
 
     bool m_newDataToSend;

@@ -8,7 +8,6 @@ NetworkServer::NetworkServer()
     m_socket.setBlocking(false);
 
     m_stopThread.store(false);
-    m_newDataReceived = false;
     m_newDataToSend = false;
 
     startThread();
@@ -43,10 +42,9 @@ std::vector<PayloadClient2Server> NetworkServer::getData(int playerId)
 {
     std::lock_guard const lock { m_dataMutex };
     auto data = std::vector<PayloadClient2Server>();
-    ;
-    if (m_newDataReceived) {
-        m_newDataReceived = false;
-        auto const con = m_connections.getConnectionForPlayerId(playerId);
+
+    auto const con = m_connections.getConnectionForPlayerId(playerId);
+    if (!m_received_data[con].empty()) {
         data = m_received_data[con];
         m_received_data[con].clear();
     }
@@ -74,14 +72,11 @@ void NetworkServer::internalReceiveData()
     } else if (status == sf::Socket::Status::Done) {
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
-        m_newDataReceived = true;
         IP_Endpoint const con { sender_address, sender_port };
 
         PayloadClient2Server payload;
         packet >> payload;
         m_received_data[con].emplace_back(std::move(payload));
-
-        // TODO if new connection, send back "welcome" packet
 
         m_connections.updateConnection(sender_address, sender_port);
 
