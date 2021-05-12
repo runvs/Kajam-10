@@ -2,6 +2,7 @@
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
 #include "SystemHelper.hpp"
+#include "common.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
 
@@ -25,17 +26,18 @@ void createNewPlayerIfNotKnownToServer(
 
 int main()
 {
-    std::cout << "server started\n";
-
     NetworkServer server;
 
     PlayerMap playerStates;
-    std::map<int, std::size_t> player_prediction_id;
+    std::map<int, std::size_t> playerPredictionId;
 
+    std::cout << "server started\n";
     while (true) {
         auto now = std::chrono::steady_clock::now();
-        float const elapsed = 0.01f;
-        auto next = now + std::chrono::milliseconds { static_cast<long long>(elapsed * 1000) };
+
+        auto next = now
+            + std::chrono::milliseconds { static_cast<long long>(
+                Network::NetworkProperties::serverTickTime() * 1000) };
 
         auto allPlayerIds = server.getAllPlayerIds();
 
@@ -48,23 +50,24 @@ int main()
 
             auto dataForPlayer = server.getData(currentPlayerId);
             // TODO Sort dataForPlayer by message id
+            // TODO remove duplicated messages by message id
             for (auto& payload : dataForPlayer) {
                 if (payload.disconnect == true) {
                     playersToDisconnect.push_back(currentPlayerId);
                     break;
                 }
                 updatePlayerState(playerStates[currentPlayerId], payload.dt, payload.input);
-                player_prediction_id[currentPlayerId] = payload.currentPredictionId;
+                playerPredictionId[currentPlayerId] = payload.currentPredictionId;
                 // std::cout << payload.currentPredictionId << std::endl;
             }
         }
+
         for (auto playerToDisconnectId : playersToDisconnect) {
             server.closeConnectionTo(playerToDisconnectId);
         }
 
         for (auto& kvp : playerStates) {
-            PayloadServer2Client payload { kvp.first, playerStates,
-                player_prediction_id[kvp.first] };
+            PayloadServer2Client payload { kvp.first, playerStates, playerPredictionId[kvp.first] };
             server.sendToClient(kvp.first, payload);
         }
 

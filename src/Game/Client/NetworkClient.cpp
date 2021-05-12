@@ -45,12 +45,10 @@ void NetworkClient::sendDisconnectMessage()
 
 void NetworkClient::startThread()
 {
-
     m_thread = std::thread([this]() {
         while (true) {
             // exit thread
             if (m_stopThread.load()) {
-                sendDisconnectMessage();
                 std::cout << "kill thread" << std::endl;
                 break;
             }

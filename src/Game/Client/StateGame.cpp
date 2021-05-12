@@ -61,8 +61,8 @@ void StateGame::doInternalCreate()
 void StateGame::updateActivePlayerPositionFromServer(
     std::shared_ptr<Player> player, PlayerMap playerPositions)
 {
-    player_state = playerPositions.at(m_localPlayerId);
-    player->m_shape->setPosition(player_state.position);
+    m_currentPlayerState = playerPositions.at(m_localPlayerId);
+    player->m_shape->setPosition(m_currentPlayerState.position);
 }
 
 void StateGame::spawnNewPlayer(int newPlayerId)
@@ -72,7 +72,7 @@ void StateGame::spawnNewPlayer(int newPlayerId)
     m_remotePlayers[newPlayerId]->create();
 }
 
-void StateGame::UpdateRemotePlayerPositions(PayloadServer2Client payload)
+void StateGame::updateRemotePlayerPositions(PayloadServer2Client payload)
 {
     auto playerPositions = payload.playerStates;
 
@@ -112,17 +112,17 @@ void StateGame::doInternalUpdate(float const elapsed)
         auto inputState = m_localPlayer->getInput();
 
         const PayloadClient2Server payload { m_localPlayerId, inputState, elapsed,
-            current_prediction_id, false };
+            m_currentPredictionId, false };
         m_client->send(payload);
 
         const std::size_t buffer_index
-            = current_prediction_id & Network::NetworkProperties::c_buffer_mask();
-        predicted_move[buffer_index].elapsed = elapsed;
-        predicted_move[buffer_index].input = inputState;
-        predicted_move_result[buffer_index] = player_state;
-        ++current_prediction_id;
+            = m_currentPredictionId & Network::NetworkProperties::clientNetworkBufferMask();
+        m_predictedMoves[buffer_index].elapsed = elapsed;
+        m_predictedMoves[buffer_index].input = inputState;
+        m_predictedMoveResults[buffer_index] = m_currentPlayerState;
+        ++m_currentPredictionId;
 
-        updatePlayerState(player_state, elapsed, inputState);
+        updatePlayerState(m_currentPlayerState, elapsed, inputState);
 
         if (m_client->isNewDataAvailable()) {
             auto payload = m_client->getData();
@@ -130,32 +130,33 @@ void StateGame::doInternalUpdate(float const elapsed)
 
             checkLocalPlayerId(payload.playerID);
 
-            auto buffer_index = payload.prediction_id & Network::NetworkProperties::c_buffer_mask();
-            auto const diff = predicted_move_result[buffer_index].position
+            auto buffer_index
+                = payload.prediction_id & Network::NetworkProperties::clientNetworkBufferMask();
+            auto const diff = m_predictedMoveResults[buffer_index].position
                 - payload.playerStates[m_localPlayerId].position;
 
             if (jt::MathHelper::lengthSquared(diff)
-                > Game::GameProperties::PlayerMaxAllowedPredictionError()) {
+                > Game::GameProperties::playerMaxAllowedPredictionError()) {
                 std::cout << "prediction error for prediction id " << payload.prediction_id
-                          << "with local current prediction id: " << current_prediction_id
+                          << "with local current prediction id: " << m_currentPredictionId
                           << std::endl;
-                player_state = payload.playerStates[m_localPlayerId];
+                m_currentPlayerState = payload.playerStates[m_localPlayerId];
 
                 for (std::size_t replaying_prediction_id = payload.prediction_id + 1;
-                     replaying_prediction_id < current_prediction_id; ++replaying_prediction_id) {
-                    buffer_index
-                        = replaying_prediction_id & Network::NetworkProperties::c_buffer_mask();
+                     replaying_prediction_id < m_currentPredictionId; ++replaying_prediction_id) {
+                    buffer_index = replaying_prediction_id
+                        & Network::NetworkProperties::clientNetworkBufferMask();
 
-                    updatePlayerState(player_state, predicted_move[buffer_index].elapsed,
-                        predicted_move[buffer_index].input);
+                    updatePlayerState(m_currentPlayerState, m_predictedMoves[buffer_index].elapsed,
+                        m_predictedMoves[buffer_index].input);
 
-                    predicted_move_result[buffer_index] = player_state;
+                    m_predictedMoveResults[buffer_index] = m_currentPlayerState;
                 }
             }
-            UpdateRemotePlayerPositions(payload);
+            updateRemotePlayerPositions(payload);
         }
     }
-    m_localPlayer->m_shape->setPosition(player_state.position);
+    m_localPlayer->m_shape->setPosition(m_currentPlayerState.position);
     m_background->update(elapsed);
     m_vignette->update(elapsed);
     m_overlay->update(elapsed);

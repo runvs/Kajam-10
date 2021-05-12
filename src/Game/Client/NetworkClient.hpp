@@ -8,7 +8,7 @@
 
 class NetworkClient {
 public:
-    NetworkClient(sf::IpAddress address);
+    explicit NetworkClient(sf::IpAddress address);
     ~NetworkClient();
 
     bool isNewDataAvailable();

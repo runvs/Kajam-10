@@ -67,10 +67,7 @@ void NetworkServer::internalReceiveData()
     auto const status = m_socket.receive(packet, sender_address, sender_port);
 
     if (status == sf::Socket::Status::NotReady) { /*nothing received, try again in next iteration*/
-        // std::cout << "not ready\n";
-
     } else if (status == sf::Socket::Status::Done) {
-        // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         IP_Endpoint const con { sender_address, sender_port };
 

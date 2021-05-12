@@ -3,7 +3,7 @@
 
 #include "InputState.hpp"
 
-struct Predicted_Move {
+struct PredictedMove {
     float elapsed;
     InputState input;
 };
