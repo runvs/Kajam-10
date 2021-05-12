@@ -14,6 +14,15 @@ void removeInactivePlayers(PlayerMap& playerStates, std::vector<int> playerIds)
     }
 }
 
+void createNewPlayerIfNotKnownToServer(
+    PlayerMap playerStates, std::vector<int>::value_type currentPlayerId)
+{
+    if (playerStates.count(currentPlayerId) == 0) {
+        playerStates[currentPlayerId].position.x() = 0;
+        playerStates[currentPlayerId].position.y() = 0;
+    }
+}
+
 int main()
 {
     std::cout << "server started\n";
@@ -21,32 +30,32 @@ int main()
     NetworkServer server;
 
     PlayerMap playerStates;
-    std::map<int, int> player_prediction_id;
+    std::map<int, std::size_t> player_prediction_id;
 
     while (true) {
         auto now = std::chrono::steady_clock::now();
         float const elapsed = 0.04f;
         auto next = now + std::chrono::milliseconds { static_cast<long long>(elapsed * 1000) };
 
-        auto playerIds = server.getAllPlayerIds();
+        auto allPlayerIds = server.getAllPlayerIds();
 
-        removeInactivePlayers(playerStates, playerIds);
+        removeInactivePlayers(playerStates, allPlayerIds);
 
-        for (auto pid : playerIds) {
-            if (playerStates.count(pid) == 0) {
-                playerStates[pid].position.x() = 0;
-                playerStates[pid].position.y() = 0;
-            }
-            auto dataForPlayer = server.getData(pid);
+        for (auto currentPlayerId : allPlayerIds) {
 
+            createNewPlayerIfNotKnownToServer(playerStates, currentPlayerId);
+
+            auto dataForPlayer = server.getData(currentPlayerId);
+            // TODO Sort dataForPlayer by message id
             for (auto& playerData : dataForPlayer) {
-                updatePlayerState(playerStates[pid], playerData.dt, playerData.input);
-                player_prediction_id[pid] = playerData.currentPredictionId;
+                updatePlayerState(playerStates[currentPlayerId], playerData.dt, playerData.input);
+                player_prediction_id[currentPlayerId] = playerData.currentPredictionId;
             }
         }
 
+        // TODO pass player_prediction id for the correct player
         PayloadServer2Client payload { 0, playerStates };
-        server.send(payload);
+        server.sendToAllClients(payload);
 
         std::this_thread::sleep_until(next);
     }

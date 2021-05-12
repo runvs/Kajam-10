@@ -15,7 +15,7 @@ public:
     // TODO with the vector, the bool is no longer needed.
     std::vector<PayloadClient2Server> getData(int playerId);
     // TODO switch to actual data structs
-    void send(PayloadServer2Client const&);
+    void sendToAllClients(PayloadServer2Client const&);
     std::vector<int> getAllPlayerIds();
 
 private:

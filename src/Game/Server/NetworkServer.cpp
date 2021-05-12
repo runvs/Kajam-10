@@ -53,7 +53,7 @@ std::vector<PayloadClient2Server> NetworkServer::getData(int playerId)
     return data;
 }
 
-void NetworkServer::send(PayloadServer2Client const& payload)
+void NetworkServer::sendToAllClients(PayloadServer2Client const& payload)
 {
     std::lock_guard const lock { m_dataMutex };
     m_newDataToSend = true;
