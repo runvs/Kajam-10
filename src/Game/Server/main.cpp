@@ -55,6 +55,7 @@ int main()
                 }
                 updatePlayerState(playerStates[currentPlayerId], payload.dt, payload.input);
                 player_prediction_id[currentPlayerId] = payload.currentPredictionId;
+                // std::cout << payload.currentPredictionId << std::endl;
             }
         }
         for (auto playerToDisconnectId : playersToDisconnect) {

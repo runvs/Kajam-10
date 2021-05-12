@@ -4,6 +4,7 @@
 #include "Color.hpp"
 #include "GameInterface.hpp"
 #include "Hud.hpp"
+#include "MathHelper.hpp"
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
 #include "Shape.hpp"
@@ -53,14 +54,14 @@ void StateGame::doInternalCreate()
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
 
-    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "217.80.132.122" });
+    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
     m_client->send(PayloadClient2Server { 0, {} });
 }
 
 void StateGame::updateActivePlayerPositionFromServer(
-    int playerID, std::shared_ptr<Player> player, PlayerMap playerPositions)
+    std::shared_ptr<Player> player, PlayerMap playerPositions)
 {
-    player_state = playerPositions.at(playerID);
+    player_state = playerPositions.at(m_localPlayerId);
     player->m_shape->setPosition(player_state.position);
 }
 
@@ -71,29 +72,35 @@ void StateGame::spawnNewPlayer(int newPlayerId)
     m_remotePlayers[newPlayerId]->create();
 }
 
-void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
+void StateGame::UpdateRemotePlayerPositions(PayloadServer2Client payload)
 {
-    auto activePlayerId = payload.playerID;
-
     auto playerPositions = payload.playerStates;
 
     for (auto kvp : playerPositions) {
-        if (kvp.first == activePlayerId) {
-            m_localPlayer->m_shape->setPosition(kvp.second.position);
-        } else {
+        if (kvp.first != m_localPlayerId) {
             if (m_remotePlayers.count(kvp.first) == 0) {
                 spawnNewPlayer(kvp.first);
             }
             m_remotePlayers[kvp.first]->m_shape->setPosition(kvp.second.position);
         }
     }
-    updateActivePlayerPositionFromServer(activePlayerId, m_localPlayer, playerPositions);
 }
 
 void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
 {
     jt::SystemHelper::erase_if(m_remotePlayers,
         [&payload](auto const kvp) { return payload.playerStates.count(kvp.first) == 0; });
+}
+
+void StateGame::checkLocalPlayerId(int const payloadPlayerId)
+{
+    if (m_localPlayerId == -1) {
+        m_localPlayerId = payloadPlayerId;
+    } else {
+        if (m_localPlayerId != payloadPlayerId) {
+            std::cout << "Error: player id in payload does not match local player id\n";
+        }
+    }
 }
 
 void StateGame::doInternalUpdate(float const elapsed)
@@ -104,32 +111,55 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         auto inputState = m_localPlayer->getInput();
 
-        // TODO use correct predictionId
-        // TODO use correct player id
-        const PayloadClient2Server payload { 0, inputState, elapsed, 0, false };
+        const PayloadClient2Server payload { m_localPlayerId, inputState, elapsed,
+            current_prediction_id, false };
         m_client->send(payload);
-
-        if (m_client->isNewDataAvailable()) {
-            auto payload = m_client->getData();
-            UpdateAllPlayerPositionsFromServer(payload);
-            removeLocalOnlyPlayers(payload);
-        } else {
-            updatePlayerState(player_state, elapsed, inputState);
-
-            m_localPlayer->m_shape->setPosition(player_state.position);
-        }
 
         const std::size_t buffer_index
             = current_prediction_id & Network::NetworkProperties::c_buffer_mask();
-        predicted_move[buffer_index].dt = elapsed;
+        predicted_move[buffer_index].elapsed = elapsed;
         predicted_move[buffer_index].input = inputState;
         predicted_move_result[buffer_index] = player_state;
         ++current_prediction_id;
-    }
 
+        updatePlayerState(player_state, elapsed, inputState);
+
+        if (m_client->isNewDataAvailable()) {
+            auto payload = m_client->getData();
+            removeLocalOnlyPlayers(payload);
+
+            checkLocalPlayerId(payload.playerID);
+
+            auto buffer_index = payload.prediction_id & Network::NetworkProperties::c_buffer_mask();
+            auto const diff = predicted_move_result[buffer_index].position
+                - payload.playerStates[m_localPlayerId].position;
+
+            if (jt::MathHelper::lengthSquared(diff)
+                > Game::GameProperties::PlayerMaxAllowedPredictionError()) {
+                std::cout << "prediction error for prediction id " << payload.prediction_id
+                          << "with local current prediction id: " << current_prediction_id
+                          << std::endl;
+                player_state = payload.playerStates[m_localPlayerId];
+
+                for (std::size_t replaying_prediction_id = payload.prediction_id + 1;
+                     replaying_prediction_id < current_prediction_id; ++replaying_prediction_id) {
+                    buffer_index
+                        = replaying_prediction_id & Network::NetworkProperties::c_buffer_mask();
+
+                    updatePlayerState(player_state, predicted_move[buffer_index].elapsed,
+                        predicted_move[buffer_index].input);
+
+                    predicted_move_result[buffer_index] = player_state;
+                }
+            }
+            UpdateRemotePlayerPositions(payload);
+        }
+    }
+    m_localPlayer->m_shape->setPosition(player_state.position);
     m_background->update(elapsed);
     m_vignette->update(elapsed);
     m_overlay->update(elapsed);
+
     for (auto p : m_remotePlayers) {
         p.second->update(elapsed);
     }
@@ -139,10 +169,10 @@ void StateGame::doInternalDraw() const
 {
     m_background->draw(getGame()->getRenderTarget());
     drawObjects();
-    m_localPlayer->draw();
     for (auto p : m_remotePlayers) {
         p.second->draw();
     }
+    m_localPlayer->draw();
     m_vignette->draw(getGame()->getRenderTarget());
     m_hud->draw();
     m_overlay->draw(getGame()->getRenderTarget());

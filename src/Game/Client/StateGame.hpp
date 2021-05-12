@@ -7,7 +7,6 @@
 #include "PredictedMove.hpp"
 #include "common.hpp"
 #include <array>
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -33,18 +32,21 @@ private:
     bool m_running { false };
     bool m_hasEnded { false };
 
+    int m_localPlayerId { -1 };
+
     std::array<Predicted_Move, Network::NetworkProperties::c_buffer_size()> predicted_move;
     std::array<PlayerState, Network::NetworkProperties::c_buffer_size()> predicted_move_result;
 
     PlayerState player_state;
-    uint32_t current_prediction_id;
+    std::size_t current_prediction_id { 0 };
 
     void doInternalCreate() override;
     void updateActivePlayerPositionFromServer(
-        int playerID, std::shared_ptr<Player> player, PlayerMap playerPositions);
+        std::shared_ptr<Player> player, PlayerMap playerPositions);
     void spawnNewPlayer(int newPlayerId);
-    void UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload);
+    void UpdateRemotePlayerPositions(PayloadServer2Client payload);
     void removeLocalOnlyPlayers(PayloadServer2Client payload);
+    void checkLocalPlayerId(int payloadPlayerId);
     void doInternalUpdate(float const elapsed) override;
     void doInternalDraw() const override;
 

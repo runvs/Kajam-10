@@ -23,6 +23,7 @@ void deserializeTestPacket(sf::Packet, std::size_t&, std::string&);
 namespace Game {
 struct GameProperties {
     static float PlayerMovementSpeed() { return 100.0f; }
+    static float PlayerMaxAllowedPredictionError() { return 1.0f; };
 };
 } // namespace Game
 
