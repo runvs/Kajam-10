@@ -1,5 +1,5 @@
 ﻿#include "NetworkClient.hpp"
-#include "../Common/common.hpp"
+#include "common.hpp"
 
 #include <iostream>
 

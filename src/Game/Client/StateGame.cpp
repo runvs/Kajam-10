@@ -1,11 +1,11 @@
 ﻿#include "StateGame.hpp"
-#include "../Common/Payloads.hpp"
-#include "../Common/PlayerState.hpp"
 #include "Box2D/Box2D.h"
 #include "ClientProperties.hpp"
 #include "Color.hpp"
 #include "GameInterface.hpp"
 #include "Hud.hpp"
+#include "Payloads.hpp"
+#include "PlayerState.hpp"
 #include "Shape.hpp"
 #include "Sprite.hpp"
 #include "StateMenu.hpp"
@@ -106,7 +106,7 @@ void StateGame::doInternalUpdate(float const elapsed)
         auto inputState = m_player->getInput();
 
         // TODO use correct predictionId
-        const PayloadClient2Server payload { 0, inputState, 0.0f, 0 };
+        const PayloadClient2Server payload { 0, inputState, elapsed, 0 };
         m_client->send(payload);
 
         if (m_client->isNewDataAvailable()) {
@@ -115,10 +115,12 @@ void StateGame::doInternalUpdate(float const elapsed)
             removeLocalOnlyPlayers(payload);
         } else {
             updatePlayerState(player_state, elapsed, inputState);
+
             m_player->m_shape->setPosition(player_state.position);
         }
 
-        const std::size_t buffer_index = current_prediction_id & c_buffer_mask;
+        const std::size_t buffer_index
+            = current_prediction_id & Network::NetworkProperties::c_buffer_mask();
         predicted_move[buffer_index].dt = elapsed;
         predicted_move[buffer_index].input = inputState;
         predicted_move_result[buffer_index] = player_state;

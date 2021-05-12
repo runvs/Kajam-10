@@ -1,9 +1,8 @@
 ﻿#ifndef NETWORK_SERVER_HPP_GUARD
 #define NETWORK_SERVER_HPP_GUARD
 
-#include "../Common/Payloads.hpp"
 #include "ConnectionManager.hpp"
-
+#include "Payloads.hpp"
 #include <SFML/Network.hpp>
 #include <future>
 #include <thread>
@@ -13,8 +12,8 @@ public:
     NetworkServer();
     ~NetworkServer();
 
-    // TODO access data
-    std::tuple<bool, PayloadClient2Server> getData(int playerId);
+    // TODO with the vector, the bool is no longer needed.
+    std::vector<PayloadClient2Server> getData(int playerId);
     // TODO switch to actual data structs
     void send(PayloadServer2Client const&);
     std::vector<int> getAllPlayerIds();
@@ -29,7 +28,7 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
-    std::map<IP_Endpoint, std::tuple<bool, PayloadClient2Server>> m_received_data;
+    std::map<IP_Endpoint, std::vector<PayloadClient2Server>> m_received_data;
 
     bool m_newDataToSend;
     PayloadServer2Client m_dataToSend;

@@ -1,15 +1,17 @@
-﻿#include "../Common/Payloads.hpp"
-#include "../Common/PlayerState.hpp"
-#include "NetworkServer.hpp"
+﻿#include "NetworkServer.hpp"
+#include "Payloads.hpp"
+#include "PlayerState.hpp"
 #include "SystemHelper.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
 
 void removeInactivePlayers(PlayerMap& playerStates, std::vector<int> playerIds)
 {
-    jt::SystemHelper::erase_if(playerStates, [&playerIds](auto const& kvp) {
-        return std::find(playerIds.begin(), playerIds.end(), kvp.first) == playerIds.end();
-    });
+    if (playerIds.size() != playerStates.size()) {
+        jt::SystemHelper::erase_if(playerStates, [&playerIds](auto const& kvp) {
+            return std::find(playerIds.begin(), playerIds.end(), kvp.first) == playerIds.end();
+        });
+    }
 }
 
 int main()
@@ -19,6 +21,7 @@ int main()
     NetworkServer server;
 
     PlayerMap playerStates;
+    std::map<int, int> player_prediction_id;
 
     while (true) {
         auto now = std::chrono::steady_clock::now();
@@ -26,18 +29,19 @@ int main()
         auto next = now + std::chrono::milliseconds { static_cast<long long>(elapsed * 1000) };
 
         auto playerIds = server.getAllPlayerIds();
-        if (playerIds.size() != playerStates.size()) {
-            removeInactivePlayers(playerStates, playerIds);
-        }
+
+        removeInactivePlayers(playerStates, playerIds);
+
         for (auto pid : playerIds) {
             if (playerStates.count(pid) == 0) {
                 playerStates[pid].position.x() = 0;
                 playerStates[pid].position.y() = 0;
             }
-            auto playerData = server.getData(pid);
-            if (std::get<0>(playerData)) {
-                auto playerInput = std::get<1>(playerData);
-                updatePlayerState(playerStates[pid], elapsed, playerInput.input);
+            auto dataForPlayer = server.getData(pid);
+
+            for (auto& playerData : dataForPlayer) {
+                updatePlayerState(playerStates[pid], playerData.dt, playerData.input);
+                player_prediction_id[pid] = playerData.currentPredictionId;
             }
         }
 

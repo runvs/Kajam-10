@@ -1,6 +1,6 @@
 ﻿#include "ConnectionManager.hpp"
-#include "../Common/common.hpp"
 #include "SystemHelper.hpp"
+#include "common.hpp"
 #include <iostream>
 
 bool operator==(IP_Endpoint const& a, IP_Endpoint const& b)

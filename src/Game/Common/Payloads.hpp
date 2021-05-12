@@ -20,6 +20,8 @@ sf::Packet& operator>>(sf::Packet&, PayloadClient2Server&);
 struct PayloadServer2Client {
     int playerID;
     PlayerMap playerStates;
+    std::size_t prediction_id;
+
     // TODO Enemy Positions
     // TODO ParticlePositions
 };

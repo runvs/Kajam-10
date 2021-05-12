@@ -1,6 +1,5 @@
 ﻿#include "NetworkServer.hpp"
-#include "../Common/common.hpp"
-
+#include "common.hpp"
 #include <iostream>
 
 NetworkServer::NetworkServer()
@@ -40,15 +39,16 @@ void NetworkServer::startThread()
 
 NetworkServer::~NetworkServer() { stopThread(); }
 
-std::tuple<bool, PayloadClient2Server> NetworkServer::getData(int playerId)
+std::vector<PayloadClient2Server> NetworkServer::getData(int playerId)
 {
     std::lock_guard const lock { m_dataMutex };
-    auto data = std::make_tuple(false, PayloadClient2Server { 0, {} });
+    auto data = std::vector<PayloadClient2Server>();
     ;
     if (m_newDataReceived) {
         m_newDataReceived = false;
-        data = m_received_data[m_connections.getConnectionForPlayerId(playerId)];
-        std::get<0>(m_received_data[m_connections.getConnectionForPlayerId(playerId)]) = false;
+        auto const con = m_connections.getConnectionForPlayerId(playerId);
+        data = m_received_data[con];
+        m_received_data[con].clear();
     }
     return data;
 }
@@ -76,8 +76,10 @@ void NetworkServer::internalReceiveData()
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
         IP_Endpoint const con { sender_address, sender_port };
-        std::get<0>(m_received_data[con]) = true;
-        packet >> std::get<1>(m_received_data[con]);
+
+        PayloadClient2Server payload;
+        packet >> payload;
+        m_received_data[con].emplace_back(payload);
 
         // TODO if new connection, send back "welcome" packet
 

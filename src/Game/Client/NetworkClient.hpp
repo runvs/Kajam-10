@@ -1,11 +1,10 @@
 ﻿#ifndef NETWORKCLIENT_HPP_GUARD
 #define NETWORKCLIENT_HPP_GUARD
 
+#include "Payloads.hpp"
 #include <SFML/Network.hpp>
 #include <future>
 #include <thread>
-
-#include "../Common/Payloads.hpp"
 
 class NetworkClient {
 public:

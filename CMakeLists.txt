@@ -186,8 +186,9 @@ target_link_libraries(JamTemplate Box2D)
 ## setup Game executable
 #####################################################
 
-file(GLOB COMMONFILES src/Game/Common/*)
+file(GLOB COMMONFILES ${CMAKE_CURRENT_SOURCE_DIR}/src/Game/Common/*)
 add_library(${PROJECTNAME}_Common ${COMMONFILES})
+target_include_directories(${PROJECTNAME}_Common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/Game/Common)
 target_link_libraries(${PROJECTNAME}_Common JamTemplate)
 
 file(GLOB CLIENTFILES src/Game/Client/*)

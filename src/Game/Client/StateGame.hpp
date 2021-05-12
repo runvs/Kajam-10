@@ -4,6 +4,8 @@
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
 #include "Player.hpp"
+#include "PredictedMove.hpp"
+#include "common.hpp"
 #include <array>
 #include <iostream>
 #include <memory>
@@ -18,14 +20,6 @@ class b2World;
 
 class Hud;
 
-struct PredictedMove {
-    float dt;
-    InputState input;
-};
-
-constexpr std::size_t c_buffer_size = 512;
-constexpr std::size_t c_buffer_mask = c_buffer_size - 1;
-
 class StateGame : public jt::GameState {
 private:
     std::shared_ptr<jt::Shape> m_background;
@@ -39,8 +33,8 @@ private:
     bool m_running { false };
     bool m_hasEnded { false };
 
-    std::array<PredictedMove, c_buffer_size> predicted_move;
-    std::array<PlayerState, c_buffer_size> predicted_move_result;
+    std::array<Predicted_Move, Network::NetworkProperties::c_buffer_size()> predicted_move;
+    std::array<PlayerState, Network::NetworkProperties::c_buffer_size()> predicted_move_result;
 
     PlayerState player_state;
     uint32_t current_prediction_id;
