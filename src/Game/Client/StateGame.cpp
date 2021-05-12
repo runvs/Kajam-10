@@ -92,9 +92,6 @@ void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
 
 void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
 {
-    if (m_remotePlayers.size() == payload.playerStates.size()) {
-        return;
-    }
     jt::SystemHelper::erase_if(m_remotePlayers,
         [&payload](auto const kvp) { return payload.playerStates.count(kvp.first) == 0; });
 }
