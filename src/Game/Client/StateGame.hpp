@@ -34,7 +34,7 @@ private:
 
     void doInternalCreate() override;
     void updateActivePlayerPositionFromServer(
-        int playerID, std::shared_ptr<Player> player, std::map<int, jt::Vector2> playerPositions);
+        int playerID, std::shared_ptr<Player> player, PlayerMap playerPositions);
     void spawnNewPlayer(int newPlayerId);
     void UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload);
     void InterpolateActivePlayer(float elapsed);

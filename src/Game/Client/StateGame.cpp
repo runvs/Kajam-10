@@ -57,9 +57,9 @@ void StateGame::doInternalCreate()
 }
 
 void StateGame::updateActivePlayerPositionFromServer(
-    int playerID, std::shared_ptr<Player> player, std::map<int, jt::Vector2> playerPositions)
+    int playerID, std::shared_ptr<Player> player, PlayerMap playerPositions)
 {
-    auto pos = playerPositions.at(playerID);
+    auto pos = playerPositions.at(playerID).position;
     player->m_shape->setPosition(pos);
 }
 
@@ -72,16 +72,16 @@ void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
 {
     auto activePlayerId = payload.playerID;
 
-    auto playerPositions = payload.playerPositions;
+    auto playerPositions = payload.playerStates;
 
     for (auto kvp : playerPositions) {
         if (kvp.first == activePlayerId) {
-            m_player->m_shape->setPosition(kvp.second);
+            m_player->m_shape->setPosition(kvp.second.position);
         } else {
             if (m_players.count(kvp.first) == 0) {
                 spawnNewPlayer(kvp.first);
             }
-            m_players[kvp.first]->m_shape->setPosition(kvp.second);
+            m_players[kvp.first]->m_shape->setPosition(kvp.second.position);
         }
     }
     updateActivePlayerPositionFromServer(activePlayerId, m_player, playerPositions);
@@ -105,11 +105,11 @@ void StateGame::InterpolateActivePlayer(float const elapsed)
 
 void StateGame::removeLocalOnlyPlayers(PayloadServer2Client payload)
 {
-    if (m_players.size() == payload.playerPositions.size()) {
+    if (m_players.size() == payload.playerStates.size()) {
         return;
     }
     jt::SystemHelper::erase_if(m_players,
-        [&payload](auto const kvp) { return payload.playerPositions.count(kvp.first) == 0; });
+        [&payload](auto const kvp) { return payload.playerStates.count(kvp.first) == 0; });
 }
 
 void StateGame::doInternalUpdate(float const elapsed)

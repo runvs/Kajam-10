@@ -13,9 +13,7 @@ public:
     ~NetworkClient();
 
     bool isNewDataAvailable();
-    // TODO access data
     PayloadServer2Client getData();
-    // TODO switch to actual data structs
     void send(PayloadClient2Server const&);
 
 private:
