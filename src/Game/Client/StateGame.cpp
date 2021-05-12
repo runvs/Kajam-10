@@ -67,8 +67,8 @@ void StateGame::updateActivePlayerPositionFromServer(
 void StateGame::spawnNewPlayer(int newPlayerId)
 {
     m_remotePlayers[newPlayerId] = std::make_shared<Player>(false);
-    m_remotePlayers[newPlayerId]->create();
     m_remotePlayers[newPlayerId]->setGameInstance(getGame());
+    m_remotePlayers[newPlayerId]->create();
 }
 
 void StateGame::UpdateAllPlayerPositionsFromServer(PayloadServer2Client payload)
