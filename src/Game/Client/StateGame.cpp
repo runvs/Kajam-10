@@ -53,7 +53,7 @@ void StateGame::doInternalCreate()
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
 
-    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "127.0.0.1" });
+    m_client = std::make_shared<NetworkClient>(sf::IpAddress { "217.80.132.122" });
     m_client->send(PayloadClient2Server { 0, {} });
 }
 
