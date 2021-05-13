@@ -88,8 +88,10 @@ int main()
 
                 if (payload.input[jt::KeyCode::Space]) {
                     if (playerStates[currentPlayerId]._shootTimer <= 0) {
-                        shots.emplace_back(
-                            ShotState { playerStates[currentPlayerId].position, { 0, -1 } });
+                        auto const pos = playerStates[currentPlayerId].position
+                            + jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
+                                  0.0f };
+                        shots.emplace_back(ShotState { pos, { 0, -1 } });
                         playerStates[currentPlayerId]._shootTimer
                             = Game::GameProperties::playerShootCooldown();
                     }

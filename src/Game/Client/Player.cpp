@@ -1,6 +1,7 @@
 ﻿#include "Player.hpp"
 #include "DrawableHelpers.hpp"
 #include "GameInterface.hpp"
+#include "common.hpp"
 
 std::vector<jt::KeyCode> getNeededKeys()
 {
@@ -13,7 +14,13 @@ std::vector<jt::KeyCode> getNeededKeys()
     return keys;
 }
 
-void Player::doCreate() { m_shape = jt::dh::createRectShape({ 32, 32 }); }
+// TODO load sprite instead of create shape
+void Player::doCreate()
+{
+    m_shape
+        = jt::dh::createRectShape({ static_cast<float>(Game::GameProperties::playerSizeInPixel()),
+            static_cast<float>(Game::GameProperties::playerSizeInPixel()) });
+}
 
 void Player::updateInput()
 {

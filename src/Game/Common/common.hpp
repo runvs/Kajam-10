@@ -29,6 +29,7 @@ struct GameProperties {
     static float shotVelocity() { return 200.0f; }
     static float shotLifeTime() { return 5.0f; }
     static float playerShootCooldown() { return 0.3f; }
+    static int playerSizeInPixel() { return 16; }
 };
 } // namespace Game
 
