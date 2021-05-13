@@ -96,6 +96,7 @@ void StateGame::checkLocalPlayerId(int const payloadPlayerId)
 {
     if (m_localPlayerId == -1) {
         m_localPlayerId = payloadPlayerId;
+        std::cout << "Local player was assigned id: " << payloadPlayerId << std::endl;
     } else {
         if (m_localPlayerId != payloadPlayerId) {
             std::cout << "Error: player id in payload does not match local player id\n";
@@ -115,11 +116,9 @@ void StateGame::doInternalUpdate(float const elapsed)
             m_currentPredictionId, false };
         m_client->send(payload);
 
-        const std::size_t buffer_index
-            = m_currentPredictionId & Network::NetworkProperties::clientNetworkBufferMask();
-        m_predictedMoves[buffer_index].elapsed = elapsed;
-        m_predictedMoves[buffer_index].input = inputState;
-        m_predictedMoveResults[buffer_index] = m_currentPlayerState;
+        m_predictedMoves[m_currentPredictionId].elapsed = elapsed;
+        m_predictedMoves[m_currentPredictionId].input = inputState;
+        m_predictedMoveResults[m_currentPredictionId] = m_currentPlayerState;
         ++m_currentPredictionId;
 
         updatePlayerState(m_currentPlayerState, elapsed, inputState);
@@ -130,9 +129,7 @@ void StateGame::doInternalUpdate(float const elapsed)
 
             checkLocalPlayerId(payload.playerID);
 
-            auto buffer_index
-                = payload.prediction_id & Network::NetworkProperties::clientNetworkBufferMask();
-            auto const diff = m_predictedMoveResults[buffer_index].position
+            auto const diff = m_predictedMoveResults[payload.prediction_id].position
                 - payload.playerStates[m_localPlayerId].position;
 
             if (jt::MathHelper::lengthSquared(diff)
@@ -144,13 +141,12 @@ void StateGame::doInternalUpdate(float const elapsed)
 
                 for (std::size_t replaying_prediction_id = payload.prediction_id + 1;
                      replaying_prediction_id < m_currentPredictionId; ++replaying_prediction_id) {
-                    buffer_index = replaying_prediction_id
-                        & Network::NetworkProperties::clientNetworkBufferMask();
 
-                    updatePlayerState(m_currentPlayerState, m_predictedMoves[buffer_index].elapsed,
-                        m_predictedMoves[buffer_index].input);
+                    updatePlayerState(m_currentPlayerState,
+                        m_predictedMoves[replaying_prediction_id].elapsed,
+                        m_predictedMoves[replaying_prediction_id].input);
 
-                    m_predictedMoveResults[buffer_index] = m_currentPlayerState;
+                    m_predictedMoveResults[replaying_prediction_id] = m_currentPlayerState;
                 }
             }
             updateRemotePlayerPositions(payload);

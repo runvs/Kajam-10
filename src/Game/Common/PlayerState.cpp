@@ -1,5 +1,4 @@
 ﻿#include "PlayerState.hpp"
-
 #include "Conversions.hpp"
 #include "common.hpp"
 

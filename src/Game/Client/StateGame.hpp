@@ -1,6 +1,7 @@
 ﻿#ifndef GAME_STATE_GAME_HPP_INCLUDEGUARD
 #define GAME_STATE_GAME_HPP_INCLUDEGUARD
 
+#include "CircularBuffer.hpp"
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
 #include "Player.hpp"
@@ -39,9 +40,9 @@ private:
     PlayerState m_currentPlayerState;
     std::size_t m_currentPredictionId { 0 };
 
-    std::array<PredictedMove, Network::NetworkProperties::clientNetworkBufferSize()>
+    jt::CircularBuffer<PredictedMove, Network::NetworkProperties::clientNetworkBufferSize()>
         m_predictedMoves;
-    std::array<PlayerState, Network::NetworkProperties::clientNetworkBufferSize()>
+    jt::CircularBuffer<PlayerState, Network::NetworkProperties::clientNetworkBufferSize()>
         m_predictedMoveResults;
 
     void doInternalCreate() override;
