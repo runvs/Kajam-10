@@ -29,8 +29,12 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState& inpu
     else if (input[jt::KeyCode::S])
         playerState.position.y() += elapsed * Game::GameProperties::playerMovementSpeed();
 
-    playerState.position.x() = jt::MathHelper::clamp(playerState.position.x(), 0.0f, 100.0f);
-    playerState.position.y() = jt::MathHelper::clamp(playerState.position.y(), 0.0f, 100.0f);
+    playerState.position.x() = jt::MathHelper::clamp(playerState.position.x(), 0.0f,
+        Game::GameProperties::GetScreenSize().x()
+            - static_cast<float>(Game::GameProperties::playerSizeInPixel()));
+    playerState.position.y() = jt::MathHelper::clamp(playerState.position.y(), 0.0f,
+        Game::GameProperties::GetScreenSize().y()
+            - static_cast<float>(Game::GameProperties::playerSizeInPixel()));
 
     playerState._shootTimer -= elapsed;
 }
