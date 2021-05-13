@@ -11,6 +11,7 @@ NetworkServer::NetworkServer()
 
     m_stopThread.store(false);
     m_newDataToSend = false;
+    m_messageId = 0U;
 
     startThread();
 }
@@ -69,10 +70,7 @@ void NetworkServer::internalReceiveData()
     auto const status = m_socket.receive(packet, sender_address, sender_port);
 
     if (status == sf::Socket::Status::NotReady) { /*nothing received, try again in next iteration*/
-        // std::cout << "not ready\n";
-
     } else if (status == sf::Socket::Status::Done) {
-        // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         IP_Endpoint const con { sender_address, sender_port };
 
@@ -93,6 +91,7 @@ void NetworkServer::internalSendData()
     if (m_newDataToSend) {
         for (auto& kvp : m_dataToSend) {
             sf::Packet packet;
+            kvp.second.messageId = m_messageId++;
             packet << kvp.second;
             m_socket.send(packet, kvp.first.address, kvp.first.port);
         }

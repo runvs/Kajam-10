@@ -31,6 +31,7 @@ private:
 
     bool m_newDataToSend;
     std::map<IP_Endpoint, PayloadServer2Client> m_dataToSend;
+    std::size_t m_messageId;
 
     void stopThread();
     void startThread();

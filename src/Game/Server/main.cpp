@@ -1,7 +1,9 @@
-﻿#include "NetworkServer.hpp"
+﻿#include "CircularBuffer.hpp"
+#include "NetworkServer.hpp"
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
 #include "SystemHelper.hpp"
+#include "common.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
 
@@ -23,19 +25,34 @@ void createNewPlayerIfNotKnownToServer(
     }
 }
 
+bool checkForDuplicatedMessages(
+    std::map<int, jt::CircularBuffer<std::size_t, 20>> receivedMessageIdsMap, int currentPlayerId,
+    std::size_t const messageId)
+{
+    if (receivedMessageIdsMap[currentPlayerId].contains(messageId)) {
+        std::cout << "skip duplicated message for player " << currentPlayerId << std::endl;
+        return true;
+    }
+    receivedMessageIdsMap[currentPlayerId].push(messageId);
+    return false;
+}
+
 int main()
 {
-    std::cout << "starting server...\n";
-
     NetworkServer server;
 
     PlayerMap playerStates;
-    std::map<int, std::size_t> player_prediction_id;
+    std::map<int, std::size_t> playerPredictionId;
 
+    std::map<int, jt::CircularBuffer<std::size_t, 20>> receivedMessageIdsMap;
+
+    std::cout << "starting server...\n";
     while (true) {
         auto now = std::chrono::steady_clock::now();
-        float const elapsed = 0.01f;
-        auto next = now + std::chrono::milliseconds { static_cast<long long>(elapsed * 1000) };
+
+        auto next = now
+            + std::chrono::milliseconds { static_cast<long long>(
+                Network::NetworkProperties::serverTickTime() * 1000) };
 
         auto allPlayerIds = server.getAllPlayerIds();
 
@@ -47,24 +64,34 @@ int main()
             createNewPlayerIfNotKnownToServer(playerStates, currentPlayerId);
 
             auto dataForPlayer = server.getData(currentPlayerId);
-            // TODO Sort dataForPlayer by message id
+            if (dataForPlayer.size() > 1) {
+                std::sort(dataForPlayer.begin(), dataForPlayer.end(),
+                    [](auto const& payloadA, auto const& payloadB) {
+                        return payloadA.messageId < payloadB.messageId;
+                    });
+            }
             for (auto& payload : dataForPlayer) {
+                std::size_t const messageId = payload.messageId;
+                if (checkForDuplicatedMessages(receivedMessageIdsMap, currentPlayerId, messageId)) {
+                    continue;
+                }
                 if (payload.disconnect == true) {
                     playersToDisconnect.push_back(currentPlayerId);
                     break;
                 }
+
                 updatePlayerState(playerStates[currentPlayerId], payload.dt, payload.input);
-                player_prediction_id[currentPlayerId] = payload.currentPredictionId;
+                playerPredictionId[currentPlayerId] = payload.currentPredictionId;
                 // std::cout << payload.currentPredictionId << std::endl;
             }
         }
+
         for (auto playerToDisconnectId : playersToDisconnect) {
             server.closeConnectionTo(playerToDisconnectId);
         }
 
         for (auto& kvp : playerStates) {
-            PayloadServer2Client payload { kvp.first, playerStates,
-                player_prediction_id[kvp.first] };
+            PayloadServer2Client payload { kvp.first, playerStates, playerPredictionId[kvp.first] };
             server.sendToClient(kvp.first, payload);
         }
 

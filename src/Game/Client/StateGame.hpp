@@ -1,25 +1,29 @@
 ﻿#ifndef GAME_STATE_GAME_HPP_INCLUDEGUARD
 #define GAME_STATE_GAME_HPP_INCLUDEGUARD
 
+#include "CircularBuffer.hpp"
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
 #include "Player.hpp"
 #include "PredictedMove.hpp"
 #include "common.hpp"
 #include <array>
+#include <cstddef>
 #include <memory>
-#include <vector>
 
 // fwd decls
 namespace jt {
 class Shape;
 class Sprite;
 } // namespace jt
-class b2World;
 
+class b2World;
 class Hud;
 
-class StateGame : public jt::GameState {
+class StateGame final : public jt::GameState {
+public:
+    StateGame() = default;
+
 private:
     std::shared_ptr<jt::Shape> m_background;
     std::shared_ptr<jt::Shape> m_overlay;
@@ -33,18 +37,19 @@ private:
     bool m_hasEnded { false };
 
     int m_localPlayerId { -1 };
+    PlayerState m_currentPlayerState;
+    std::size_t m_currentPredictionId { 0 };
 
-    std::array<Predicted_Move, Network::NetworkProperties::c_buffer_size()> predicted_move;
-    std::array<PlayerState, Network::NetworkProperties::c_buffer_size()> predicted_move_result;
-
-    PlayerState player_state;
-    std::size_t current_prediction_id { 0 };
+    jt::CircularBuffer<PredictedMove, Network::NetworkProperties::clientNetworkBufferSize()>
+        m_predictedMoves;
+    jt::CircularBuffer<PlayerState, Network::NetworkProperties::clientNetworkBufferSize()>
+        m_predictedMoveResults;
 
     void doInternalCreate() override;
     void updateActivePlayerPositionFromServer(
         std::shared_ptr<Player> player, PlayerMap playerPositions);
     void spawnNewPlayer(int newPlayerId);
-    void UpdateRemotePlayerPositions(PayloadServer2Client payload);
+    void updateRemotePlayerPositions(PayloadServer2Client payload);
     void removeLocalOnlyPlayers(PayloadServer2Client payload);
     void checkLocalPlayerId(int payloadPlayerId);
     void doInternalUpdate(float const elapsed) override;

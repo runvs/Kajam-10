@@ -8,7 +8,7 @@
 
 class NetworkClient {
 public:
-    NetworkClient(sf::IpAddress address);
+    explicit NetworkClient(sf::IpAddress address);
     ~NetworkClient();
 
     bool isNewDataAvailable();
@@ -29,6 +29,7 @@ private:
 
     bool m_newDataToSend;
     PayloadClient2Server m_dataToSend;
+    std::size_t m_messageId;
 
     void stopThread();
     void sendDisconnectMessage();
