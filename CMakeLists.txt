@@ -22,11 +22,9 @@ function (jt_use_assets TGT)
 		add_custom_command(TARGET ${TGT} PRE_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/Debug/assets)
-			configure_file(${CMAKE_SOURCE_DIR}/assets/config.json ${CMAKE_BINARY_DIR}/Debug COPYONLY)
 		add_custom_command(TARGET ${TGT} PRE_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/Release/assets)
-			configure_file(${CMAKE_SOURCE_DIR}/assets/config.json ${CMAKE_BINARY_DIR}/Release COPYONLY)
 	endif()
 endfunction()
 
@@ -213,3 +211,12 @@ if(MSVC)
 	jt_deploy_dlls(${CMAKE_BINARY_DIR})
 endif()
 configure_file(${CMAKE_SOURCE_DIR}/.clang-format ${CMAKE_BINARY_DIR}/ COPYONLY)
+
+##################################################
+## copy config.json to Debug/Release binary dir ##
+##################################################
+
+if(MSVC)
+	configure_file(${CMAKE_SOURCE_DIR}/src/config.json ${CMAKE_BINARY_DIR}/Debug   COPYONLY)
+	configure_file(${CMAKE_SOURCE_DIR}/src/config.json ${CMAKE_BINARY_DIR}/Release COPYONLY)
+endif()

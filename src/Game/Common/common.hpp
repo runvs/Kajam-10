@@ -6,7 +6,7 @@
 #include <sfml/Network.hpp>
 
 namespace {
-auto configSettings = ConfigSettings("config.json");
+ConfigSettings configSettings("config.json");
 }
 
 namespace Network {
