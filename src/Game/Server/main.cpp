@@ -51,7 +51,7 @@ int main()
     std::vector<ShotState> shots;
     std::vector<EnemyState> enemies;
 
-    enemies.emplace_back(EnemyState { { 100, 100 } });
+    enemies.emplace_back(EnemyState { { 100, 100 }, 3, true });
 
     float elapsed = 0.0f;
     std::cout << "starting server...\n";
@@ -128,14 +128,17 @@ int main()
                 auto const lSquared = jt::MathHelper::lengthSquared(diff);
 
                 if (lSquared < (8 + 4) * (8 + 4)) {
-                    std::cout << "collision!" << std::endl;
+                    s._alive = false;
+                    enemyTakeDamage(e, s);
                 }
             }
             // TODO check collisions shots/player
         }
 
-        jt::SystemHelper::erase_if(
-            shots, [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime(); });
+        jt::SystemHelper::erase_if(shots,
+            [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime() || !s._alive; });
+
+        jt::SystemHelper::erase_if(enemies, [](auto& e) { return !e._alive; });
 
         std::this_thread::sleep_until(next);
         auto after = std::chrono::steady_clock::now();

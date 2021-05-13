@@ -8,6 +8,9 @@ struct ShotState {
     jt::Vector2 position;
     jt::Vector2 direction;
     float _age { 0.0f };
+    bool _alive { true };
+    bool _fromPlayer { true };
+    int _damage { 1 };
 };
 
 sf::Packet& operator<<(sf::Packet& packet, ShotState& shotState);
