@@ -94,8 +94,8 @@ int main()
                 if (payload.input[jt::KeyCode::Space]) {
                     if (playerStates[currentPlayerId]._shootTimer <= 0) {
                         auto const pos = playerStates[currentPlayerId].position
-                            + jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
-                                  0.0f };
+                            + jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f, 0.0f }
+                            - jt::Vector2 { 4.0f, 0.0f };
                         shots.emplace_back(ShotState { pos, { 0, -1 } });
                         playerStates[currentPlayerId]._shootTimer
                             = Game::GameProperties::playerShootCooldown();
@@ -120,7 +120,17 @@ int main()
 
         for (auto& s : shots) {
             updateShotState(s, elapsed);
-            // TODO check collision shots/enemy
+
+            for (auto& e : enemies) {
+                auto const centerPositionEnemy = e.position + jt::Vector2 { 8, 8 };
+                auto const centerPositionShot = s.position + jt::Vector2 { 4, 4 };
+                auto const diff = centerPositionShot - centerPositionEnemy;
+                auto const lSquared = jt::MathHelper::lengthSquared(diff);
+
+                if (lSquared < (8 + 4) * (8 + 4)) {
+                    std::cout << "collision!" << std::endl;
+                }
+            }
             // TODO check collisions shots/player
         }
 
