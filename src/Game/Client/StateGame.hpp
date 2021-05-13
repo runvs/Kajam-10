@@ -7,7 +7,6 @@
 #include "Player.hpp"
 #include "PredictedMove.hpp"
 #include "common.hpp"
-#include <array>
 #include <cstddef>
 #include <memory>
 
@@ -33,6 +32,10 @@ private:
     std::shared_ptr<NetworkClient> m_client { nullptr };
     std::shared_ptr<Player> m_localPlayer { nullptr };
     std::map<int, std::shared_ptr<Player>> m_remotePlayers;
+
+    std::vector<ShotState> m_shots;
+    std::shared_ptr<jt::Shape> mutable m_shotShape;
+
     bool m_running { false };
     bool m_hasEnded { false };
 

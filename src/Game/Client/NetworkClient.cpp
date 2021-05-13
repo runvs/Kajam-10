@@ -73,6 +73,7 @@ PayloadServer2Client NetworkClient::getData()
         m_newDataReceived = false;
         auto temp = m_received_data;
         m_received_data.playerStates.clear();
+        m_received_data.shots.clear();
         return temp;
     }
     return PayloadServer2Client { -1, {} };

@@ -27,4 +27,6 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState& inpu
         playerState.position.y() -= elapsed * Game::GameProperties::playerMovementSpeed();
     else if (input[jt::KeyCode::S])
         playerState.position.y() += elapsed * Game::GameProperties::playerMovementSpeed();
+
+    playerState._shootTimer -= elapsed;
 }

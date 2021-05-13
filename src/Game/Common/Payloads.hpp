@@ -3,6 +3,7 @@
 
 #include "InputState.hpp"
 #include "PlayerState.hpp"
+#include "ShotState.hpp"
 #include <SFML/Network.hpp>
 #include <map>
 
@@ -26,6 +27,7 @@ struct PayloadServer2Client {
     std::size_t prediction_id;
     std::size_t messageId;
 
+    std::vector<ShotState> shots;
     // TODO Enemy Positions
     // TODO ParticlePositions
 };

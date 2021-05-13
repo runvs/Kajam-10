@@ -2,6 +2,7 @@
 #include "Box2D/Box2D.h"
 #include "ClientProperties.hpp"
 #include "Color.hpp"
+#include "DrawableHelpers.hpp"
 #include "GameInterface.hpp"
 #include "Hud.hpp"
 #include "MathHelper.hpp"
@@ -44,6 +45,8 @@ void StateGame::doInternalCreate()
         + std::to_string(static_cast<int>(GP::GetScreenSize().y())));
     m_vignette->setIgnoreCamMovement(true);
     m_vignette->setColor({ 255, 255, 255, 100 });
+
+    m_shotShape = jt::dh::createRectShape({ 2, 8 });
 
     m_localPlayer = std::make_shared<Player>(true);
     add(m_localPlayer);
@@ -129,6 +132,8 @@ void StateGame::doInternalUpdate(float const elapsed)
             removeLocalOnlyPlayers(payload);
 
             checkLocalPlayerId(payload.playerID);
+            m_shots.clear();
+            m_shots = payload.shots;
 
             auto const diff = m_predictedMoveResults[payload.prediction_id].position
                 - payload.playerStates[m_localPlayerId].position;
@@ -167,6 +172,13 @@ void StateGame::doInternalDraw() const
 {
     m_background->draw(getGame()->getRenderTarget());
     drawObjects();
+
+    for (auto& s : m_shots) {
+        m_shotShape->setPosition(s.position);
+        m_shotShape->update(0.1f);
+        m_shotShape->draw(getGame()->getRenderTarget());
+    }
+
     for (auto p : m_remotePlayers) {
         p.second->draw();
     }

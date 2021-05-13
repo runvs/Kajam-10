@@ -2,9 +2,9 @@
 #include "NetworkServer.hpp"
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
+#include "ShotState.hpp"
 #include "SystemHelper.hpp"
 #include "common.hpp"
-#include <SFML/Network.hpp>
 #include <iostream>
 
 void removeInactivePlayers(PlayerMap& playerStates, std::vector<int> playerIds)
@@ -46,6 +46,9 @@ int main()
 
     std::map<int, jt::CircularBuffer<std::size_t, 20>> receivedMessageIdsMap;
 
+    std::vector<ShotState> shots;
+
+    float elapsed = 0.0f;
     std::cout << "starting server...\n";
     while (true) {
         auto now = std::chrono::steady_clock::now();
@@ -82,8 +85,16 @@ int main()
 
                 updatePlayerState(playerStates[currentPlayerId], payload.dt, payload.input);
                 playerPredictionId[currentPlayerId] = payload.currentPredictionId;
-                // std::cout << payload.currentPredictionId << std::endl;
+
+                if (payload.input[jt::KeyCode::Space]) {
+                    if (playerStates[currentPlayerId]._shootTimer <= 0) {
+                        shots.emplace_back(
+                            ShotState { playerStates[currentPlayerId].position, { 0, -100 } });
+                        playerStates[currentPlayerId]._shootTimer = 1.0f;
+                    }
+                }
             }
+            std::cout << shots.size() << std::endl;
         }
 
         for (auto playerToDisconnectId : playersToDisconnect) {
@@ -91,10 +102,24 @@ int main()
         }
 
         for (auto& kvp : playerStates) {
-            PayloadServer2Client payload { kvp.first, playerStates, playerPredictionId[kvp.first] };
+            PayloadServer2Client payload;
+            payload.playerID = kvp.first;
+            payload.playerStates = playerStates;
+            payload.prediction_id = playerPredictionId[kvp.first];
+            payload.shots = shots;
             server.sendToClient(kvp.first, payload);
         }
 
+        for (auto& s : shots) {
+            s.position += s.direction * elapsed;
+            s._age += elapsed;
+        }
+
+        jt::SystemHelper::erase_if(shots, [](auto& s) { return s._age >= 10; });
+
         std::this_thread::sleep_until(next);
+        auto after = std::chrono::steady_clock::now();
+        elapsed = std::chrono::duration_cast<std::chrono::microseconds>(after - now).count()
+            / 1000.0f / 1000.0f;
     }
 }

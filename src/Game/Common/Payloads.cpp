@@ -14,11 +14,11 @@ sf::Packet& operator>>(sf::Packet& packet, PayloadClient2Server& payload)
 
 sf::Packet& operator<<(sf::Packet& packet, PayloadServer2Client& payload)
 {
-    return packet << payload.playerID << payload.playerStates << payload.prediction_id
-                  << payload.messageId;
+    return packet << payload.playerID << payload.playerStates << payload.shots
+                  << payload.prediction_id << payload.messageId;
 }
 sf::Packet& operator>>(sf::Packet& packet, PayloadServer2Client& payload)
 {
-    return packet >> payload.playerID >> payload.playerStates >> payload.prediction_id
-        >> payload.messageId;
+    return packet >> payload.playerID >> payload.playerStates >> payload.shots
+        >> payload.prediction_id >> payload.messageId;
 }

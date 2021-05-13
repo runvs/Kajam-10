@@ -8,6 +8,7 @@
 
 struct PlayerState {
     jt::Vector2 position;
+    float _shootTimer { 0 };
 };
 
 void updatePlayerState(PlayerState& playerState, float dt, InputState& input);

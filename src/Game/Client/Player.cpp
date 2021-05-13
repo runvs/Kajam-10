@@ -9,6 +9,7 @@ std::vector<jt::KeyCode> getNeededKeys()
     keys.push_back(jt::KeyCode::S);
     keys.push_back(jt::KeyCode::A);
     keys.push_back(jt::KeyCode::D);
+    keys.push_back(jt::KeyCode::Space);
     return keys;
 }
 
