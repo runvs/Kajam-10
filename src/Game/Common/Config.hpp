@@ -11,6 +11,7 @@ public:
 
     std::string serverIp;
     unsigned short serverPort;
+    unsigned short clientPort;
 };
 
 #endif // CONFIG_HPP_GUARD

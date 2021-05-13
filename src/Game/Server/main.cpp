@@ -94,7 +94,7 @@ int main()
                     }
                 }
             }
-            std::cout << shots.size() << std::endl;
+            // std::cout << shots.size() << std::endl;
         }
 
         for (auto playerToDisconnectId : playersToDisconnect) {

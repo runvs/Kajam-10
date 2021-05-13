@@ -14,6 +14,7 @@ ConfigSettings::ConfigSettings(std::string input_file_path)
 
     json.at("serverIp").get_to(serverIp);
     json.at("serverPort").get_to(serverPort);
+    json.at("clientPort").get_to(clientPort);
 }
 
 ConfigSettings::~ConfigSettings() { }

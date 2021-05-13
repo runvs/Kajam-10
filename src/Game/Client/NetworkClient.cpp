@@ -7,7 +7,7 @@ NetworkClient::NetworkClient(sf::IpAddress address)
 {
     m_serverAddress = address;
 
-    m_socket.bind(Network::NetworkProperties::port() - 1);
+    m_socket.bind(Network::NetworkProperties::clientPort());
     m_socket.setBlocking(false);
 
     m_stopThread.store(false);
@@ -36,7 +36,7 @@ void NetworkClient::sendDisconnectMessage()
     sf::Packet packet;
     packet << payload;
 
-    if (m_socket.send(packet, m_serverAddress, Network::NetworkProperties::port())
+    if (m_socket.send(packet, m_serverAddress, Network::NetworkProperties::serverPort())
         != sf::Socket::Status::Done) {
         std::cout << "error sending data\n";
     } else {
@@ -116,7 +116,7 @@ void NetworkClient::internalSendData()
         packet << m_dataToSend;
         lock.unlock();
 
-        if (m_socket.send(packet, m_serverAddress, Network::NetworkProperties::port())
+        if (m_socket.send(packet, m_serverAddress, Network::NetworkProperties::serverPort())
             != sf::Socket::Status::Done) {
             std::cout << "error sending data\n";
         }

@@ -12,7 +12,8 @@ ConfigSettings configSettings("config.json");
 namespace Network {
 struct NetworkProperties {
     static std::string serverIp() { return configSettings.serverIp; }
-    static unsigned short port() { return configSettings.serverPort; }
+    static unsigned short serverPort() { return configSettings.serverPort; }
+    static unsigned short clientPort() { return configSettings.clientPort; }
     static float serverTimeToClientTimeout() { return 2.0f; }
     static float serverTickTime() { return 0.01f; }
 
