@@ -31,6 +31,8 @@ sf::Packet& operator>>(sf::Packet& packet, std::vector<T>& vec)
     std::size_t size;
     packet >> size;
 
+    vec.clear();
+
     for (std::size_t i = 0; i != size; ++i) {
         T obj;
         packet >> obj;
@@ -54,6 +56,8 @@ sf::Packet& operator>>(sf::Packet& packet, std::map<K, V>& map)
 {
     std::size_t size;
     packet >> size;
+
+    map.clear();
 
     for (std::size_t i = 0; i != size; ++i) {
         K key;

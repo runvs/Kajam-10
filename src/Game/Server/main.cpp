@@ -1,4 +1,5 @@
 ﻿#include "CircularBuffer.hpp"
+#include "EnemyState.hpp"
 #include "GameProperties.hpp"
 #include "NetworkServer.hpp"
 #include "Payloads.hpp"
@@ -48,6 +49,9 @@ int main()
     std::map<int, jt::CircularBuffer<std::size_t, 20>> receivedMessageIdsMap;
 
     std::vector<ShotState> shots;
+    std::vector<EnemyState> enemies;
+
+    enemies.emplace_back(EnemyState { { 100, 100 } });
 
     float elapsed = 0.0f;
     std::cout << "starting server...\n";
@@ -110,6 +114,7 @@ int main()
             payload.playerStates = playerStates;
             payload.prediction_id = playerPredictionId[kvp.first];
             payload.shots = shots;
+            payload.enemies = enemies;
             server.sendToClient(kvp.first, payload);
         }
 

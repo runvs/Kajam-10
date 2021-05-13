@@ -1,6 +1,7 @@
 ﻿#ifndef PAYLOADS_HPP_GUARD
 #define PAYLOADS_HPP_GUARD
 
+#include "EnemyState.hpp"
 #include "InputState.hpp"
 #include "PlayerState.hpp"
 #include "ShotState.hpp"
@@ -28,7 +29,7 @@ struct PayloadServer2Client {
     std::size_t messageId;
 
     std::vector<ShotState> shots;
-    // TODO Enemy Positions
+    std::vector<EnemyState> enemies;
     // TODO ParticlePositions
 };
 

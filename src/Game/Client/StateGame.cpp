@@ -49,6 +49,7 @@ void StateGame::doInternalCreate()
     m_vignette->setColor({ 255, 255, 255, 100 });
 
     m_shotShape = jt::dh::createRectShape({ 2, 8 });
+    m_enemyShape = jt::dh::createRectShape({ 16, 16 });
 
     m_localPlayer = std::make_shared<Player>(true);
     add(m_localPlayer);
@@ -134,8 +135,8 @@ void StateGame::doInternalUpdate(float const elapsed)
             removeLocalOnlyPlayers(payload);
 
             checkLocalPlayerId(payload.playerID);
-            m_shots.clear();
             m_shots = payload.shots;
+            m_enemies = payload.enemies;
 
             auto const diff = m_predictedMoveResults[payload.prediction_id].position
                 - payload.playerStates[m_localPlayerId].position;
@@ -179,6 +180,12 @@ void StateGame::doInternalDraw() const
         m_shotShape->setPosition(s.position);
         m_shotShape->update(0.1f);
         m_shotShape->draw(getGame()->getRenderTarget());
+    }
+
+    for (auto& e : m_enemies) {
+        m_enemyShape->setPosition(e.position);
+        m_enemyShape->update(0.1f);
+        m_enemyShape->draw(getGame()->getRenderTarget());
     }
 
     for (auto p : m_remotePlayers) {

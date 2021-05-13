@@ -26,11 +26,23 @@ sf::Packet& operator>>(sf::Packet& packet, PayloadClient2Server& payload)
 
 sf::Packet& operator<<(sf::Packet& packet, PayloadServer2Client& payload)
 {
-    return packet << payload.playerID << payload.playerStates << payload.shots
-                  << payload.prediction_id << payload.messageId;
+    packet << payload.playerID;
+    packet << payload.playerStates;
+    packet << payload.shots;
+    packet << payload.enemies;
+    packet << payload.prediction_id;
+    packet << payload.messageId;
+
+    return packet;
 }
 sf::Packet& operator>>(sf::Packet& packet, PayloadServer2Client& payload)
 {
-    return packet >> payload.playerID >> payload.playerStates >> payload.shots
-        >> payload.prediction_id >> payload.messageId;
+    packet >> payload.playerID;
+    packet >> payload.playerStates;
+    packet >> payload.shots;
+    packet >> payload.enemies;
+    packet >> payload.prediction_id;
+    packet >> payload.messageId;
+
+    return packet;
 }

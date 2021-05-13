@@ -2,6 +2,7 @@
 #define GAME_STATE_GAME_HPP_INCLUDEGUARD
 
 #include "CircularBuffer.hpp"
+#include "EnemyState.hpp"
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
 #include "Player.hpp"
@@ -34,7 +35,9 @@ private:
     std::map<int, std::shared_ptr<Player>> m_remotePlayers;
 
     std::vector<ShotState> m_shots;
+    std::vector<EnemyState> m_enemies;
     std::shared_ptr<jt::Shape> mutable m_shotShape;
+    std::shared_ptr<jt::Shape> mutable m_enemyShape;
 
     bool m_running { false };
     bool m_hasEnded { false };
