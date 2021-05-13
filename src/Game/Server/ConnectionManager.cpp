@@ -71,6 +71,7 @@ void ConnectionManager::closeConnection(IP_Endpoint const& ip_endpoint)
 bool ConnectionManager::isNewConnection(IP_Endpoint newCon)
 {
     std::lock_guard lock { m_mutex };
+
     bool const alreadyPresent = std::any_of(m_connections.begin(), m_connections.end(),
         [&newCon](auto kvp) { return kvp.first == newCon; });
     return !alreadyPresent;

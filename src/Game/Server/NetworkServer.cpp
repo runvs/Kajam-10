@@ -74,12 +74,16 @@ void NetworkServer::internalReceiveData()
     } else if (status == sf::Socket::Status::Done) {
         std::lock_guard const lockData { m_dataMutex };
         IP_Endpoint const con { sender_address, sender_port };
+        if (m_connections.getAllActiveConnections().size()
+            <= Network::NetworkProperties::serverMaxConnections()) {
+            PayloadClient2Server payload;
+            packet >> payload;
+            m_received_data[con].emplace_back(std::move(payload));
 
-        PayloadClient2Server payload;
-        packet >> payload;
-        m_received_data[con].emplace_back(std::move(payload));
-
-        m_connections.updateConnection(sender_address, sender_port);
+            m_connections.updateConnection(sender_address, sender_port);
+        } else {
+            std::cout << "maximum number of players exceeded\n";
+        }
 
     } else if (status == sf::Socket::Status::Error) {
         std::cout << "network error\n";

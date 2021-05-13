@@ -26,6 +26,7 @@ struct NetworkProperties {
      * if size is a power of 2
      */
     static constexpr std::size_t clientNetworkBufferMask() { return clientNetworkBufferSize() - 1; }
+    static size_t serverMaxConnections() { return 8; }
 };
 
 } // namespace Network
