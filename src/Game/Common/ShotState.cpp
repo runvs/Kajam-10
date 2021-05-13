@@ -1,7 +1,7 @@
 ﻿#include "ShotState.hpp"
 
 #include "Conversions.hpp"
-#include "common.hpp"
+#include "GameProperties.hpp"
 
 sf::Packet& operator<<(sf::Packet& packet, ShotState& shotState)
 {

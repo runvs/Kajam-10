@@ -1,4 +1,5 @@
 ﻿#include "CircularBuffer.hpp"
+#include "GameProperties.hpp"
 #include "NetworkServer.hpp"
 #include "Payloads.hpp"
 #include "PlayerState.hpp"

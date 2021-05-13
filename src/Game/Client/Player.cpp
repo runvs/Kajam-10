@@ -1,6 +1,7 @@
 ﻿#include "Player.hpp"
 #include "DrawableHelpers.hpp"
 #include "GameInterface.hpp"
+#include "GameProperties.hpp"
 #include "common.hpp"
 
 std::vector<jt::KeyCode> getNeededKeys()

@@ -2,8 +2,6 @@
 #define GAME_GAMEPROPERTIES_HPP_INCLUDEGUARD
 
 #include "Color.hpp"
-#include "Vector.hpp"
-#include <cstdint>
 #include <string>
 
 class GP {
@@ -14,10 +12,6 @@ public:
     static std::string AuthorName() { return "TODO"; }
     static std::string JamName() { return "TODO"; }
     static std::string JamDate() { return "TODO"; }
-
-    static jt::Vector2 GetWindowSize() { return jt::Vector2 { 800, 600 }; }
-    static float GetZoom() { return 2.0f; }
-    static jt::Vector2 GetScreenSize() { return GetWindowSize() * (1.0f / GetZoom()); }
 
     static jt::Color PaletteBackground() { return GP::PaletteColor6(); }
     static jt::Color PaletteFontFront() { return GP::PaletteColor4(); }

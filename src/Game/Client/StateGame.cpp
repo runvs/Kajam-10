@@ -4,6 +4,7 @@
 #include "Color.hpp"
 #include "DrawableHelpers.hpp"
 #include "GameInterface.hpp"
+#include "GameProperties.hpp"
 #include "Hud.hpp"
 #include "MathHelper.hpp"
 #include "Payloads.hpp"
@@ -18,8 +19,8 @@ void StateGame::doInternalCreate()
 {
     m_world = std::make_shared<b2World>(b2Vec2 { 0.0f, 0.0f });
 
-    float const w = static_cast<float>(GP::GetWindowSize().x());
-    float const h = static_cast<float>(GP::GetWindowSize().y());
+    float const w = static_cast<float>(Game::GameProperties::GetWindowSize().x());
+    float const h = static_cast<float>(Game::GameProperties::GetWindowSize().y());
 
     using jt::Shape;
     using jt::TweenAlpha;
@@ -41,8 +42,9 @@ void StateGame::doInternalCreate()
     add(tw);
 
     m_vignette = std::make_shared<jt::Sprite>();
-    m_vignette->loadSprite("#v#" + std::to_string(static_cast<int>(GP::GetScreenSize().x())) + "#"
-        + std::to_string(static_cast<int>(GP::GetScreenSize().y())));
+    m_vignette->loadSprite("#v#"
+        + std::to_string(static_cast<int>(Game::GameProperties::GetScreenSize().x())) + "#"
+        + std::to_string(static_cast<int>(Game::GameProperties::GetScreenSize().y())));
     m_vignette->setIgnoreCamMovement(true);
     m_vignette->setColor({ 255, 255, 255, 100 });
 

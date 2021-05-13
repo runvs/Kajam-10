@@ -2,6 +2,7 @@
 #define COMMON_GUARD_HPP
 
 #include "Config.hpp"
+
 #include <cstddef>
 
 namespace {
@@ -21,16 +22,5 @@ struct NetworkProperties {
 };
 
 } // namespace Network
-
-namespace Game {
-struct GameProperties {
-    static float playerMovementSpeed() { return 100.0f; }
-    static float playerMaxAllowedPredictionError() { return 4.0f * 4.0f; }
-    static float shotVelocity() { return 200.0f; }
-    static float shotLifeTime() { return 5.0f; }
-    static float playerShootCooldown() { return 0.3f; }
-    static int playerSizeInPixel() { return 16; }
-};
-} // namespace Game
 
 #endif
