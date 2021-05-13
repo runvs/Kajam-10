@@ -20,7 +20,7 @@ NetworkClient::NetworkClient(sf::IpAddress address)
 
 NetworkClient::~NetworkClient()
 {
-    sendDisconnectMessage();
+    // sendDisconnectMessage();
     stopThread();
 }
 
@@ -32,7 +32,13 @@ void NetworkClient::stopThread()
 
 void NetworkClient::sendDisconnectMessage()
 {
-    PayloadClient2Server payload { 0, {}, 0, 0, true };
+    PayloadClient2Server payload;
+    payload.disconnect = true;
+    payload.messageId = m_messageId++;
+    payload.input = {};
+    payload.currentPredictionId = 0;
+    payload.dt = 0;
+    payload.playerID = 0;
     sf::Packet packet;
     packet << payload;
 
@@ -50,6 +56,7 @@ void NetworkClient::startThread()
         while (true) {
             // exit thread
             if (m_stopThread.load()) {
+                sendDisconnectMessage();
                 std::cout << "kill thread" << std::endl;
                 break;
             }
