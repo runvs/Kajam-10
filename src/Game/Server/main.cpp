@@ -1,4 +1,5 @@
-﻿#include "NetworkServer.hpp"
+﻿#include "CircularBuffer.hpp"
+#include "NetworkServer.hpp"
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
 #include "SystemHelper.hpp"
@@ -24,12 +25,26 @@ void createNewPlayerIfNotKnownToServer(
     }
 }
 
+bool checkForDuplicatedMessages(
+    std::map<int, jt::CircularBuffer<std::size_t, 20>> receivedMessageIdsMap, int currentPlayerId,
+    std::size_t const messageId)
+{
+    if (receivedMessageIdsMap[currentPlayerId].contains(messageId)) {
+        std::cout << "skip duplicated message for player " << currentPlayerId << std::endl;
+        return true;
+    }
+    receivedMessageIdsMap[currentPlayerId].push(messageId);
+    return false;
+}
+
 int main()
 {
     NetworkServer server;
 
     PlayerMap playerStates;
     std::map<int, std::size_t> playerPredictionId;
+
+    std::map<int, jt::CircularBuffer<std::size_t, 20>> receivedMessageIdsMap;
 
     std::cout << "server started\n";
     while (true) {
@@ -49,13 +64,22 @@ int main()
             createNewPlayerIfNotKnownToServer(playerStates, currentPlayerId);
 
             auto dataForPlayer = server.getData(currentPlayerId);
-            // TODO Sort dataForPlayer by message id
-            // TODO remove duplicated messages by message id
+            if (dataForPlayer.size() > 1) {
+                std::sort(dataForPlayer.begin(), dataForPlayer.end(),
+                    [](auto const& payloadA, auto const& payloadB) {
+                        return payloadA.messageId < payloadB.messageId;
+                    });
+            }
             for (auto& payload : dataForPlayer) {
+                std::size_t const messageId = payload.messageId;
+                if (checkForDuplicatedMessages(receivedMessageIdsMap, currentPlayerId, messageId)) {
+                    continue;
+                }
                 if (payload.disconnect == true) {
                     playersToDisconnect.push_back(currentPlayerId);
                     break;
                 }
+
                 updatePlayerState(playerStates[currentPlayerId], payload.dt, payload.input);
                 playerPredictionId[currentPlayerId] = payload.currentPredictionId;
                 // std::cout << payload.currentPredictionId << std::endl;

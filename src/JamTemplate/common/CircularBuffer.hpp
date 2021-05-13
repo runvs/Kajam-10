@@ -41,10 +41,17 @@ class CircularBuffer {
 public:
     T const& operator[](std::size_t const position) const { return m_data[wrapper.wrap(position)]; }
     T& operator[](std::size_t const position) { return m_data[wrapper.wrap(position)]; }
+    bool contains(T const& expected)
+    {
+        return std::any_of(m_data.cbegin(), m_data.cend(),
+            [&expected](auto const& value) { return value == expected; });
+    }
+    void push(T const& value) { m_data[wrapper.wrap(m_pushIndex)] = value; }
 
 private:
     detail::IndexWrapper<size> wrapper;
     std::array<T, size> m_data;
+    std::size_t m_pushIndex { 0 };
 };
 } // namespace jt
 #endif

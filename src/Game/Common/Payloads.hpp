@@ -13,15 +13,18 @@ struct PayloadClient2Server {
     float dt;
     std::size_t currentPredictionId;
     bool disconnect;
+    std::size_t messageId;
 };
 
 sf::Packet& operator<<(sf::Packet&, PayloadClient2Server&);
 sf::Packet& operator>>(sf::Packet&, PayloadClient2Server&);
 
 struct PayloadServer2Client {
+
     int playerID;
     PlayerMap playerStates;
     std::size_t prediction_id;
+    std::size_t messageId;
 
     // TODO Enemy Positions
     // TODO ParticlePositions

@@ -9,6 +9,7 @@ NetworkServer::NetworkServer()
 
     m_stopThread.store(false);
     m_newDataToSend = false;
+    m_messageId = 0U;
 
     startThread();
 }
@@ -88,6 +89,7 @@ void NetworkServer::internalSendData()
     if (m_newDataToSend) {
         for (auto& kvp : m_dataToSend) {
             sf::Packet packet;
+            kvp.second.messageId = m_messageId++;
             packet << kvp.second;
             m_socket.send(packet, kvp.first.address, kvp.first.port);
         }

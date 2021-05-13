@@ -13,6 +13,7 @@ NetworkClient::NetworkClient(sf::IpAddress address)
     m_stopThread.store(false);
     m_newDataReceived = false;
     m_newDataToSend = false;
+    m_messageId = 0U;
 
     startThread();
 }
@@ -110,6 +111,7 @@ void NetworkClient::internalSendData()
     std::unique_lock lock { m_dataMutex };
     if (m_newDataToSend) {
         sf::Packet packet;
+        m_dataToSend.messageId = m_messageId++;
         packet << m_dataToSend;
         lock.unlock();
 
