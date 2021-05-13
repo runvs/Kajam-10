@@ -10,7 +10,7 @@ bool operator==(IP_Endpoint const& a, IP_Endpoint const& b)
 
 bool operator<(IP_Endpoint const& a, IP_Endpoint const& b)
 {
-    return a.port < b.port && a.address.toInteger() < b.address.toInteger();
+    return a.port < b.port || a.address < b.address;
 }
 
 void ConnectionManager::updateConnection(sf::IpAddress sender_address, unsigned short sender_port)
@@ -20,7 +20,13 @@ void ConnectionManager::updateConnection(sf::IpAddress sender_address, unsigned 
         std::cout << "add new connection: " << sender_address.toString() << ":" << sender_port
                   << std::endl;
         std::lock_guard lock { m_mutex };
-        m_connections[con] = ConnectionInfo { currentPlayerId++, std::chrono::steady_clock::now() };
+        /*std::cout << "current connections size: " << m_connections.size()
+                  << " new connection :" << con.address << ":" << con.port
+                  << "contain count: " << m_connections.count(con) << std::endl;*/
+
+        m_connections.insert(std::make_pair(
+            con, ConnectionInfo { currentPlayerId++, std::chrono::steady_clock::now() }));
+        // m_connections[con] = ;
         return;
     }
     std::lock_guard lock { m_mutex };

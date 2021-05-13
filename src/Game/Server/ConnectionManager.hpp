@@ -10,14 +10,14 @@ struct IP_Endpoint {
     unsigned short port;
 };
 
+bool operator==(IP_Endpoint const& a, IP_Endpoint const& b);
+bool operator<(IP_Endpoint const& a, IP_Endpoint const& b);
+
 using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
 struct ConnectionInfo {
     int playerId;
     TimePoint lastReceivedTime;
 };
-
-bool operator==(IP_Endpoint const& a, IP_Endpoint const& b);
-bool operator<(IP_Endpoint const& a, IP_Endpoint const& b);
 
 class ConnectionManager {
 public:
@@ -31,8 +31,7 @@ public:
     void closeConnection(IP_Endpoint const& ip_endpoint);
 
 private:
-    using MapType = std::map<IP_Endpoint, ConnectionInfo>;
-    MapType m_connections;
+    std::map<IP_Endpoint, ConnectionInfo> m_connections;
     std::mutex m_mutex;
     int currentPlayerId = 0;
 };
