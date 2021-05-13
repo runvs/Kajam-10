@@ -27,7 +27,7 @@ void StateGame::doInternalCreate()
 
     m_background = std::make_shared<Shape>();
     m_background->makeRect({ w, h });
-    m_background->setColor(GP::PaletteBackground());
+    m_background->setColor(jt::Color { 25, 25, 25 });
     m_background->setIgnoreCamMovement(true);
     m_background->update(0.0f);
 
@@ -49,7 +49,7 @@ void StateGame::doInternalCreate()
     m_vignette->setColor({ 255, 255, 255, 100 });
 
     m_shotShape = jt::dh::createRectShape({ 2, 8 });
-    m_enemyShape = jt::dh::createRectShape({ 16, 16 });
+    m_enemyShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Red);
 
     m_localPlayer = std::make_shared<Player>(true);
     add(m_localPlayer);
