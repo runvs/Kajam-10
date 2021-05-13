@@ -3,7 +3,6 @@
 
 #include "Config.hpp"
 #include <cstddef>
-#include <sfml/Network.hpp>
 
 namespace {
 ConfigSettings configSettings("config.json");
@@ -18,14 +17,6 @@ struct NetworkProperties {
     static float serverTickTime() { return 0.01f; }
 
     static constexpr std::size_t clientNetworkBufferSize() { return (2 << 9); }
-    /*
-     * Trick: Instead of
-     *  index = current_id % size;
-     * it is possible to calculate
-     *  index = current_id & (size - 1)
-     * if size is a power of 2
-     */
-    static constexpr std::size_t clientNetworkBufferMask() { return clientNetworkBufferSize() - 1; }
     static size_t serverMaxConnections() { return 8; }
 };
 
@@ -34,7 +25,10 @@ struct NetworkProperties {
 namespace Game {
 struct GameProperties {
     static float playerMovementSpeed() { return 100.0f; }
-    static float playerMaxAllowedPredictionError() { return 4.0f * 4.0f; };
+    static float playerMaxAllowedPredictionError() { return 4.0f * 4.0f; }
+    static float shotVelocity() { return 200.0f; }
+    static float shotLifeTime() { return 5.0f; }
+    static float playerShootCooldown() { return 0.3f; }
 };
 } // namespace Game
 

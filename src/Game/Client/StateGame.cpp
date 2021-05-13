@@ -145,14 +145,14 @@ void StateGame::doInternalUpdate(float const elapsed)
                           << std::endl;
                 m_currentPlayerState = payload.playerStates[m_localPlayerId];
 
-                for (std::size_t replaying_prediction_id = payload.prediction_id + 1;
-                     replaying_prediction_id < m_currentPredictionId; ++replaying_prediction_id) {
+                for (std::size_t replayingPredictionId = payload.prediction_id + 1;
+                     replayingPredictionId < m_currentPredictionId; ++replayingPredictionId) {
 
                     updatePlayerState(m_currentPlayerState,
-                        m_predictedMoves[replaying_prediction_id].elapsed,
-                        m_predictedMoves[replaying_prediction_id].input);
+                        m_predictedMoves[replayingPredictionId].elapsed,
+                        m_predictedMoves[replayingPredictionId].input);
 
-                    m_predictedMoveResults[replaying_prediction_id] = m_currentPlayerState;
+                    m_predictedMoveResults[replayingPredictionId] = m_currentPlayerState;
                 }
             }
             updateRemotePlayerPositions(payload);

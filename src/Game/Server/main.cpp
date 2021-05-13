@@ -89,12 +89,12 @@ int main()
                 if (payload.input[jt::KeyCode::Space]) {
                     if (playerStates[currentPlayerId]._shootTimer <= 0) {
                         shots.emplace_back(
-                            ShotState { playerStates[currentPlayerId].position, { 0, -100 } });
-                        playerStates[currentPlayerId]._shootTimer = 1.0f;
+                            ShotState { playerStates[currentPlayerId].position, { 0, -1 } });
+                        playerStates[currentPlayerId]._shootTimer
+                            = Game::GameProperties::playerShootCooldown();
                     }
                 }
             }
-            // std::cout << shots.size() << std::endl;
         }
 
         for (auto playerToDisconnectId : playersToDisconnect) {
@@ -111,11 +111,13 @@ int main()
         }
 
         for (auto& s : shots) {
-            s.position += s.direction * elapsed;
-            s._age += elapsed;
+            updateShotState(s, elapsed);
+            // TODO check collision shots/enemy
+            // TODO check collisions shots/player
         }
 
-        jt::SystemHelper::erase_if(shots, [](auto& s) { return s._age >= 10; });
+        jt::SystemHelper::erase_if(
+            shots, [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime(); });
 
         std::this_thread::sleep_until(next);
         auto after = std::chrono::steady_clock::now();

@@ -26,6 +26,14 @@ private:
     size_t m_mask { size - 1 };
 };
 
+/*
+ * Size     1000            8
+ * Maske    0111            7
+ * index1   0010 => 0010    2
+ * index2   1010 => 0010    10 => 2
+ *
+ */
+
 template <std::size_t size>
 class IndexWrapper<size, typename std::enable_if<!jt::MathHelper::is_powerof2(size)>::type> {
 public:
@@ -46,7 +54,7 @@ public:
         return std::any_of(m_data.cbegin(), m_data.cend(),
             [&expected](auto const& value) { return value == expected; });
     }
-    void push(T const& value) { m_data[wrapper.wrap(m_pushIndex)] = value; }
+    void push(T const& value) { m_data[wrapper.wrap(m_pushIndex++)] = value; }
 
 private:
     detail::IndexWrapper<size> wrapper;

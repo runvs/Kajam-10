@@ -14,4 +14,6 @@ sf::Packet& operator<<(sf::Packet& packet, ShotState& shotState);
 sf::Packet& operator<<(sf::Packet& packet, ShotState const& shotState);
 sf::Packet& operator>>(sf::Packet& packet, ShotState& shotState);
 
+void updateShotState(ShotState& s, float elapsed);
+
 #endif
