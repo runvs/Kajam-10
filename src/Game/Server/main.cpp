@@ -25,7 +25,7 @@ void createNewPlayerIfNotKnownToServer(
 
 int main()
 {
-    std::cout << "server started\n";
+    std::cout << "starting server...\n";
 
     NetworkServer server;
 

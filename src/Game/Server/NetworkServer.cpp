@@ -7,6 +7,8 @@ NetworkServer::NetworkServer()
     m_socket.bind(Network::NetworkProperties::port());
     m_socket.setBlocking(false);
 
+    std::cout << "server listening on port " << Network::NetworkProperties::port() << std::endl;
+
     m_stopThread.store(false);
     m_newDataToSend = false;
 
