@@ -1,13 +1,19 @@
 ﻿#ifndef COMMON_GUARD_HPP
 #define COMMON_GUARD_HPP
 
+#include "Config.hpp"
 #include <cstddef>
 #include <sfml/Network.hpp>
 #include <string>
 
+namespace {
+auto configSettings = ConfigSettings("config.json");
+}
+
 namespace Network {
 struct NetworkProperties {
-    static unsigned short port() { return 53000; }
+    static std::string serverIp() { return configSettings.serverIp; }
+    static unsigned short port() { return configSettings.serverPort; }
     static float serverTimeToClientTimeout() { return 2.0f; }
     static constexpr std::size_t c_buffer_size() { return 512; }
     static constexpr std::size_t c_buffer_mask() { return c_buffer_size() - 1; }
