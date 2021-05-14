@@ -70,19 +70,31 @@ void EnemySpawner::spawnEnemySine(float basePosX, int i)
     m_enemies.emplace_back(std::move(enemy));
 }
 
+void EnemySpawner::spawnEnemyCircle(float basePosX, int i)
+{
+    if (i >= 3) {
+        return;
+    }
+    auto enemy = createBaseEnemy(basePosX, i);
+    enemy._mover = std::make_shared<EnemyMoverCircle>();
+    m_enemies.emplace_back(std::move(enemy));
+}
+
 void EnemySpawner::SpawnEnemy(int groupType, float basePosX, int i)
 {
     if (groupType == 0) {
         spawnEnemyStandStill(basePosX, i);
-    } else {
+    } else if (groupType == 1) {
         spawnEnemySine(basePosX, i);
+    } else {
+        spawnEnemyCircle(basePosX, i);
     }
 }
 
 void EnemySpawner::spawnEnemyGroup()
 {
-    auto const count = getGroupSize() + jt::Random::getInt(1, 3);
-    int groupType = jt::Random::getInt(0, 1);
+    auto const count = getGroupSize() + jt::Random::getInt(1, 2);
+    int groupType = jt::Random::getInt(0, 2);
     int margin = 40;
     float basePosX = jt::Random::getFloat(margin,
         Game::GameProperties::displayScreenSize().x() - margin

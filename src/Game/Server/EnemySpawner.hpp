@@ -29,6 +29,7 @@ private:
     EnemyState createBaseEnemy(float basePosX, int i);
     void spawnEnemyStandStill(float basePosX, int i);
     void spawnEnemySine(float basePosX, int i);
+    void spawnEnemyCircle(float basePosX, int i);
     void SpawnEnemy(int groupType, float basePosX, int i);
     void spawnEnemyGroup();
 };

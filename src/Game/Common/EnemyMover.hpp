@@ -22,4 +22,10 @@ class EnemyMoverSine : public EnemyMoverBase {
     void doMove(EnemyState& state, float elapsed) override;
 };
 
+class EnemyMoverCircle : public EnemyMoverBase {
+    void doMove(EnemyState& state, float elapsed) override;
+    int m_sequenceId { 0 };
+    float m_timer { 0.0f };
+};
+
 #endif
