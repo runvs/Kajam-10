@@ -28,7 +28,7 @@ void updateEnemyState(EnemyState& enemyState, std::vector<ShotState>& shots, flo
 {
     enemyState._age += elapsed;
     if (enemyState._mover) {
-        enemyState._mover->move(enemyState, shots, elapsed);
+        enemyState._mover->update(enemyState, shots, elapsed);
     }
 
     if (enemyState.position.y() >= Game::GameProperties::displayScreenSize().y() + 24) {
