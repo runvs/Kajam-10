@@ -8,7 +8,7 @@
 #include <memory>
 
 struct ShotState;
-class EnemyMoverBase;
+class EnemyAI;
 
 struct EnemyState {
     jt::Vector2 position { -500.0f, -500.0f };
@@ -16,7 +16,7 @@ struct EnemyState {
     bool _alive { true };
     float _age { 0.0f };
     float _moveDelay { 0.0f };
-    std::shared_ptr<EnemyMoverBase> _mover { nullptr };
+    std::shared_ptr<EnemyAI> _mover { nullptr };
     jt::Vector2 _positionBase { -500.0f, -500.0f };
 };
 
@@ -25,6 +25,6 @@ sf::Packet& operator<<(sf::Packet& packet, EnemyState const& enemyState);
 sf::Packet& operator>>(sf::Packet& packet, EnemyState& enemyState);
 
 void enemyTakeDamage(EnemyState& enemyState, ShotState& shotState);
-void updateEnemyState(EnemyState& enemyState, float elapsed);
+void updateEnemyState(EnemyState& enemyState, std::vector<ShotState>& shots, float elapsed);
 
 #endif // ENEMY_STATE_GUARD_HPP

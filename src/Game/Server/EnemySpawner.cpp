@@ -1,5 +1,5 @@
 ﻿#include "EnemySpawner.hpp"
-#include "EnemyMover.hpp"
+#include "EnemyAI.hpp"
 #include "Random.hpp"
 
 #include <iostream>
@@ -7,7 +7,7 @@
 EnemySpawner::EnemySpawner(std::vector<EnemyState>& enemies)
     : m_enemies(enemies)
     , m_timer(0.0f)
-    , m_timerMax(8.0f)
+    , m_timerMax(7.5f)
 {
 }
 
@@ -32,7 +32,7 @@ void EnemySpawner::setDifficulty(float difficulty) { m_difficulty = difficulty; 
 
 int EnemySpawner::getEnemyNumberTarget()
 {
-    return m_activePlayerCount * Game::GameProperties::spawnerEnemiesPerPlayer();
+    return 5 + m_activePlayerCount * Game::GameProperties::spawnerEnemiesPerPlayer();
 }
 
 int EnemySpawner::getGroupSize() { return 2; }
@@ -59,14 +59,14 @@ EnemyState EnemySpawner::createBaseEnemy(float basePosX, int i)
 void EnemySpawner::spawnEnemyStandStill(float basePosX, int i)
 {
     auto enemy = createBaseEnemy(basePosX, i);
-    enemy._mover = std::make_shared<EnemyMoverStandStill>();
+    enemy._mover = std::make_shared<EnemyAIIdle>();
     m_enemies.emplace_back(std::move(enemy));
 }
 
 void EnemySpawner::spawnEnemySine(float basePosX, int i)
 {
     auto enemy = createBaseEnemy(basePosX, i);
-    enemy._mover = std::make_shared<EnemyMoverSine>();
+    enemy._mover = std::make_shared<EnemyAISine>();
     m_enemies.emplace_back(std::move(enemy));
 }
 
@@ -76,7 +76,7 @@ void EnemySpawner::spawnEnemyCircle(float basePosX, int i)
         return;
     }
     auto enemy = createBaseEnemy(basePosX, i);
-    enemy._mover = std::make_shared<EnemyMoverCircle>();
+    enemy._mover = std::make_shared<EnemyAICircle>();
     m_enemies.emplace_back(std::move(enemy));
 }
 

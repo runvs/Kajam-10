@@ -1,6 +1,6 @@
 ﻿#include "EnemyState.hpp"
 #include "Conversions.hpp"
-#include "EnemyMover.hpp"
+#include "EnemyAI.hpp"
 #include "ShotState.hpp"
 
 sf::Packet& operator<<(sf::Packet& packet, EnemyState& enemyState)
@@ -24,11 +24,11 @@ void enemyTakeDamage(EnemyState& enemyState, ShotState& shotState)
     enemyState._alive = enemyState._health > 0;
 }
 
-void updateEnemyState(EnemyState& enemyState, float elapsed)
+void updateEnemyState(EnemyState& enemyState, std::vector<ShotState>& shots, float elapsed)
 {
     enemyState._age += elapsed;
     if (enemyState._mover) {
-        enemyState._mover->move(enemyState, elapsed);
+        enemyState._mover->move(enemyState, shots, elapsed);
     }
 
     if (enemyState.position.y() >= Game::GameProperties::displayScreenSize().y() + 24) {

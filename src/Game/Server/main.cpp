@@ -1,5 +1,4 @@
 ﻿#include "CircularBuffer.hpp"
-#include "EnemyMover.hpp"
 #include "EnemySpawner.hpp"
 #include "EnemyState.hpp"
 #include "GameProperties.hpp"
@@ -110,13 +109,13 @@ int main()
             server.closeConnectionTo(playerToDisconnectId);
         }
 
-        spawner.setActivePlayerCount(playerStates.size());
-        spawner.setCurrentlyAliveEnemies(enemies.size());
+        spawner.setActivePlayerCount(static_cast<int>(playerStates.size()));
+        spawner.setCurrentlyAliveEnemies(static_cast<int>(enemies.size()));
         // TODO increase difficulty
         spawner.setDifficulty(1.0f);
         spawner.update(elapsed);
         for (auto& e : enemies) {
-            updateEnemyState(e, elapsed);
+            updateEnemyState(e, shots, elapsed);
         }
 
         for (auto& s : shots) {
