@@ -10,11 +10,20 @@ public:
 
     void update(float elapsed);
 
+    void setActivePlayerCount(int activePlayers);
+    void setCurrentlyAliveEnemies(int currentlyAlive);
+    void setDifficulty(float difficulty = 1.0f);
+
 private:
     std::vector<EnemyState>& m_enemies;
     float m_timer;
     float m_timerMax;
 
+    int m_enemyNumberCurrent;
+    float m_difficulty;
+    int m_activePlayerCount;
+
+    int getEnemyNumberTarget();
     int getGroupSize();
     float getMaxTimer();
     EnemyState createBaseEnemy(float basePosX, int i);

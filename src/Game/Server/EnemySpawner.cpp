@@ -21,9 +21,30 @@ void EnemySpawner::update(float elapsed)
     }
 }
 
+void EnemySpawner::setActivePlayerCount(int activePlayers) { m_activePlayerCount = activePlayers; }
+
+void EnemySpawner::setCurrentlyAliveEnemies(int currentlyAlive)
+{
+    m_enemyNumberCurrent = currentlyAlive;
+}
+
+void EnemySpawner::setDifficulty(float difficulty) { m_difficulty = difficulty; }
+
+int EnemySpawner::getEnemyNumberTarget()
+{
+    return m_activePlayerCount * Game::GameProperties::spawnerEnemiesPerPlayer();
+}
+
 int EnemySpawner::getGroupSize() { return 2; }
 
-float EnemySpawner::getMaxTimer() { return m_timerMax; }
+float EnemySpawner::getMaxTimer()
+{
+    float exponent = 1.0f;
+    float currentEnemies = static_cast<float>(m_enemyNumberCurrent);
+    float targetEnemies = static_cast<float>(getEnemyNumberTarget());
+    float ret = std::pow(currentEnemies / targetEnemies, exponent) * m_timerMax;
+    return ret;
+}
 
 EnemyState EnemySpawner::createBaseEnemy(float basePosX, int i)
 {
@@ -31,6 +52,7 @@ EnemyState EnemySpawner::createBaseEnemy(float basePosX, int i)
     enemy.EnemyState::position = jt::Vector2 { basePosX, -100.0f + i * 24.0f };
     enemy.EnemyState::_positionBase = enemy.EnemyState::position;
     enemy.EnemyState::_moveDelay = i * 0.5f;
+    enemy._health = static_cast<int>(Game::GameProperties::enemyDefaultHealth() * m_difficulty);
     return enemy;
 }
 

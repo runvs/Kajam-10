@@ -20,6 +20,7 @@ struct GameProperties {
     static jt::Vector2 enemyHalfSize() { return jt::Vector2 { 8, 8 }; }
     static jt::Vector2 shotHalfSize() { return jt::Vector2 { 4, 4 }; }
     static jt::Vector2 shotSize() { return 2.0f * shotHalfSize(); }
+    static int spawnerEnemiesPerPlayer() { return 5; }
 };
 } // namespace Game
 

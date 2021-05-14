@@ -24,13 +24,13 @@ sf::Packet& operator>>(sf::Packet&, PayloadClient2Server&);
 
 struct PayloadServer2Client {
 
-    int playerID;
-    PlayerMap playerStates;
-    std::size_t prediction_id;
-    std::size_t messageId;
+    int playerID { -1 };
+    PlayerMap playerStates {};
+    std::size_t prediction_id { 0 };
+    std::size_t messageId { 0 };
 
-    std::vector<ShotState> shots;
-    std::vector<EnemyState> enemies;
+    std::vector<ShotState> shots {};
+    std::vector<EnemyState> enemies {};
     // TODO ParticlePositions
 };
 
