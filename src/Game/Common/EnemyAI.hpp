@@ -21,8 +21,14 @@ class EnemyAISine : public EnemyAI {
 };
 
 class EnemyAICircle : public EnemyAI {
+public:
+    EnemyAICircle(float circlePosition)
+        : m_circlePositionY(circlePosition) {};
+
+private:
     void doMove(EnemyState& state, std::vector<ShotState>& shots, float elapsed) override;
     int m_sequenceId { 0 };
+    float m_circlePositionY { 100 };
     float m_timer { 0.0f };
 };
 #endif

@@ -21,7 +21,7 @@ void EnemyAISine::doMove(EnemyState& state, std::vector<ShotState>& shots, float
 void EnemyAICircle::doMove(EnemyState& state, std::vector<ShotState>& shots, float elapsed)
 {
     if (m_sequenceId == 0) {
-        if (state.position.y() >= 100) {
+        if (state.position.y() >= m_circlePositionY) {
             m_sequenceId = 1;
             m_timer = 0.0f;
         }

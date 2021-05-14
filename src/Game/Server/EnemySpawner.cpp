@@ -49,57 +49,60 @@ float EnemySpawner::getMaxTimer()
 EnemyState EnemySpawner::createBaseEnemy(float basePosX, int i)
 {
     EnemyState enemy;
-    enemy.EnemyState::position = jt::Vector2 { basePosX, -100.0f + i * 24.0f };
+    enemy.EnemyState::position = jt::Vector2 { basePosX, -48.0f - i * 24.0f };
     enemy.EnemyState::_positionBase = enemy.EnemyState::position;
     enemy.EnemyState::_moveDelay = i * 0.5f;
     enemy._health = static_cast<int>(Game::GameProperties::enemyDefaultHealth() * m_difficulty);
     return enemy;
 }
 
-void EnemySpawner::spawnEnemyStandStill(float basePosX, int i)
+void EnemySpawner::spawnEnemyGroupStill(float basePosX)
 {
-    auto enemy = createBaseEnemy(basePosX, i);
-    enemy._mover = std::make_shared<EnemyAIIdle>();
-    m_enemies.emplace_back(std::move(enemy));
-}
-
-void EnemySpawner::spawnEnemySine(float basePosX, int i)
-{
-    auto enemy = createBaseEnemy(basePosX, i);
-    enemy._mover = std::make_shared<EnemyAISine>();
-    m_enemies.emplace_back(std::move(enemy));
-}
-
-void EnemySpawner::spawnEnemyCircle(float basePosX, int i)
-{
-    if (i >= 3) {
-        return;
+    int const max = jt::Random::getInt(1, 2);
+    for (int i = 0; i != max; ++i) {
+        auto enemy = createBaseEnemy(basePosX, i);
+        enemy._mover = std::make_shared<EnemyAIIdle>();
+        m_enemies.emplace_back(std::move(enemy));
     }
-    auto enemy = createBaseEnemy(basePosX, i);
-    enemy._mover = std::make_shared<EnemyAICircle>();
-    m_enemies.emplace_back(std::move(enemy));
 }
 
-void EnemySpawner::SpawnEnemy(int groupType, float basePosX, int i)
+void EnemySpawner::spawnEnemyGroupSine(float basePosX)
+{
+    int const max = jt::Random::getInt(4, 7);
+    for (int i = 0; i != max; ++i) {
+        auto enemy = createBaseEnemy(basePosX, i);
+        enemy._mover = std::make_shared<EnemyAISine>();
+        m_enemies.emplace_back(std::move(enemy));
+    }
+}
+
+void EnemySpawner::spawnEnemyGroupCircle(float basePosX)
+{
+    float circlePosY = jt::Random::getFloat(50, 150);
+    for (int i = 0; i != 3; ++i) {
+        auto enemy = createBaseEnemy(basePosX, i);
+        enemy._mover = std::make_shared<EnemyAICircle>(circlePosY);
+        m_enemies.emplace_back(std::move(enemy));
+    }
+}
+
+void EnemySpawner::SpawnEnemy(int groupType, float basePosX)
 {
     if (groupType == 0) {
-        spawnEnemyStandStill(basePosX, i);
+        spawnEnemyGroupStill(basePosX);
     } else if (groupType == 1) {
-        spawnEnemySine(basePosX, i);
+        spawnEnemyGroupSine(basePosX);
     } else {
-        spawnEnemyCircle(basePosX, i);
+        spawnEnemyGroupCircle(basePosX);
     }
 }
 
 void EnemySpawner::spawnEnemyGroup()
 {
-    auto const count = getGroupSize() + jt::Random::getInt(1, 2);
     int groupType = jt::Random::getInt(0, 2);
     int margin = 40;
     float basePosX = jt::Random::getFloat(margin,
         Game::GameProperties::displayScreenSize().x() - margin
             - Game::GameProperties::playerSizeInPixel());
-    for (int i = 0; i != count; ++i) {
-        SpawnEnemy(groupType, basePosX, i);
-    }
+    SpawnEnemy(groupType, basePosX);
 }

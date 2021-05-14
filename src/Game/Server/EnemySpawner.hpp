@@ -27,10 +27,10 @@ private:
     int getGroupSize();
     float getMaxTimer();
     EnemyState createBaseEnemy(float basePosX, int i);
-    void spawnEnemyStandStill(float basePosX, int i);
-    void spawnEnemySine(float basePosX, int i);
-    void spawnEnemyCircle(float basePosX, int i);
-    void SpawnEnemy(int groupType, float basePosX, int i);
+    void spawnEnemyGroupStill(float basePosX);
+    void spawnEnemyGroupSine(float basePosX);
+    void spawnEnemyGroupCircle(float basePosX);
+    void SpawnEnemy(int groupType, float basePosX);
     void spawnEnemyGroup();
 };
 
