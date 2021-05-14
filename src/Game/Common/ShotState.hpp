@@ -9,7 +9,7 @@ struct ShotState {
     jt::Vector2 direction { 0.0f, 1.0f };
     float _age { 0.0f };
     bool _alive { true };
-    bool _fromPlayer { true };
+    bool fromPlayer { true };
     int _damage { 1 };
 };
 

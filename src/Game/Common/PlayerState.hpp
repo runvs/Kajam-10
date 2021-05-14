@@ -6,12 +6,16 @@
 #include "Vector.hpp"
 #include <map>
 
+struct ShotState;
+
 struct PlayerState {
     jt::Vector2 position;
     float _shootTimer { 0 };
+    int health { 12 };
 };
 
 void updatePlayerState(PlayerState& playerState, float dt, InputState& input);
+void playerTakeDamage(PlayerState& playerState, ShotState& shot);
 
 using PlayerMap = std::map<int, PlayerState>;
 

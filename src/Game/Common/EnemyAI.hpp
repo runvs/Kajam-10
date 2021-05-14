@@ -6,18 +6,18 @@ class EnemyAI {
 public:
     EnemyAI() = default;
     ~EnemyAI() = default;
-    void move(EnemyState& state, std::vector<ShotState>& shots, float elapsed);
+    void update(EnemyState& state, std::vector<ShotState>& shots, float elapsed);
 
 private:
-    virtual void doMove(EnemyState& state, std::vector<ShotState>& shots, float elapsed) = 0;
+    virtual void doUpdate(EnemyState& state, std::vector<ShotState>& shots, float elapsed) = 0;
 };
 
 class EnemyAIIdle : public EnemyAI {
-    void doMove(EnemyState& state, std::vector<ShotState>& shots, float elapsed) override;
+    void doUpdate(EnemyState& state, std::vector<ShotState>& shots, float elapsed) override;
 };
 
 class EnemyAISine : public EnemyAI {
-    void doMove(EnemyState& state, std::vector<ShotState>& shots, float elapsed) override;
+    void doUpdate(EnemyState& state, std::vector<ShotState>& shots, float elapsed) override;
 };
 
 class EnemyAICircle : public EnemyAI {
@@ -26,7 +26,7 @@ public:
         : m_circlePositionY(circlePosition) {};
 
 private:
-    void doMove(EnemyState& state, std::vector<ShotState>& shots, float elapsed) override;
+    void doUpdate(EnemyState& state, std::vector<ShotState>& shots, float elapsed) override;
     int m_sequenceId { 0 };
     float m_circlePositionY { 100 };
     float m_timer { 0.0f };
