@@ -29,15 +29,16 @@ void StateMenu::doInternalCreate()
 
 void StateMenu::createVignette()
 {
-    m_vignette = jt::dh::createVignette(Game::GameProperties::GetScreenSize());
+    m_vignette = jt::dh::createVignette(Game::GameProperties::displayScreenSize());
     m_vignette->setColor({ 255, 255, 255, 110 });
 }
 
 void StateMenu::createShapes()
 {
     m_background
-        = jt::dh::createRectShape(Game::GameProperties::GetScreenSize(), GP::PaletteColor1());
-    m_overlay = jt::dh::createRectShape(Game::GameProperties::GetScreenSize(), jt::colors::Black);
+        = jt::dh::createRectShape(Game::GameProperties::displayScreenSize(), GP::PaletteColor1());
+    m_overlay
+        = jt::dh::createRectShape(Game::GameProperties::displayScreenSize(), jt::colors::Black);
 }
 
 void StateMenu::createMenuText()
@@ -53,13 +54,13 @@ void StateMenu::createTextCredits()
         "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\n" + GP::JamDate(), 10U,
         GP::PaletteColor5());
     m_text_Credits->SetTextAlign(jt::Text::TextAlign::LEFT);
-    m_text_Credits->setPosition({ 10, Game::GameProperties::GetScreenSize().y() - 30 });
+    m_text_Credits->setPosition({ 10, Game::GameProperties::displayScreenSize().y() - 30 });
     m_text_Credits->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 1, 1 });
 }
 
 void StateMenu::createTextExplanation()
 {
-    float half_width = Game::GameProperties::GetScreenSize().x() / 2;
+    float half_width = Game::GameProperties::displayScreenSize().x() / 2;
     m_text_Explanation = jt::dh::createText(
         getGame()->getRenderTarget(), "Press Space to start the game", 16U, GP::PaletteColor8());
     m_text_Explanation->setPosition({ half_width, 150 });
@@ -68,7 +69,7 @@ void StateMenu::createTextExplanation()
 
 void StateMenu::createTextTitle()
 {
-    float half_width = Game::GameProperties::GetScreenSize().x() / 2;
+    float half_width = Game::GameProperties::displayScreenSize().x() / 2;
     m_text_Title = jt::dh::createText(
         getGame()->getRenderTarget(), GP::GameName(), 32U, GP::PaletteFontFront());
     m_text_Title->setPosition({ half_width, 20 });

@@ -1,4 +1,5 @@
 ﻿#include "CircularBuffer.hpp"
+#include "EnemyMover.hpp"
 #include "EnemyState.hpp"
 #include "GameProperties.hpp"
 #include "NetworkServer.hpp"
@@ -39,6 +40,21 @@ bool checkForDuplicatedMessages(
     return false;
 }
 
+EnemyState createEnemy()
+{
+    EnemyState enemy;
+    enemy.position = jt::Vector2 { 100.0f, 100.0f };
+    enemy._positionBase = enemy.position;
+    enemy._mover = std::make_shared<EnemyMoverSine>();
+    return enemy;
+}
+
+void spawnEnemy(std::vector<EnemyState>& enemies)
+{
+    std::cout << "spawnEnemy\n";
+    enemies.emplace_back(createEnemy());
+}
+
 int main()
 {
     NetworkServer server;
@@ -51,7 +67,7 @@ int main()
     std::vector<ShotState> shots;
     std::vector<EnemyState> enemies;
 
-    enemies.emplace_back(EnemyState { { 100, 100 }, 3, true });
+    spawnEnemy(enemies);
 
     float elapsed = 0.0f;
     std::cout << "starting server...\n";
@@ -108,14 +124,8 @@ int main()
             server.closeConnectionTo(playerToDisconnectId);
         }
 
-        for (auto& kvp : playerStates) {
-            PayloadServer2Client payload;
-            payload.playerID = kvp.first;
-            payload.playerStates = playerStates;
-            payload.prediction_id = playerPredictionId[kvp.first];
-            payload.shots = shots;
-            payload.enemies = enemies;
-            server.sendToClient(kvp.first, payload);
+        for (auto& e : enemies) {
+            updateEnemyState(e, elapsed);
         }
 
         for (auto& s : shots) {
@@ -139,6 +149,16 @@ int main()
             [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime() || !s._alive; });
 
         jt::SystemHelper::erase_if(enemies, [](auto& e) { return !e._alive; });
+
+        for (auto& kvp : playerStates) {
+            PayloadServer2Client payload;
+            payload.playerID = kvp.first;
+            payload.playerStates = playerStates;
+            payload.prediction_id = playerPredictionId[kvp.first];
+            payload.shots = shots;
+            payload.enemies = enemies;
+            server.sendToClient(kvp.first, payload);
+        }
 
         std::this_thread::sleep_until(next);
         auto after = std::chrono::steady_clock::now();

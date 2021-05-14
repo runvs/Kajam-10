@@ -1,5 +1,6 @@
-#include "EnemyState.hpp"
+﻿#include "EnemyState.hpp"
 #include "Conversions.hpp"
+#include "EnemyMover.hpp"
 #include "ShotState.hpp"
 
 sf::Packet& operator<<(sf::Packet& packet, EnemyState& enemyState)
@@ -21,4 +22,12 @@ void enemyTakeDamage(EnemyState& enemyState, ShotState& shotState)
 {
     enemyState._health -= shotState._damage;
     enemyState._alive = enemyState._health > 0;
+}
+
+void updateEnemyState(EnemyState& enemyState, float elapsed)
+{
+    enemyState._age += elapsed;
+    if (enemyState._mover) {
+        enemyState._mover->move(enemyState, elapsed);
+    }
 }

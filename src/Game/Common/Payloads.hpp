@@ -1,6 +1,7 @@
 ﻿#ifndef PAYLOADS_HPP_GUARD
 #define PAYLOADS_HPP_GUARD
 
+#include "EnemyMover.hpp"
 #include "EnemyState.hpp"
 #include "InputState.hpp"
 #include "PlayerState.hpp"

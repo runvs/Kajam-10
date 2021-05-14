@@ -30,10 +30,10 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState& inpu
         playerState.position.y() += elapsed * Game::GameProperties::playerMovementSpeed();
 
     playerState.position.x() = jt::MathHelper::clamp(playerState.position.x(), 0.0f,
-        Game::GameProperties::GetScreenSize().x()
+        Game::GameProperties::displayScreenSize().x()
             - static_cast<float>(Game::GameProperties::playerSizeInPixel()));
     playerState.position.y() = jt::MathHelper::clamp(playerState.position.y(), 0.0f,
-        Game::GameProperties::GetScreenSize().y()
+        Game::GameProperties::displayScreenSize().y()
             - static_cast<float>(Game::GameProperties::playerSizeInPixel()));
 
     playerState._shootTimer -= elapsed;

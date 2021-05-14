@@ -19,8 +19,8 @@ void StateGame::doInternalCreate()
 {
     m_world = std::make_shared<b2World>(b2Vec2 { 0.0f, 0.0f });
 
-    float const w = static_cast<float>(Game::GameProperties::GetWindowSize().x());
-    float const h = static_cast<float>(Game::GameProperties::GetWindowSize().y());
+    float const w = static_cast<float>(Game::GameProperties::displayWindowSize().x());
+    float const h = static_cast<float>(Game::GameProperties::displayWindowSize().y());
 
     using jt::Shape;
     using jt::TweenAlpha;
@@ -43,8 +43,8 @@ void StateGame::doInternalCreate()
 
     m_vignette = std::make_shared<jt::Sprite>();
     m_vignette->loadSprite("#v#"
-        + std::to_string(static_cast<int>(Game::GameProperties::GetScreenSize().x())) + "#"
-        + std::to_string(static_cast<int>(Game::GameProperties::GetScreenSize().y())));
+        + std::to_string(static_cast<int>(Game::GameProperties::displayScreenSize().x())) + "#"
+        + std::to_string(static_cast<int>(Game::GameProperties::displayScreenSize().y())));
     m_vignette->setIgnoreCamMovement(true);
     m_vignette->setColor({ 255, 255, 255, 100 });
 

@@ -31,9 +31,9 @@ int main()
     auto input = std::make_shared<jt::InputManager>(mouse, keyboard);
 
     game = std::make_shared<jt::Game>(
-        std::make_shared<jt::RenderWindow>(Game::GameProperties::GetWindowSize().x(),
-            Game::GameProperties::GetWindowSize().y(), GP::GameName()),
-        Game::GameProperties::GetZoom(), input, std::make_shared<jt::MusicPlayer>());
+        std::make_shared<jt::RenderWindow>(Game::GameProperties::displayWindowSize().x(),
+            Game::GameProperties::displayWindowSize().y(), GP::GameName()),
+        Game::GameProperties::displayZoom(), input, std::make_shared<jt::MusicPlayer>());
     game->setupRenderTarget();
 
     game->startGame(std::make_shared<StateMenu>(), gameloop);
