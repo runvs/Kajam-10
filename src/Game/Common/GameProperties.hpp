@@ -17,6 +17,9 @@ struct GameProperties {
     static float displayZoom() { return 2.0f; }
     static jt::Vector2 displayScreenSize() { return displayWindowSize() * (1.0f / displayZoom()); }
     static float scrollSpeed() { return 25.0f; }
+    static jt::Vector2 enemyHalfSize() { return jt::Vector2 { 8, 8 }; }
+    static jt::Vector2 shotHalfSize() { return jt::Vector2 { 4, 4 }; }
+    static jt::Vector2 shotSize() { return 2.0f * shotHalfSize(); }
 };
 } // namespace Game
 

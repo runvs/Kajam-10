@@ -30,4 +30,11 @@ void updateEnemyState(EnemyState& enemyState, float elapsed)
     if (enemyState._mover) {
         enemyState._mover->move(enemyState, elapsed);
     }
+
+    if (enemyState.position.y() >= Game::GameProperties::displayScreenSize().y() + 24) {
+        enemyState._alive = false;
+    }
+    if (enemyState._age >= 25) {
+        enemyState._alive = false;
+    }
 }

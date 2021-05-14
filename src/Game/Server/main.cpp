@@ -1,5 +1,6 @@
 ﻿#include "CircularBuffer.hpp"
 #include "EnemyMover.hpp"
+#include "EnemySpawner.hpp"
 #include "EnemyState.hpp"
 #include "GameProperties.hpp"
 #include "NetworkServer.hpp"
@@ -117,13 +118,16 @@ int main()
         for (auto& s : shots) {
             updateShotState(s, elapsed);
 
+            auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
+            auto const shotHalfSize = Game::GameProperties::shotHalfSize();
             for (auto& e : enemies) {
-                auto const centerPositionEnemy = e.position + jt::Vector2 { 8, 8 };
-                auto const centerPositionShot = s.position + jt::Vector2 { 4, 4 };
+                auto const centerPositionEnemy = e.position + enemyHalfSize;
+                auto const centerPositionShot = s.position + shotHalfSize;
                 auto const diff = centerPositionShot - centerPositionEnemy;
                 auto const lSquared = jt::MathHelper::lengthSquared(diff);
 
-                if (lSquared < (8 + 4) * (8 + 4)) {
+                if (lSquared < (enemyHalfSize.x() + shotHalfSize.x())
+                        * (enemyHalfSize.y() + shotHalfSize.y())) {
                     s._alive = false;
                     enemyTakeDamage(e, s);
                 }
