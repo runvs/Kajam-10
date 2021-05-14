@@ -40,21 +40,6 @@ bool checkForDuplicatedMessages(
     return false;
 }
 
-EnemyState createEnemy()
-{
-    EnemyState enemy;
-    enemy.position = jt::Vector2 { 100.0f, 100.0f };
-    enemy._positionBase = enemy.position;
-    enemy._mover = std::make_shared<EnemyMoverSine>();
-    return enemy;
-}
-
-void spawnEnemy(std::vector<EnemyState>& enemies)
-{
-    std::cout << "spawnEnemy\n";
-    enemies.emplace_back(createEnemy());
-}
-
 int main()
 {
     NetworkServer server;
@@ -67,7 +52,7 @@ int main()
     std::vector<ShotState> shots;
     std::vector<EnemyState> enemies;
 
-    spawnEnemy(enemies);
+    EnemySpawner spawner { enemies };
 
     float elapsed = 0.0f;
     std::cout << "starting server...\n";
@@ -124,6 +109,7 @@ int main()
             server.closeConnectionTo(playerToDisconnectId);
         }
 
+        spawner.update(elapsed);
         for (auto& e : enemies) {
             updateEnemyState(e, elapsed);
         }
