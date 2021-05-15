@@ -32,7 +32,7 @@ jt::Vector2 getShotJitterDirection(float jitterAmount)
 }
 
 /**
- * jitterAmount 1 is 90 degrees
+ * jitterAmount 1 is 180 degrees
  */
 jt::Vector2 getShotJitterDirection(float jitterAmount, jt::Vector2 const& baseVector)
 {
