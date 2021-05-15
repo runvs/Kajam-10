@@ -16,7 +16,7 @@ struct EnemyState {
     bool _alive { true };
     float _age { 0.0f };
     float _moveDelay { 0.0f };
-    std::shared_ptr<EnemyAI> _mover { nullptr };
+    std::shared_ptr<EnemyAI> _ai { nullptr };
     jt::Vector2 _positionBase { -500.0f, -500.0f };
 };
 

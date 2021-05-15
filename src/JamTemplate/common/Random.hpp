@@ -28,5 +28,20 @@ public:
 private:
     static std::default_random_engine m_engine;
 };
+
+class SampleAndHold {
+public:
+    SampleAndHold(float timerMu, float timerSigma);
+    void sampleNewValue();
+    void update(float elapsed);
+    float getFloat() const;
+
+private:
+    float m_timerMu;
+    float m_timerSigma;
+    float m_timer;
+    float m_value;
+};
+
 } // namespace jt
 #endif

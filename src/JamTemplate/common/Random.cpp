@@ -47,3 +47,25 @@ jt::Vector2 const Random::getRandomPointin(jt::Rect r)
 void Random::setSeed(unsigned int s) { m_engine.seed(s); }
 
 void Random::useTimeAsRandomSeed() { setSeed(static_cast<unsigned int>(time(NULL))); }
+
+SampleAndHold::SampleAndHold(float timerMu, float timerSigma)
+{
+    m_timerMu = timerMu;
+    m_timerSigma = timerSigma;
+}
+
+void SampleAndHold::sampleNewValue()
+{
+    m_value = jt::Random::getFloat(0.0f, 1.0f);
+    m_timer = jt::Random::getFloatGauss(m_timerMu, m_timerSigma);
+}
+
+void SampleAndHold::update(float elapsed)
+{
+    m_timer -= elapsed;
+    if (m_timer <= 0) {
+        sampleNewValue();
+    }
+}
+
+float SampleAndHold::getFloat() const { return m_value; }

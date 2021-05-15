@@ -2,6 +2,8 @@
 #define ENEMYSPAWNER_HPP_GUARD
 
 #include "EnemyState.hpp"
+#include "Random.hpp"
+#include <functional>
 #include <vector>
 
 class EnemySpawner {
@@ -22,14 +24,19 @@ private:
     int m_enemyNumberCurrent;
     float m_difficulty;
     int m_activePlayerCount;
+    jt::SampleAndHold m_sah;
+    std::vector<std::function<void(float)>> m_spawnFunctions;
 
-    int getEnemyNumberTarget();
-    int getGroupSize();
-    float getMaxTimer();
-    EnemyState createBaseEnemy(float basePosX, int i);
-    void spawnEnemyGroupStill(float basePosX);
-    void spawnEnemyGroupSine(float basePosX);
-    void spawnEnemyGroupCircle(float basePosX);
+    void fillSpawnFunctions();
+    int getEnemyNumberTarget() const;
+    static int getGroupSize();
+    float getMaxTimer() const;
+    EnemyState createBaseEnemy(float basePosX, int i) const;
+    void spawnEnemyGroupIdleVertical(float basePosX) const;
+    void spawnEnemyGroupIdleHorizontal(float basePosX) const;
+    void spawnEnemyGroupSine(float basePosX) const;
+    void spawnEnemyGroupCircle(float basePosX) const;
+
     void SpawnEnemy(int groupType, float basePosX);
     void spawnEnemyGroup();
 };
