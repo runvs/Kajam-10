@@ -14,6 +14,7 @@
 #include "StateMenu.hpp"
 #include "SystemHelper.hpp"
 #include "TweenAlpha.hpp"
+#include <cmath>
 
 void StateGame::doInternalCreate()
 {
@@ -177,7 +178,10 @@ void StateGame::doInternalDraw() const
     drawObjects();
 
     for (auto& s : m_shots) {
-        m_shotShape->setPosition(s.position);
+        auto angleInDegrees = jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
+        m_shotShape->setOrigin(Game::GameProperties::shotHalfSize());
+        m_shotShape->setRotation(angleInDegrees);
+        m_shotShape->setPosition(s.position + Game::GameProperties::shotHalfSize());
         m_shotShape->update(0.1f);
         m_shotShape->draw(getGame()->getRenderTarget());
     }
