@@ -7,7 +7,7 @@ namespace Game {
 struct GameProperties {
     static float playerMovementSpeed() { return 100.0f; }
     static float playerMaxAllowedPredictionError() { return 4.0f * 4.0f; }
-    static float playerShootCooldown() { return 0.3f; }
+    static float playerShootCooldown() { return 0.1f; }
     static int playerSizeInPixel() { return 16; }
 
     static float shotVelocity() { return 200.0f; }
