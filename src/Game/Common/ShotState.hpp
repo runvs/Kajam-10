@@ -18,5 +18,7 @@ sf::Packet& operator<<(sf::Packet& packet, ShotState const& shotState);
 sf::Packet& operator>>(sf::Packet& packet, ShotState& shotState);
 
 void updateShotState(ShotState& s, float elapsed);
+jt::Vector2 getShotJitterDirection(float jitterAmount);
+jt::Vector2 getShotJitterDirection(float jitterAmount, jt::Vector2 const& baseVector);
 
 #endif
