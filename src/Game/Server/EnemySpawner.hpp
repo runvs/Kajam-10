@@ -32,12 +32,12 @@ private:
     static int getGroupSize();
     float getMaxTimer() const;
     EnemyState createBaseEnemy(float basePosX, int i) const;
-    void spawnEnemyGroupIdleVertical(float basePosX) const;
-    void spawnEnemyGroupIdleHorizontal(float basePosX) const;
-    void spawnEnemyGroupSine(float basePosX) const;
-    void spawnEnemyGroupCircle(float basePosX) const;
+    void spawnGroupIdleVertical(float basePosX) const;
+    void spawnGroupIdleHorizontal(float basePosX) const;
+    void spawnGroupSine(float basePosX) const;
+    void spawnGroupCircle(float basePosX) const;
+    void spawnGroupMine(float basePosX) const;
 
-    void SpawnEnemy(int groupType, float basePosX);
     void spawnEnemyGroup();
 };
 

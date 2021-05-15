@@ -8,11 +8,11 @@
 EnemySpawner::EnemySpawner(std::vector<EnemyState>& enemies)
     : m_enemies { enemies }
     , m_timer { 0.0f }
-    , m_timerMax { 7.5f }
+    , m_timerMax { 5.5f }
     , m_enemyNumberCurrent { 0 }
     , m_difficulty { 1.0f }
     , m_activePlayerCount(0)
-    , m_sah { 15.0f, 2.5f }
+    , m_sah { 20.0f, 3.5f }
 {
     fillSpawnFunctions();
 }
@@ -58,11 +58,11 @@ float EnemySpawner::getMaxTimer() const
 
 void EnemySpawner::fillSpawnFunctions()
 {
-    m_spawnFunctions.emplace_back([this](auto const value) { spawnEnemyGroupIdleVertical(value); });
-    m_spawnFunctions.emplace_back(
-        [this](auto const value) { spawnEnemyGroupIdleHorizontal(value); });
-    m_spawnFunctions.emplace_back([this](auto const value) { spawnEnemyGroupSine(value); });
-    m_spawnFunctions.emplace_back([this](auto const value) { spawnEnemyGroupCircle(value); });
+    m_spawnFunctions.emplace_back([this](auto const value) { spawnGroupIdleVertical(value); });
+    m_spawnFunctions.emplace_back([this](auto const value) { spawnGroupIdleHorizontal(value); });
+    m_spawnFunctions.emplace_back([this](auto const value) { spawnGroupSine(value); });
+    m_spawnFunctions.emplace_back([this](auto const value) { spawnGroupCircle(value); });
+    m_spawnFunctions.emplace_back([this](auto const value) { spawnGroupMine(value); });
 }
 
 EnemyState EnemySpawner::createBaseEnemy(float basePosX, int i) const
@@ -76,7 +76,7 @@ EnemyState EnemySpawner::createBaseEnemy(float basePosX, int i) const
     return enemy;
 }
 
-void EnemySpawner::spawnEnemyGroupIdleVertical(float basePosX) const
+void EnemySpawner::spawnGroupIdleVertical(float basePosX) const
 {
     int const max = jt::Random::getInt(1, 2);
     for (int i = 0; i != max; ++i) {
@@ -86,7 +86,7 @@ void EnemySpawner::spawnEnemyGroupIdleVertical(float basePosX) const
     }
 }
 
-void EnemySpawner::spawnEnemyGroupIdleHorizontal(float basePosX) const
+void EnemySpawner::spawnGroupIdleHorizontal(float basePosX) const
 {
     int const max = jt::Random::getInt(2, 4);
     for (int i = 0; i != max; ++i) {
@@ -97,7 +97,7 @@ void EnemySpawner::spawnEnemyGroupIdleHorizontal(float basePosX) const
     }
 }
 
-void EnemySpawner::spawnEnemyGroupSine(float basePosX) const
+void EnemySpawner::spawnGroupSine(float basePosX) const
 {
     int const max = jt::Random::getInt(4, 5);
     for (int i = 0; i != max; ++i) {
@@ -107,7 +107,7 @@ void EnemySpawner::spawnEnemyGroupSine(float basePosX) const
     }
 }
 
-void EnemySpawner::spawnEnemyGroupCircle(float basePosX) const
+void EnemySpawner::spawnGroupCircle(float basePosX) const
 {
     float const circlePosY = jt::Random::getFloat(80, 150);
     for (int i = 0; i != 3; ++i) {
@@ -115,6 +115,13 @@ void EnemySpawner::spawnEnemyGroupCircle(float basePosX) const
         enemy._ai = std::make_shared<EnemyAICircle>(circlePosY);
         m_enemies.emplace_back(std::move(enemy));
     }
+}
+
+void EnemySpawner::spawnGroupMine(float basePosX) const
+{
+    auto enemy = createBaseEnemy(basePosX, 0);
+    enemy._ai = std::make_shared<EnemyAIMine>(jt::Random::getFloat(80, 150));
+    m_enemies.emplace_back(std::move(enemy));
 }
 
 float getBasePosX()
