@@ -2,6 +2,7 @@
 #include "Conversions.hpp"
 #include "GameProperties.hpp"
 #include "MathHelper.hpp"
+#include "Random.hpp"
 #include <cstdlib>
 
 sf::Packet& operator<<(sf::Packet& packet, ShotState& shotState)
@@ -32,12 +33,11 @@ jt::Vector2 getShotJitterDirection(float jitterAmount)
 }
 
 /**
- * jitterAmount 1 is 180 degrees
+ * jitterAmount 1.0 is 180 degrees
  */
 jt::Vector2 getShotJitterDirection(float jitterAmount, jt::Vector2 const& baseVector)
 {
-    auto randomness = (static_cast<float>(rand()) / RAND_MAX);
-    auto randomAngle = 90 * ((randomness * 2.0f * jitterAmount) - jitterAmount);
-
+    auto const sigma = jitterAmount * Game::GameProperties::shotJitterSigma();
+    auto const randomAngle = 90.0f * jt::Random::getFloatGauss(0, sigma);
     return jt::MathHelper::rotateBy(baseVector, randomAngle);
 }
