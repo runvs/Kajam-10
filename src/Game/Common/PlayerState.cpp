@@ -6,16 +6,24 @@
 
 sf::Packet& operator<<(sf::Packet& packet, PlayerState& playerState)
 {
-    return packet << playerState.position << playerState.health;
+    packet << playerState.position;
+    packet << playerState.health;
+    return packet;
 }
 sf::Packet& operator<<(sf::Packet& packet, PlayerState const& playerState)
 {
-    return packet << playerState.position << playerState.health;
+
+    packet << playerState.position;
+    packet << playerState.health;
+    return packet;
 }
 
 sf::Packet& operator>>(sf::Packet& packet, PlayerState& playerState)
 {
-    return packet >> playerState.position >> playerState.health;
+
+    packet >> playerState.position;
+    packet >> playerState.health;
+    return packet;
 }
 
 void updatePlayerState(PlayerState& playerState, float elapsed, InputState& input)
