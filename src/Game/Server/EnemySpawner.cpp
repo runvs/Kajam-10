@@ -8,7 +8,7 @@
 EnemySpawner::EnemySpawner(std::vector<EnemyState>& enemies)
     : m_enemies { enemies }
     , m_timer { 0.0f }
-    , m_timerMax { 5.5f }
+    , m_timerMax { 3.5f }
     , m_enemyNumberCurrent { 0 }
     , m_difficulty { 1.0f }
     , m_activePlayerCount(0)
@@ -43,7 +43,7 @@ void EnemySpawner::setDifficulty(float difficulty) { m_difficulty = difficulty; 
 
 int EnemySpawner::getEnemyNumberTarget() const
 {
-    return 5 + m_activePlayerCount * Game::GameProperties::spawnerEnemiesPerPlayer();
+    return 10 + m_activePlayerCount * Game::GameProperties::spawnerEnemiesPerPlayer();
 }
 
 int EnemySpawner::getGroupSize() { return 2; }

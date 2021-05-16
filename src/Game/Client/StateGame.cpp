@@ -138,7 +138,10 @@ void StateGame::doInternalUpdate(float const elapsed)
             checkLocalPlayerId(payload.playerID);
             m_shots = payload.shots;
             m_enemies = payload.enemies;
+
             m_hud->setHealth(payload.playerStates.at(m_localPlayerId).health);
+            m_localPlayer->setHealth(payload.playerStates.at(m_localPlayerId).health);
+            m_currentPlayerState.health = payload.playerStates.at(m_localPlayerId).health;
 
             auto const diff = m_predictedMoveResults[payload.prediction_id].position
                 - payload.playerStates[m_localPlayerId].position;

@@ -35,7 +35,21 @@ void Player::doUpdate(float const elapsed)
 {
     if (m_isActivePlayer) {
         updateInput();
-        m_shape->setColor(jt::colors::Green);
+
+        if (m_health <= 0) {
+            m_flickerTimer -= elapsed;
+            if (m_flickerTimer <= 0) {
+                m_flickerTimer = 0.1f;
+                if (m_shape->getColor().a() == 255) {
+                    m_shape->setColor(jt::colors::Transparent);
+                } else {
+                    m_shape->setColor(jt::colors::Green);
+                }
+            }
+        } else {
+
+            m_shape->setColor(jt::colors::Green);
+        }
     }
     m_shape->update(elapsed);
 }
@@ -47,3 +61,5 @@ void Player::doDestroy() { }
 Player::Player(bool isActive) { m_isActivePlayer = isActive; }
 
 std::map<jt::KeyCode, bool> Player::getInput() { return m_currentInput; }
+
+void Player::setHealth(int health) { m_health = health; }

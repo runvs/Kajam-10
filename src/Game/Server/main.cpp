@@ -57,24 +57,30 @@ void performShotEnemyCollision(
     }
 }
 
-void performShotPlayerCollision(PlayerState& player, ShotState& s)
+void performShotPlayerCollision(PlayerState& player, ShotState& shot)
 {
+    if (player.health <= 0) {
+        return;
+    }
     auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
         Game::GameProperties::playerSizeInPixel() / 2.0f };
     auto const shotHalfSize = Game::GameProperties::shotHalfSize();
     auto const centerPositionPlayer = player.position + playerHalfSize;
-    auto const centerPositionShot = s.position + shotHalfSize;
+    auto const centerPositionShot = shot.position + shotHalfSize;
     auto const diff = centerPositionShot - centerPositionPlayer;
     auto const lSquared = jt::MathHelper::lengthSquared(diff);
     if (lSquared
         <= (playerHalfSize.x() + shotHalfSize.x()) * (playerHalfSize.y() + shotHalfSize.y())) {
-        s._alive = false;
-        playerTakeDamage(player, s);
+        shot._alive = false;
+        playerTakeDamage(player, shot);
     }
 }
 
 void performPlayerEnemyCollision(PlayerState& player, EnemyState& enemy)
 {
+    if (player.health <= 0) {
+        return;
+    }
     auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
         Game::GameProperties::playerSizeInPixel() / 2.0f };
     auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();

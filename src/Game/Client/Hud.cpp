@@ -18,7 +18,7 @@ void Hud::doCreate()
     m_healthBar = std::make_shared<jt::Bar>(
         8.0f, Game::GameProperties::displayScreenSize().y() - 2.0f * margin, false);
     m_healthBar->setPosition({ margin, margin });
-    m_healthBar->setMaxValue(Game::GameProperties::playerMaxHealth());
+    m_healthBar->setMaxValue(static_cast<float>(Game::GameProperties::playerMaxHealth()));
 }
 
 void Hud::addScore(int i)
@@ -29,7 +29,7 @@ void Hud::addScore(int i)
     }
 }
 
-void Hud::setHealth(int health) { m_healthBar->setCurrentValue(health); }
+void Hud::setHealth(int health) { m_healthBar->setCurrentValue(static_cast<float>(health)); }
 
 void Hud::doUpdate(float const elapsed)
 {
