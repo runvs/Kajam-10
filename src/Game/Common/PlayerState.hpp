@@ -3,17 +3,15 @@
 
 #include "GameProperties.hpp"
 #include "InputState.hpp"
-#include "Random.hpp"
 #include "SFML/Network/Packet.hpp"
 #include "Vector.hpp"
-#include <iostream>
 #include <map>
 
 struct ShotState;
 struct EnemyState;
 
 struct PlayerState {
-    jt::Vector2 position { 200, 250 };
+    jt::Vector2 position { 0, 0 };
     int health { 12 };
 
     float _shootTimer { 0 };

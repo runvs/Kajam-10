@@ -20,11 +20,14 @@ void removeInactivePlayers(PlayerMap& playerStates, std::vector<int> playerIds)
 }
 
 void createNewPlayerIfNotKnownToServer(
-    PlayerMap playerStates, std::vector<int>::value_type currentPlayerId)
+    PlayerMap& playerStates, std::vector<int>::value_type currentPlayerId)
 {
     if (playerStates.count(currentPlayerId) == 0) {
-        playerStates[currentPlayerId].position.x() = 0;
-        playerStates[currentPlayerId].position.y() = 0;
+        auto xPos = jt::Random::getFloat(0, Game::GameProperties::displayScreenSize().x());
+        auto yPos = Game::GameProperties::displayScreenSize().y() * 0.8f;
+
+        playerStates[currentPlayerId].position.x() = xPos;
+        playerStates[currentPlayerId].position.y() = yPos;
     }
 }
 
