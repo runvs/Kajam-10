@@ -27,6 +27,12 @@ sf::Packet& operator>>(sf::Packet& packet, PlayerState& playerState)
     return packet;
 }
 
+void respawnPlayer(PlayerState& playerState)
+{
+    playerState._respawnTimer = 0;
+    playerState.health = Game::GameProperties::playerMaxHealth();
+}
+
 void updatePlayerState(PlayerState& playerState, float elapsed, InputState& input)
 {
     if (playerState.health > 0) {
@@ -51,9 +57,20 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState& inpu
     } else {
         playerState._respawnTimer -= elapsed;
         if (playerState._respawnTimer <= 0) {
-            playerState._respawnTimer = 0;
-            playerState.health = Game::GameProperties::playerMaxHealth();
+            respawnPlayer(playerState);
         }
+    }
+}
+
+void killPlayer(PlayerState& playerState)
+{
+    playerState._respawnTimer = Game::GameProperties::playerRespawnTime();
+}
+
+void checkPlayerDeath(PlayerState& playerState)
+{
+    if (playerState.health <= 0) {
+        killPlayer(playerState);
     }
 }
 
@@ -63,9 +80,7 @@ void playerTakeDamage(PlayerState& playerState, ShotState& shot)
         return;
     }
     playerState.health -= shot._damage;
-    if (playerState.health <= 0) {
-        playerState._respawnTimer = Game::GameProperties::playerRespawnTime();
-    }
+    checkPlayerDeath(playerState);
 }
 
 // TODO take enemy size into account
@@ -75,7 +90,5 @@ void playerTakeDamage(PlayerState& playerState, EnemyState& enemy)
         return;
     }
     playerState.health -= 4;
-    if (playerState.health <= 0) {
-        playerState._respawnTimer = Game::GameProperties::playerRespawnTime();
-    }
+    checkPlayerDeath(playerState);
 }
