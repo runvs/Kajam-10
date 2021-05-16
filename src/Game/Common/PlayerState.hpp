@@ -3,15 +3,17 @@
 
 #include "GameProperties.hpp"
 #include "InputState.hpp"
+#include "Random.hpp"
 #include "SFML/Network/Packet.hpp"
 #include "Vector.hpp"
+#include <iostream>
 #include <map>
 
 struct ShotState;
 struct EnemyState;
 
 struct PlayerState {
-    jt::Vector2 position;
+    jt::Vector2 position { 200, 250 };
     float _shootTimer { 0 };
     int health { Game::GameProperties::playerMaxHealth() };
 };
