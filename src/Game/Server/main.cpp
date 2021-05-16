@@ -41,11 +41,11 @@ bool checkForDuplicatedMessages(
 }
 
 void performShotEnemyCollision(
-    std::vector<ShotState>::value_type& s, std::vector<EnemyState>::value_type& e)
+    std::vector<ShotState>::value_type& s, std::vector<EnemyState>::value_type& enemy)
 {
     auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
     auto const shotHalfSize = Game::GameProperties::shotHalfSize();
-    auto const centerPositionEnemy = e.position + enemyHalfSize;
+    auto const centerPositionEnemy = enemy.position + enemyHalfSize;
     auto const centerPositionShot = s.position + shotHalfSize;
     auto const diff = centerPositionShot - centerPositionEnemy;
     auto const lSquared = jt::MathHelper::lengthSquared(diff);
@@ -53,23 +53,40 @@ void performShotEnemyCollision(
     if (lSquared
         < (enemyHalfSize.x() + shotHalfSize.x()) * (enemyHalfSize.y() + shotHalfSize.y())) {
         s._alive = false;
-        enemyTakeDamage(e, s);
+        enemyTakeDamage(enemy, s);
     }
 }
 
-void performShotPlayerCollision(PlayerState& playerState, ShotState& s)
+void performShotPlayerCollision(PlayerState& player, ShotState& s)
 {
     auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
         Game::GameProperties::playerSizeInPixel() / 2.0f };
     auto const shotHalfSize = Game::GameProperties::shotHalfSize();
-    auto const centerPositionPlayer = playerState.position + playerHalfSize;
+    auto const centerPositionPlayer = player.position + playerHalfSize;
     auto const centerPositionShot = s.position + shotHalfSize;
     auto const diff = centerPositionShot - centerPositionPlayer;
     auto const lSquared = jt::MathHelper::lengthSquared(diff);
     if (lSquared
         <= (playerHalfSize.x() + shotHalfSize.x()) * (playerHalfSize.y() + shotHalfSize.y())) {
         s._alive = false;
-        playerTakeDamage(playerState, s);
+        playerTakeDamage(player, s);
+    }
+}
+
+void performPlayerEnemyCollision(PlayerState& player, EnemyState& enemy)
+{
+    auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
+        Game::GameProperties::playerSizeInPixel() / 2.0f };
+    auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
+    auto const centerPositionPlayer = player.position + playerHalfSize;
+    auto const centerPositionEnemy = enemy.position + enemyHalfSize;
+
+    auto const diff = centerPositionPlayer - centerPositionEnemy;
+    auto const lSquared = jt::MathHelper::lengthSquared(diff);
+    if (lSquared
+        <= (playerHalfSize.x() + enemyHalfSize.x()) * (playerHalfSize.y() + enemyHalfSize.y())) {
+        enemy._alive = false;
+        playerTakeDamage(player, enemy);
     }
 }
 
@@ -151,6 +168,9 @@ int main()
         spawner.update(elapsed);
         for (auto& e : enemies) {
             updateEnemyState(e, shots, elapsed);
+            for (auto& p : playerStates) {
+                performPlayerEnemyCollision(p.second, e);
+            }
         }
 
         for (auto& s : shots) {

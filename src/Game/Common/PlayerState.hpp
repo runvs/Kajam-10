@@ -8,6 +8,7 @@
 #include <map>
 
 struct ShotState;
+struct EnemyState;
 
 struct PlayerState {
     jt::Vector2 position;
@@ -17,6 +18,7 @@ struct PlayerState {
 
 void updatePlayerState(PlayerState& playerState, float dt, InputState& input);
 void playerTakeDamage(PlayerState& playerState, ShotState& shot);
+void playerTakeDamage(PlayerState& playerState, EnemyState& enemy);
 
 using PlayerMap = std::map<int, PlayerState>;
 

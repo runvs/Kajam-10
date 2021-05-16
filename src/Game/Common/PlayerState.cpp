@@ -1,5 +1,6 @@
 ﻿#include "PlayerState.hpp"
 #include "Conversions.hpp"
+#include "EnemyState.hpp"
 #include "GameProperties.hpp"
 #include "MathHelper.hpp"
 #include "ShotState.hpp"
@@ -52,3 +53,6 @@ void playerTakeDamage(PlayerState& playerState, ShotState& shot)
 {
     playerState.health -= shot._damage;
 }
+
+// TODO take enemy size into account
+void playerTakeDamage(PlayerState& playerState, EnemyState& enemy) { playerState.health -= 4; }
