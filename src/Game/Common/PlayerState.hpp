@@ -12,8 +12,10 @@ struct EnemyState;
 
 struct PlayerState {
     jt::Vector2 position;
+    int health { 12 };
+
     float _shootTimer { 0 };
-    int health { Game::GameProperties::playerMaxHealth() };
+    float _respawnTimer { 0.0f };
 };
 
 void updatePlayerState(PlayerState& playerState, float dt, InputState& input);

@@ -7,6 +7,7 @@ class Player : public jt::GameObject {
 public:
     Player(bool isActive);
     std::map<jt::KeyCode, bool> getInput();
+    void setHealth(int health);
     std::shared_ptr<jt::Shape> m_shape;
 
 private:
@@ -19,6 +20,8 @@ private:
 
     std::map<jt::KeyCode, bool> m_currentInput;
     bool m_isActivePlayer;
+    int m_health;
+    float m_flickerTimer { 0.0f };
 };
 
 #endif

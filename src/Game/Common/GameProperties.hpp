@@ -1,6 +1,7 @@
 ﻿#ifndef GAMEPROPERTIES_GUARD_HPP
 #define GAMEPROPERTIES_GUARD_HPP
 
+#include "PlayerState.hpp"
 #include "Vector.hpp"
 
 namespace Game {
@@ -9,6 +10,8 @@ struct GameProperties {
     static float playerMaxAllowedPredictionError() { return 4.0f * 4.0f; }
     static float playerShootCooldown() { return 0.1f; }
     static int playerSizeInPixel() { return 16; }
+    static int playerMaxHealth() { return 12; }
+    static float playerRespawnTime() { return 5.0f; }
 
     static float shotVelocity() { return 200.0f; }
     static float shotLifeTime() { return 5.0f; }
@@ -26,7 +29,6 @@ struct GameProperties {
     static jt::Vector2 displayScreenSize() { return displayWindowSize() * (1.0f / displayZoom()); }
 
     static float scrollSpeed() { return 25.0f; }
-    static int playerMaxHealth() { return 12; }
 };
 } // namespace Game
 
