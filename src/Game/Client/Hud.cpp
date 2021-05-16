@@ -14,9 +14,9 @@ void Hud::doCreate()
     m_scoreText->SetTextAlign(jt::Text::TextAlign::LEFT);
     m_scoreText->setPosition({ 20, 325 });
 
-    auto const margin = 4;
-    m_healthBar = std::make_shared<jt::Bar>(
-        8.0f, Game::GameProperties::displayScreenSize().y() - 2.0f * margin, false);
+    auto const margin = Game::GameProperties::healthBarMargin();
+    m_healthBar = std::make_shared<jt::Bar>(Game::GameProperties::healthBarWidth(),
+        Game::GameProperties::displayScreenSize().y() - 2.0f * margin, false);
     m_healthBar->setPosition({ margin, margin });
     m_healthBar->setMaxValue(static_cast<float>(Game::GameProperties::playerMaxHealth()));
 }

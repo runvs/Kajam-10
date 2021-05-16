@@ -23,8 +23,11 @@ void createNewPlayerIfNotKnownToServer(
     PlayerMap& playerStates, std::vector<int>::value_type currentPlayerId)
 {
     if (playerStates.count(currentPlayerId) == 0) {
-        auto xPos = jt::Random::getFloat(0, Game::GameProperties::displayScreenSize().x());
-        auto yPos = Game::GameProperties::displayScreenSize().y() * 0.8f;
+        auto const minXPos = Game::GameProperties::healthBarMargin() * 2.0f
+            + Game::GameProperties::healthBarWidth();
+        auto const xPos
+            = jt::Random::getFloat(minXPos, Game::GameProperties::displayScreenSize().x());
+        auto const yPos = Game::GameProperties::displayScreenSize().y() * 0.8f;
 
         playerStates[currentPlayerId].position.x() = xPos;
         playerStates[currentPlayerId].position.y() = yPos;

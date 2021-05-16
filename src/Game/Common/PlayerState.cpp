@@ -46,7 +46,9 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState& inpu
         else if (input[jt::KeyCode::S])
             playerState.position.y() += elapsed * Game::GameProperties::playerMovementSpeed();
 
-        playerState.position.x() = jt::MathHelper::clamp(playerState.position.x(), 0.0f,
+        auto const minXPos = Game::GameProperties::healthBarMargin() * 2.0f
+            + Game::GameProperties::healthBarWidth();
+        playerState.position.x() = jt::MathHelper::clamp(playerState.position.x(), minXPos,
             Game::GameProperties::displayScreenSize().x()
                 - static_cast<float>(Game::GameProperties::playerSizeInPixel()));
         playerState.position.y() = jt::MathHelper::clamp(playerState.position.y(), 0.0f,

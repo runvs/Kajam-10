@@ -27,6 +27,8 @@ struct GameProperties {
     static jt::Vector2 displayWindowSize() { return jt::Vector2 { 800, 600 }; }
     static float displayZoom() { return 2.0f; }
     static jt::Vector2 displayScreenSize() { return displayWindowSize() * (1.0f / displayZoom()); }
+    static float healthBarMargin() { return 4.0f; }
+    static float healthBarWidth() { return 8.0f; }
 
     static float scrollSpeed() { return 25.0f; }
 };
