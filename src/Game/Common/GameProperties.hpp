@@ -26,6 +26,7 @@ struct GameProperties {
     static jt::Vector2 displayScreenSize() { return displayWindowSize() * (1.0f / displayZoom()); }
 
     static float scrollSpeed() { return 25.0f; }
+    static int playerMaxHealth() { return 12; }
 };
 } // namespace Game
 
