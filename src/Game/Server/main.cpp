@@ -19,12 +19,11 @@ void removeInactivePlayers(PlayerMap& playerStates, std::vector<int> playerIds)
     }
 }
 
-void createNewPlayerIfNotKnownToServer(
-    PlayerMap& playerStates, std::vector<int>::value_type currentPlayerId)
+void createNewPlayerIfNotKnownToServer(PlayerMap& playerStates, int currentPlayerId)
 {
     if (playerStates.count(currentPlayerId) == 0) {
-        auto const minXPos = Game::GameProperties::healthBarMargin() * 2.0f
-            + Game::GameProperties::healthBarWidth();
+        auto const minXPos
+            = Game::GameProperties::hudBarMargin() * 2.0f + Game::GameProperties::hudBarWidth();
         auto const xPos
             = jt::Random::getFloat(minXPos, Game::GameProperties::displayScreenSize().x());
         auto const yPos = Game::GameProperties::displayScreenSize().y() * 0.8f;
@@ -46,7 +45,7 @@ bool checkForDuplicatedMessages(
     return false;
 }
 
-void performShotEnemyCollision(
+bool performShotEnemyCollision(
     std::vector<ShotState>::value_type& s, std::vector<EnemyState>::value_type& enemy)
 {
     auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
@@ -60,13 +59,17 @@ void performShotEnemyCollision(
         < (enemyHalfSize.x() + shotHalfSize.x()) * (enemyHalfSize.y() + shotHalfSize.y())) {
         s._alive = false;
         enemyTakeDamage(enemy, s);
+        if (!enemy._alive) {
+            return true;
+        }
     }
+    return false;
 }
 
-void performShotPlayerCollision(PlayerState& player, ShotState& shot)
+bool performShotPlayerCollision(PlayerState& player, ShotState& shot)
 {
     if (player.health <= 0) {
-        return;
+        return false;
     }
     auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
         Game::GameProperties::playerSizeInPixel() / 2.0f };
@@ -79,7 +82,11 @@ void performShotPlayerCollision(PlayerState& player, ShotState& shot)
         <= (playerHalfSize.x() + shotHalfSize.x()) * (playerHalfSize.y() + shotHalfSize.y())) {
         shot._alive = false;
         playerTakeDamage(player, shot);
+        if (player.health <= 0) {
+            return true;
+        }
     }
+    return false;
 }
 
 void performPlayerEnemyCollision(PlayerState& player, EnemyState& enemy)
@@ -116,6 +123,7 @@ int main()
 
     EnemySpawner spawner { enemies };
 
+    int score { 0 };
     float elapsed = 0.0f;
     std::cout << "starting server...\n";
     while (true) {
@@ -191,14 +199,19 @@ int main()
             if (s.fromPlayer) {
 
                 for (auto& e : enemies) {
-                    performShotEnemyCollision(s, e);
+                    if (performShotEnemyCollision(s, e)) {
+                        score += Game::GameProperties::scoreEnemyKillBonus();
+                    }
                 }
             } else {
                 for (auto& p : playerStates) {
-                    performShotPlayerCollision(p.second, s);
+                    if (performShotPlayerCollision(p.second, s)) {
+                        score -= Game::GameProperties::scorePlayerDeathMalus();
+                    }
                 }
             }
         }
+        score = jt::MathHelper::clamp(score, 0, Game::GameProperties::scoreMax());
 
         jt::SystemHelper::erase_if(shots,
             [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime() || !s._alive; });
@@ -212,6 +225,7 @@ int main()
             payload.prediction_id = playerPredictionId[kvp.first];
             payload.shots = shots;
             payload.enemies = enemies;
+            payload.score = score;
             server.sendToClient(kvp.first, payload);
         }
 

@@ -32,9 +32,11 @@ sf::Packet& operator<<(sf::Packet& packet, PayloadServer2Client& payload)
     packet << payload.enemies;
     packet << payload.prediction_id;
     packet << payload.messageId;
+    packet << payload.score;
 
     return packet;
 }
+
 sf::Packet& operator>>(sf::Packet& packet, PayloadServer2Client& payload)
 {
     packet >> payload.playerID;
@@ -43,6 +45,7 @@ sf::Packet& operator>>(sf::Packet& packet, PayloadServer2Client& payload)
     packet >> payload.enemies;
     packet >> payload.prediction_id;
     packet >> payload.messageId;
+    packet >> payload.score;
 
     return packet;
 }

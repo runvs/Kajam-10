@@ -140,6 +140,7 @@ void StateGame::doInternalUpdate(float const elapsed)
             m_enemies = payload.enemies;
 
             m_hud->setHealth(payload.playerStates.at(m_localPlayerId).health);
+            m_hud->setScore(payload.score);
             m_localPlayer->setHealth(payload.playerStates.at(m_localPlayerId).health);
             m_currentPlayerState.health = payload.playerStates.at(m_localPlayerId).health;
 

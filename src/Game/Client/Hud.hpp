@@ -10,7 +10,7 @@ class Hud : public jt::GameObject {
 public:
     Hud();
 
-    void addScore(int i = 1);
+    void setScore(int i);
     void setHealth(int health);
 
 private:

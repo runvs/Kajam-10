@@ -31,7 +31,8 @@ struct PayloadServer2Client {
 
     std::vector<ShotState> shots {};
     std::vector<EnemyState> enemies {};
-    // TODO ParticlePositions
+
+    int score { 0 };
 };
 
 sf::Packet& operator<<(sf::Packet&, PayloadServer2Client&);

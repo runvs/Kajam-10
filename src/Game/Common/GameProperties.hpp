@@ -3,6 +3,7 @@
 
 #include "PlayerState.hpp"
 #include "Vector.hpp"
+#include <cstdint>
 
 namespace Game {
 struct GameProperties {
@@ -27,10 +28,15 @@ struct GameProperties {
     static jt::Vector2 displayWindowSize() { return jt::Vector2 { 800, 600 }; }
     static float displayZoom() { return 2.0f; }
     static jt::Vector2 displayScreenSize() { return displayWindowSize() * (1.0f / displayZoom()); }
-    static float healthBarMargin() { return 4.0f; }
-    static float healthBarWidth() { return 8.0f; }
+    static float hudBarMargin() { return 4.0f; }
+    static float hudBarWidth() { return 8.0f; }
 
     static float scrollSpeed() { return 25.0f; }
+
+    static int scoreMax() { return 1000; }
+
+    static int scoreEnemyKillBonus() { return 1; }
+    static int scorePlayerDeathMalus() { return 5; }
 };
 } // namespace Game
 
