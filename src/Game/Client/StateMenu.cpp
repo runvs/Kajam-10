@@ -51,10 +51,12 @@ void StateMenu::createMenuText()
 void StateMenu::createTextCredits()
 {
     m_text_Credits = jt::dh::createText(getGame()->getRenderTarget(),
-        "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\n" + GP::JamDate(), 10U,
-        GP::PaletteColor5());
+        "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\n" + GP::JamDate()
+            + "\nThis game uses OpenAl, licensed under LGPL v2.\nPlease see https://openal.org/ "
+              "for details",
+        10U, GP::PaletteColor5());
     m_text_Credits->SetTextAlign(jt::Text::TextAlign::LEFT);
-    m_text_Credits->setPosition({ 10, Game::GameProperties::displayScreenSize().y() - 30 });
+    m_text_Credits->setPosition({ 10, Game::GameProperties::displayScreenSize().y() - 53 });
     m_text_Credits->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 1, 1 });
 }
 
