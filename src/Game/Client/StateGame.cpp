@@ -80,16 +80,17 @@ void StateGame::spawnNewPlayer(int newPlayerId)
     m_remotePlayers[newPlayerId]->create();
 }
 
-void StateGame::updateRemotePlayerPositions(PayloadServer2Client payload)
+void StateGame::updateRemotePlayers(PayloadServer2Client payload)
 {
-    auto playerPositions = payload.playerStates;
+    auto playerStates = payload.playerStates;
 
-    for (auto kvp : playerPositions) {
+    for (auto kvp : playerStates) {
         if (kvp.first != m_localPlayerId) {
             if (m_remotePlayers.count(kvp.first) == 0) {
                 spawnNewPlayer(kvp.first);
             }
             m_remotePlayers[kvp.first]->m_shape->setPosition(kvp.second.position);
+            m_remotePlayers[kvp.first]->setHealth(kvp.second.health);
         }
     }
 }
@@ -164,7 +165,7 @@ void StateGame::doInternalUpdate(float const elapsed)
                     m_predictedMoveResults[replayingPredictionId] = m_currentPlayerState;
                 }
             }
-            updateRemotePlayerPositions(payload);
+            updateRemotePlayers(payload);
         }
     }
     m_localPlayer->m_shape->setPosition(m_currentPlayerState.position);

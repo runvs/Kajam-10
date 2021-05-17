@@ -31,26 +31,38 @@ void Player::updateInput()
     }
 }
 
+void Player::setColorBasedOnActivePlayer()
+{
+    if (m_isActivePlayer) {
+        m_shape->setColor(jt::colors::Green);
+    } else
+        m_shape->setColor(jt::colors::White);
+}
+
+void Player::flashPlayerIfDead(float const elapsed)
+{
+    if (m_health <= 0) {
+        m_flickerTimer -= elapsed;
+        if (m_flickerTimer <= 0) {
+            m_flickerTimer = 0.1f;
+            if (m_shape->getColor().a() == 255) {
+                m_shape->setColor(jt::colors::Transparent);
+            } else {
+                setColorBasedOnActivePlayer();
+            }
+        }
+    } else {
+
+        setColorBasedOnActivePlayer();
+    }
+}
+
 void Player::doUpdate(float const elapsed)
 {
     if (m_isActivePlayer) {
         updateInput();
-
-        if (m_health <= 0) {
-            m_flickerTimer -= elapsed;
-            if (m_flickerTimer <= 0) {
-                m_flickerTimer = 0.1f;
-                if (m_shape->getColor().a() == 255) {
-                    m_shape->setColor(jt::colors::Transparent);
-                } else {
-                    m_shape->setColor(jt::colors::Green);
-                }
-            }
-        } else {
-
-            m_shape->setColor(jt::colors::Green);
-        }
     }
+    flashPlayerIfDead(elapsed);
     m_shape->update(elapsed);
 }
 void Player::doDraw() const { m_shape->draw(getGame()->getRenderTarget()); }

@@ -15,6 +15,8 @@ private:
     void doDraw() const override;
     void doCreate() override;
     void updateInput();
+    void setColorBasedOnActivePlayer();
+    void flashPlayerIfDead(float elapsed);
     void doKill() override;
     void doDestroy() override;
 

@@ -55,7 +55,7 @@ private:
     void updateActivePlayerPositionFromServer(
         std::shared_ptr<Player> player, PlayerMap playerPositions);
     void spawnNewPlayer(int newPlayerId);
-    void updateRemotePlayerPositions(PayloadServer2Client payload);
+    void updateRemotePlayers(PayloadServer2Client payload);
     void removeLocalOnlyPlayers(PayloadServer2Client payload);
     void checkLocalPlayerId(int payloadPlayerId);
     void doInternalUpdate(float const elapsed) override;

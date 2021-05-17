@@ -33,10 +33,10 @@ struct GameProperties {
 
     static float scrollSpeed() { return 25.0f; }
 
-    static int scoreMax() { return 1000; }
+    static int scoreMax() { return 500; }
 
     static int scoreEnemyKillBonus() { return 1; }
-    static int scorePlayerDeathMalus() { return 5; }
+    static int scorePlayerDeathMalus() { return 50; }
 };
 } // namespace Game
 
