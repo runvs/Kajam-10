@@ -31,9 +31,9 @@ void Player::updateInput()
     }
 }
 
-void Player::setColorBasedOnActivePlayer()
+void Player::setColorBasedOnLocalOrRemote()
 {
-    if (m_isActivePlayer) {
+    if (m_isLocalPlayer) {
         m_shape->setColor(jt::colors::Green);
     } else
         m_shape->setColor(jt::colors::White);
@@ -48,18 +48,18 @@ void Player::flashPlayerIfDead(float const elapsed)
             if (m_shape->getColor().a() == 255) {
                 m_shape->setColor(jt::colors::Transparent);
             } else {
-                setColorBasedOnActivePlayer();
+                setColorBasedOnLocalOrRemote();
             }
         }
     } else {
 
-        setColorBasedOnActivePlayer();
+        setColorBasedOnLocalOrRemote();
     }
 }
 
 void Player::doUpdate(float const elapsed)
 {
-    if (m_isActivePlayer) {
+    if (m_isLocalPlayer) {
         updateInput();
     }
     flashPlayerIfDead(elapsed);
@@ -70,7 +70,7 @@ void Player::doDraw() const { m_shape->draw(getGame()->getRenderTarget()); }
 void Player::doKill() { }
 void Player::doDestroy() { }
 
-Player::Player(bool isActive) { m_isActivePlayer = isActive; }
+Player::Player(bool isLocal) { m_isLocalPlayer = isLocal; }
 
 std::map<jt::KeyCode, bool> Player::getInput() { return m_currentInput; }
 

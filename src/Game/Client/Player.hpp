@@ -5,7 +5,7 @@
 #include "Shape.hpp"
 class Player : public jt::GameObject {
 public:
-    Player(bool isActive);
+    Player(bool isLocal);
     std::map<jt::KeyCode, bool> getInput();
     void setHealth(int health);
     std::shared_ptr<jt::Shape> m_shape;
@@ -15,13 +15,13 @@ private:
     void doDraw() const override;
     void doCreate() override;
     void updateInput();
-    void setColorBasedOnActivePlayer();
+    void setColorBasedOnLocalOrRemote();
     void flashPlayerIfDead(float elapsed);
     void doKill() override;
     void doDestroy() override;
 
     std::map<jt::KeyCode, bool> m_currentInput;
-    bool m_isActivePlayer;
+    bool m_isLocalPlayer;
     int m_health;
     float m_flickerTimer { 0.0f };
 };
