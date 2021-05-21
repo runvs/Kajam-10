@@ -29,15 +29,15 @@ void updateShotState(ShotState& s, float elapsed)
 jt::Vector2 getShotJitterDirection(float jitterAmount)
 {
     jt::Vector2 const& vec { 0, -1 };
-    return getShotJitterDirection(jitterAmount, vec);
+    return getShotJitterDirection(vec, jitterAmount);
 }
 
 /**
  * jitterAmount 1.0 is 180 degrees
  */
-jt::Vector2 getShotJitterDirection(float jitterAmount, jt::Vector2 const& baseVector)
+jt::Vector2 getShotJitterDirection(jt::Vector2 const& baseDirection, float jitterAmount)
 {
     auto const sigma = jitterAmount * Game::GameProperties::shotJitterSigma();
     auto const randomAngle = 90.0f * jt::Random::getFloatGauss(0, sigma);
-    return jt::MathHelper::rotateBy(baseVector, randomAngle);
+    return jt::MathHelper::rotateBy(baseDirection, randomAngle);
 }

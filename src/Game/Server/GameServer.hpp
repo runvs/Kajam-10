@@ -23,6 +23,7 @@ private:
 
     int m_score { 0 };
     float elapsed = 0.0f;
+    std::vector<int> m_playersToDisconnect {};
 
     void removeInactivePlayers();
     jt::Vector2 getRandomNewPlayerPosition() const;
@@ -31,6 +32,10 @@ private:
     bool checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId);
     void performShotPlayerCollision(PlayerState& player, ShotState& shot);
     void performPlayerEnemyCollision(PlayerState& player, EnemyState& enemy);
+    void sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server> dataForPlayer);
+    ShotState createPlayerShot(jt::Vector2 const& playerPosition);
+    void handlePlayerShooting(int currentPlayerId, PayloadClient2Server payload);
+    bool handleSinglePayloadForPlayer(int currentPlayerId, PayloadClient2Server const& payload);
 };
 
 #endif

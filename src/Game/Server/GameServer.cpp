@@ -114,6 +114,59 @@ void GameServer::performPlayerEnemyCollision(PlayerState& player, EnemyState& en
     }
 }
 
+void GameServer::sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server> dataForPlayer)
+{
+    std::sort(
+        dataForPlayer.begin(), dataForPlayer.end(), [](auto const& payloadA, auto const& payloadB) {
+            return payloadA.messageId < payloadB.messageId;
+        });
+}
+
+ShotState GameServer::createPlayerShot(jt::Vector2 const& playerPosition)
+{
+    auto const shotOffset
+        = jt::Vector2 { static_cast<float>(Game::GameProperties::playerSizeInPixel()) / 2.0f - 4.0f,
+              0.0f };
+    auto const shotPosition = playerPosition + shotOffset;
+    auto const shotDirection = getShotJitterDirection(
+        jt::Vector2 { 0, -1 }, Game::GameProperties::shotBaseJitterAmount());
+    auto shotState = ShotState { shotPosition, shotDirection };
+    return shotState;
+}
+
+void GameServer::handlePlayerShooting(int currentPlayerId, PayloadClient2Server payload)
+{
+    bool const hasPlayerPressedShootKey = payload.input.at(jt::KeyCode::Space);
+    if (hasPlayerPressedShootKey) {
+        bool const hasPlayerShootTimerExpired = m_playerStates[currentPlayerId]._shootTimer <= 0;
+        if (hasPlayerShootTimerExpired) {
+            shots.emplace_back(createPlayerShot(m_playerStates[currentPlayerId].position));
+            m_playerStates[currentPlayerId]._shootTimer
+                = Game::GameProperties::playerShootCooldown();
+        }
+    }
+}
+
+bool GameServer::handleSinglePayloadForPlayer(
+    int currentPlayerId, PayloadClient2Server const& payload)
+{
+    std::size_t const messageId = payload.messageId;
+    if (checkForDuplicatedMessages(currentPlayerId, messageId)) {
+        return false;
+    }
+    if (payload.disconnect == true) {
+        m_playersToDisconnect.push_back(currentPlayerId);
+        return true;
+    }
+
+    updatePlayerState(m_playerStates[currentPlayerId], payload.dt, payload.input);
+
+    playerPredictionId[currentPlayerId] = payload.currentPredictionId;
+
+    handlePlayerShooting(currentPlayerId, payload);
+    return false;
+}
+
 void GameServer::update()
 {
     auto now = std::chrono::steady_clock::now();
@@ -123,49 +176,25 @@ void GameServer::update()
             Network::NetworkProperties::serverTickTime() * 1000) };
     removeInactivePlayers();
 
-    std::vector<int> playersToDisconnect {};
     for (auto currentPlayerId : m_networkServer.getAllPlayerIds()) {
 
         createNewPlayerIfNotKnownToServer(currentPlayerId);
 
         auto dataForPlayer = m_networkServer.getData(currentPlayerId);
-        if (dataForPlayer.size() > 1) {
-            std::sort(dataForPlayer.begin(), dataForPlayer.end(),
-                [](auto const& payloadA, auto const& payloadB) {
-                    return payloadA.messageId < payloadB.messageId;
-                });
-        }
-        for (auto& payload : dataForPlayer) {
-            std::size_t const messageId = payload.messageId;
-            if (checkForDuplicatedMessages(currentPlayerId, messageId)) {
-                continue;
-            }
-            if (payload.disconnect == true) {
-                playersToDisconnect.push_back(currentPlayerId);
+
+        sortIncomingPayloadsForPlayer(dataForPlayer);
+
+        for (auto const& payload : dataForPlayer) {
+            if (handleSinglePayloadForPlayer(currentPlayerId, payload)) {
                 break;
             }
-
-            updatePlayerState(m_playerStates[currentPlayerId], payload.dt, payload.input);
-            playerPredictionId[currentPlayerId] = payload.currentPredictionId;
-
-            if (payload.input[jt::KeyCode::Space]) {
-                if (m_playerStates[currentPlayerId]._shootTimer <= 0) {
-                    auto const shotPosition = m_playerStates[currentPlayerId].position
-                        + jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f, 0.0f }
-                        - jt::Vector2 { 4.0f, 0.0f };
-                    auto const shotDirection = getShotJitterDirection(
-                        Game::GameProperties::shotBaseJitterAmount(), jt::Vector2 { 0, -1 });
-                    shots.emplace_back(ShotState { shotPosition, shotDirection });
-                    m_playerStates[currentPlayerId]._shootTimer
-                        = Game::GameProperties::playerShootCooldown();
-                }
-            }
         }
     }
 
-    for (auto playerToDisconnectId : playersToDisconnect) {
+    for (auto playerToDisconnectId : m_playersToDisconnect) {
         m_networkServer.closeConnectionTo(playerToDisconnectId);
     }
+    m_playersToDisconnect.clear();
 
     spawner.setActivePlayerCount(static_cast<int>(m_playerStates.size()));
     spawner.setCurrentlyAliveEnemies(static_cast<int>(enemies.size()));

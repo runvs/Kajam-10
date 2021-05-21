@@ -18,7 +18,7 @@ struct PlayerState {
     float _respawnTimer { 0.0f };
 };
 
-void updatePlayerState(PlayerState& playerState, float dt, InputState& input);
+void updatePlayerState(PlayerState& playerState, float dt, InputState const& input);
 void playerTakeDamage(PlayerState& playerState, ShotState& shot);
 void playerTakeDamage(PlayerState& playerState, EnemyState& enemy);
 

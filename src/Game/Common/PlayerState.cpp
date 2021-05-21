@@ -33,17 +33,17 @@ void respawnPlayer(PlayerState& playerState)
     playerState.health = Game::GameProperties::playerMaxHealth();
 }
 
-void updatePlayerState(PlayerState& playerState, float elapsed, InputState& input)
+void updatePlayerState(PlayerState& playerState, float elapsed, InputState const& input)
 {
     if (playerState.health > 0) {
-        if (input[jt::KeyCode::D])
+        if (input.at(jt::KeyCode::D))
             playerState.position.x() += elapsed * Game::GameProperties::playerMovementSpeed();
-        else if (input[jt::KeyCode::A])
+        else if (input.at(jt::KeyCode::A))
             playerState.position.x() -= elapsed * Game::GameProperties::playerMovementSpeed();
 
-        if (input[jt::KeyCode::W])
+        if (input.at(jt::KeyCode::W))
             playerState.position.y() -= elapsed * Game::GameProperties::playerMovementSpeed();
-        else if (input[jt::KeyCode::S])
+        else if (input.at(jt::KeyCode::S))
             playerState.position.y() += elapsed * Game::GameProperties::playerMovementSpeed();
 
         auto const minXPos
