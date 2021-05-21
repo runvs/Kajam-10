@@ -9,7 +9,6 @@ EnemySpawner::EnemySpawner(std::vector<EnemyState>& enemies)
     : m_enemies { enemies }
     , m_timer { 0.0f }
     , m_timerMax { 3.5f }
-    , m_enemyNumberCurrent { 0 }
     , m_difficulty { 1.0f }
     , m_activePlayerCount(0)
     , m_sah { 20.0f, 3.5f }
@@ -34,11 +33,6 @@ void EnemySpawner::update(float elapsed)
 
 void EnemySpawner::setActivePlayerCount(int activePlayers) { m_activePlayerCount = activePlayers; }
 
-void EnemySpawner::setCurrentlyAliveEnemies(int currentlyAlive)
-{
-    m_enemyNumberCurrent = currentlyAlive;
-}
-
 void EnemySpawner::setDifficulty(float difficulty) { m_difficulty = difficulty; }
 
 int EnemySpawner::getEnemyNumberTarget() const
@@ -51,7 +45,7 @@ int EnemySpawner::getGroupSize() { return 2; }
 float EnemySpawner::getMaxTimer() const
 {
     float const exponent = 1.2f;
-    auto const currentEnemies = static_cast<float>(m_enemyNumberCurrent);
+    auto const currentEnemies = static_cast<float>(m_enemies.size());
     auto const targetEnemies = static_cast<float>(getEnemyNumberTarget());
     return std::pow(currentEnemies / targetEnemies, exponent) * m_timerMax;
 }

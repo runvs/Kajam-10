@@ -88,28 +88,33 @@ void GameServer::performShotPlayerCollision(PlayerState& player, ShotState& shot
     }
 }
 
-void GameServer::performPlayerEnemyCollision(PlayerState& player, EnemyState& enemy)
+void GameServer::performPlayerEnemyCollision()
 {
-    if (player.health <= 0) {
-        return;
-    }
-    auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
-        Game::GameProperties::playerSizeInPixel() / 2.0f };
-    auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
-    auto const centerPositionPlayer = player.position + playerHalfSize;
-    auto const centerPositionEnemy = enemy.position + enemyHalfSize;
+    for (auto& enemy : m_enemies) {
+        for (auto& p : m_playerStates) {
+            auto& player = p.second;
+            if (player.health <= 0) {
+                continue;
+            }
+            auto const playerHalfSize
+                = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
+                      Game::GameProperties::playerSizeInPixel() / 2.0f };
+            auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
+            auto const centerPositionPlayer = player.position + playerHalfSize;
+            auto const centerPositionEnemy = enemy.position + enemyHalfSize;
 
-    auto const diff = centerPositionPlayer - centerPositionEnemy;
-    auto const lSquared = jt::MathHelper::lengthSquared(diff);
+            auto const diff = centerPositionPlayer - centerPositionEnemy;
+            auto const lSquared = jt::MathHelper::lengthSquared(diff);
 
-    bool isOverlapping = lSquared
-        <= (playerHalfSize.x() + enemyHalfSize.x()) * (playerHalfSize.y() + enemyHalfSize.y());
-    if (isOverlapping) {
-        enemy._alive = false;
-        playerTakeDamage(player, enemy);
-
-        if (player.health <= 0) {
-            m_score -= Game::GameProperties::scorePlayerDeathMalus();
+            bool isOverlapping = lSquared <= (playerHalfSize.x() + enemyHalfSize.x())
+                    * (playerHalfSize.y() + enemyHalfSize.y());
+            if (isOverlapping) {
+                enemy._alive = false;
+                playerTakeDamage(player, enemy);
+                if (player.health <= 0) {
+                    m_score -= Game::GameProperties::scorePlayerDeathMalus();
+                }
+            }
         }
     }
 }
@@ -140,14 +145,14 @@ void GameServer::handlePlayerShooting(int currentPlayerId, PayloadClient2Server 
     if (hasPlayerPressedShootKey) {
         bool const hasPlayerShootTimerExpired = m_playerStates[currentPlayerId]._shootTimer <= 0;
         if (hasPlayerShootTimerExpired) {
-            shots.emplace_back(createPlayerShot(m_playerStates[currentPlayerId].position));
+            m_shots.emplace_back(createPlayerShot(m_playerStates[currentPlayerId].position));
             m_playerStates[currentPlayerId]._shootTimer
                 = Game::GameProperties::playerShootCooldown();
         }
     }
 }
 
-bool GameServer::handleSinglePayloadForPlayer(
+bool GameServer::handleSinglePayloadForSinglePlayer(
     int currentPlayerId, PayloadClient2Server const& payload)
 {
     std::size_t const messageId = payload.messageId;
@@ -167,6 +172,109 @@ bool GameServer::handleSinglePayloadForPlayer(
     return false;
 }
 
+void GameServer::handleAllPayloadForSinglePlayer(int currentPlayerId)
+{
+    createNewPlayerIfNotKnownToServer(currentPlayerId);
+
+    auto dataForPlayer = m_networkServer.getData(currentPlayerId);
+
+    sortIncomingPayloadsForPlayer(dataForPlayer);
+
+    for (auto const& payload : dataForPlayer) {
+        if (handleSinglePayloadForSinglePlayer(currentPlayerId, payload)) {
+            break;
+        }
+    }
+}
+
+void GameServer::handleAllPayloadsForAllPlayers()
+{
+    for (auto currentPlayerId : m_networkServer.getAllPlayerIds()) {
+
+        handleAllPayloadForSinglePlayer(currentPlayerId);
+    }
+}
+
+void GameServer::removeDisconnectedPlayers()
+{
+    for (auto playerToDisconnectId : m_playersToDisconnect) {
+        m_networkServer.closeConnectionTo(playerToDisconnectId);
+    }
+    m_playersToDisconnect.clear();
+}
+
+void GameServer::handleEnemySpawning()
+{
+    m_enemySpawner.setActivePlayerCount(static_cast<int>(m_playerStates.size()));
+    // TODO increase difficulty
+    m_enemySpawner.setDifficulty(1.0f);
+    m_enemySpawner.update(m_elapsed);
+}
+
+void GameServer::updateAllEnemies()
+{
+    for (auto& e : m_enemies) {
+        updateEnemyState(e, m_shots, m_elapsed);
+    }
+}
+
+void GameServer::updateAllShots()
+{
+    for (auto& s : m_shots) {
+        updateShotState(s, m_elapsed);
+    }
+}
+
+void GameServer::handleSingleShotCollision(ShotState& s)
+{
+    if (s.fromPlayer) {
+        for (auto& e : m_enemies) {
+            performShotEnemyCollision(s, e);
+        }
+    } else {
+        for (auto& p : m_playerStates) {
+            performShotPlayerCollision(p.second, s);
+        }
+    }
+}
+
+void GameServer::handleAllShotCollisions()
+{
+    for (auto& s : m_shots) {
+        handleSingleShotCollision(s);
+    }
+}
+
+void GameServer::removeDeadShots()
+{
+    jt::SystemHelper::erase_if(m_shots,
+        [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime() || !s._alive; });
+}
+
+void GameServer::removeDeadEnemies()
+{
+    jt::SystemHelper::erase_if(m_enemies, [](auto& e) { return !e._alive; });
+}
+
+void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kvp)
+{
+    PayloadServer2Client payload;
+    payload.playerID = kvp.first;
+    payload.playerStates = m_playerStates;
+    payload.predictionId = playerPredictionId[kvp.first];
+    payload.shots = m_shots;
+    payload.enemies = m_enemies;
+    payload.score = m_score;
+    m_networkServer.sendToClient(kvp.first, payload);
+}
+
+void GameServer::sendPayloadToPlayers()
+{
+    for (auto& kvp : m_playerStates) {
+        sendSinglePayloadToPlayer(kvp);
+    }
+}
+
 void GameServer::update()
 {
     auto now = std::chrono::steady_clock::now();
@@ -174,74 +282,31 @@ void GameServer::update()
     auto next = now
         + std::chrono::milliseconds { static_cast<long long>(
             Network::NetworkProperties::serverTickTime() * 1000) };
+
     removeInactivePlayers();
 
-    for (auto currentPlayerId : m_networkServer.getAllPlayerIds()) {
+    handleAllPayloadsForAllPlayers();
 
-        createNewPlayerIfNotKnownToServer(currentPlayerId);
+    removeDisconnectedPlayers();
 
-        auto dataForPlayer = m_networkServer.getData(currentPlayerId);
+    handleEnemySpawning();
 
-        sortIncomingPayloadsForPlayer(dataForPlayer);
+    updateAllEnemies();
 
-        for (auto const& payload : dataForPlayer) {
-            if (handleSinglePayloadForPlayer(currentPlayerId, payload)) {
-                break;
-            }
-        }
-    }
+    performPlayerEnemyCollision();
 
-    for (auto playerToDisconnectId : m_playersToDisconnect) {
-        m_networkServer.closeConnectionTo(playerToDisconnectId);
-    }
-    m_playersToDisconnect.clear();
+    updateAllShots();
+    handleAllShotCollisions();
 
-    spawner.setActivePlayerCount(static_cast<int>(m_playerStates.size()));
-    spawner.setCurrentlyAliveEnemies(static_cast<int>(enemies.size()));
-    // TODO increase difficulty
-    spawner.setDifficulty(1.0f);
-    spawner.update(elapsed);
-    for (auto& e : enemies) {
-        updateEnemyState(e, shots, elapsed);
-        for (auto& p : m_playerStates) {
-            performPlayerEnemyCollision(p.second, e);
-        }
-    }
+    removeDeadShots();
+    removeDeadEnemies();
 
-    for (auto& s : shots) {
-        updateShotState(s, elapsed);
-
-        if (s.fromPlayer) {
-
-            for (auto& e : enemies) {
-                performShotEnemyCollision(s, e);
-            }
-        } else {
-            for (auto& p : m_playerStates) {
-                performShotPlayerCollision(p.second, s);
-            }
-        }
-    }
     m_score = jt::MathHelper::clamp(m_score, 0, Game::GameProperties::scoreMax());
 
-    jt::SystemHelper::erase_if(
-        shots, [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime() || !s._alive; });
-
-    jt::SystemHelper::erase_if(enemies, [](auto& e) { return !e._alive; });
-
-    for (auto& kvp : m_playerStates) {
-        PayloadServer2Client payload;
-        payload.playerID = kvp.first;
-        payload.playerStates = m_playerStates;
-        payload.predictionId = playerPredictionId[kvp.first];
-        payload.shots = shots;
-        payload.enemies = enemies;
-        payload.score = m_score;
-        m_networkServer.sendToClient(kvp.first, payload);
-    }
+    sendPayloadToPlayers();
 
     std::this_thread::sleep_until(next);
     auto after = std::chrono::steady_clock::now();
-    elapsed = std::chrono::duration_cast<std::chrono::microseconds>(after - now).count() / 1000.0f
+    m_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(after - now).count() / 1000.0f
         / 1000.0f;
 }

@@ -13,7 +13,6 @@ public:
     void update(float elapsed);
 
     void setActivePlayerCount(int activePlayers);
-    void setCurrentlyAliveEnemies(int currentlyAlive);
     void setDifficulty(float difficulty = 1.0f);
 
 private:
@@ -21,7 +20,6 @@ private:
     float m_timer;
     float m_timerMax;
 
-    int m_enemyNumberCurrent;
     float m_difficulty;
     int m_activePlayerCount;
     jt::SampleAndHold m_sah;

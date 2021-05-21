@@ -16,13 +16,13 @@ private:
 
     std::map<int, jt::CircularBuffer<std::size_t, 20>> m_receivedMessageIdsMap;
 
-    std::vector<ShotState> shots;
-    std::vector<EnemyState> enemies;
+    std::vector<ShotState> m_shots;
+    std::vector<EnemyState> m_enemies;
 
-    EnemySpawner spawner { enemies };
+    EnemySpawner m_enemySpawner { m_enemies };
 
     int m_score { 0 };
-    float elapsed = 0.0f;
+    float m_elapsed = 0.0f;
     std::vector<int> m_playersToDisconnect {};
 
     void removeInactivePlayers();
@@ -31,11 +31,24 @@ private:
     void performShotEnemyCollision(ShotState& s, EnemyState& enemy);
     bool checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId);
     void performShotPlayerCollision(PlayerState& player, ShotState& shot);
-    void performPlayerEnemyCollision(PlayerState& player, EnemyState& enemy);
+    void performPlayerEnemyCollision();
     void sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server> dataForPlayer);
     ShotState createPlayerShot(jt::Vector2 const& playerPosition);
     void handlePlayerShooting(int currentPlayerId, PayloadClient2Server payload);
-    bool handleSinglePayloadForPlayer(int currentPlayerId, PayloadClient2Server const& payload);
+    bool handleSinglePayloadForSinglePlayer(
+        int currentPlayerId, PayloadClient2Server const& payload);
+    void handleAllPayloadForSinglePlayer(int currentPlayerId);
+    void handleAllPayloadsForAllPlayers();
+    void removeDisconnectedPlayers();
+    void handleEnemySpawning();
+    void updateAllEnemies();
+    void updateAllShots();
+    void handleSingleShotCollision(ShotState& s);
+    void handleAllShotCollisions();
+    void removeDeadShots();
+    void removeDeadEnemies();
+    void sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kvp);
+    void sendPayloadToPlayers();
 };
 
 #endif
