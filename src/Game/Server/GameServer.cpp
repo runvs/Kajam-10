@@ -23,27 +23,27 @@ jt::Vector2 GameServer::getRandomNewPlayerPosition() const
 
 void GameServer::createNewPlayerIfNotKnownToServer(int currentPlayerId)
 {
-    if (m_playerStates.count(currentPlayerId) != 0) {
+    bool isPlayerKnownToServer = (m_playerStates.count(currentPlayerId) != 0);
+    if (isPlayerKnownToServer) {
         return;
     }
 
     m_playerStates[currentPlayerId].position = getRandomNewPlayerPosition();
 }
 
-bool GameServer::checkForDuplicatedMessages(
-    std::map<int, jt::CircularBuffer<std::size_t, 20>> receivedMessageIdsMap, int currentPlayerId,
-    std::size_t const messageId)
+bool GameServer::checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId)
 {
-    if (receivedMessageIdsMap[currentPlayerId].contains(messageId)) {
+    bool hasDuplicateMessage = m_receivedMessageIdsMap[currentPlayerId].contains(messageId);
+    if (hasDuplicateMessage) {
         std::cout << "skip duplicated message for player " << currentPlayerId << std::endl;
-        return true;
+    } else {
+        m_receivedMessageIdsMap[currentPlayerId].push(messageId);
     }
-    receivedMessageIdsMap[currentPlayerId].push(messageId);
-    return false;
+
+    return hasDuplicateMessage;
 }
 
-bool GameServer::performShotEnemyCollision(
-    std::vector<ShotState>::value_type& s, std::vector<EnemyState>::value_type& enemy)
+void GameServer::performShotEnemyCollision(ShotState& s, EnemyState& enemy)
 {
     auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
     auto const shotHalfSize = Game::GameProperties::shotHalfSize();
@@ -52,21 +52,21 @@ bool GameServer::performShotEnemyCollision(
     auto const diff = centerPositionShot - centerPositionEnemy;
     auto const lSquared = jt::MathHelper::lengthSquared(diff);
 
-    if (lSquared
-        < (enemyHalfSize.x() + shotHalfSize.x()) * (enemyHalfSize.y() + shotHalfSize.y())) {
+    bool isOverlapping = lSquared
+        < (enemyHalfSize.x() + shotHalfSize.x()) * (enemyHalfSize.y() + shotHalfSize.y());
+    if (isOverlapping) {
         s._alive = false;
         enemyTakeDamage(enemy, s);
         if (!enemy._alive) {
-            return true;
+            m_score += Game::GameProperties::scoreEnemyKillBonus();
         }
     }
-    return false;
 }
 
-bool GameServer::performShotPlayerCollision(PlayerState& player, ShotState& shot)
+void GameServer::performShotPlayerCollision(PlayerState& player, ShotState& shot)
 {
     if (player.health <= 0) {
-        return false;
+        return;
     }
     auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
         Game::GameProperties::playerSizeInPixel() / 2.0f };
@@ -75,15 +75,17 @@ bool GameServer::performShotPlayerCollision(PlayerState& player, ShotState& shot
     auto const centerPositionShot = shot.position + shotHalfSize;
     auto const diff = centerPositionShot - centerPositionPlayer;
     auto const lSquared = jt::MathHelper::lengthSquared(diff);
-    if (lSquared
-        <= (playerHalfSize.x() + shotHalfSize.x()) * (playerHalfSize.y() + shotHalfSize.y())) {
+
+    bool isOverlapping = lSquared
+        <= (playerHalfSize.x() + shotHalfSize.x()) * (playerHalfSize.y() + shotHalfSize.y());
+    if (isOverlapping) {
         shot._alive = false;
         playerTakeDamage(player, shot);
+
         if (player.health <= 0) {
-            return true;
+            m_score -= Game::GameProperties::scorePlayerDeathMalus();
         }
     }
-    return false;
 }
 
 void GameServer::performPlayerEnemyCollision(PlayerState& player, EnemyState& enemy)
@@ -99,10 +101,16 @@ void GameServer::performPlayerEnemyCollision(PlayerState& player, EnemyState& en
 
     auto const diff = centerPositionPlayer - centerPositionEnemy;
     auto const lSquared = jt::MathHelper::lengthSquared(diff);
-    if (lSquared
-        <= (playerHalfSize.x() + enemyHalfSize.x()) * (playerHalfSize.y() + enemyHalfSize.y())) {
+
+    bool isOverlapping = lSquared
+        <= (playerHalfSize.x() + enemyHalfSize.x()) * (playerHalfSize.y() + enemyHalfSize.y());
+    if (isOverlapping) {
         enemy._alive = false;
         playerTakeDamage(player, enemy);
+
+        if (player.health <= 0) {
+            m_score -= Game::GameProperties::scorePlayerDeathMalus();
+        }
     }
 }
 
@@ -129,7 +137,7 @@ void GameServer::update()
         }
         for (auto& payload : dataForPlayer) {
             std::size_t const messageId = payload.messageId;
-            if (checkForDuplicatedMessages(receivedMessageIdsMap, currentPlayerId, messageId)) {
+            if (checkForDuplicatedMessages(currentPlayerId, messageId)) {
                 continue;
             }
             if (payload.disconnect == true) {
@@ -177,19 +185,15 @@ void GameServer::update()
         if (s.fromPlayer) {
 
             for (auto& e : enemies) {
-                if (performShotEnemyCollision(s, e)) {
-                    score += Game::GameProperties::scoreEnemyKillBonus();
-                }
+                performShotEnemyCollision(s, e);
             }
         } else {
             for (auto& p : m_playerStates) {
-                if (performShotPlayerCollision(p.second, s)) {
-                    score -= Game::GameProperties::scorePlayerDeathMalus();
-                }
+                performShotPlayerCollision(p.second, s);
             }
         }
     }
-    score = jt::MathHelper::clamp(score, 0, Game::GameProperties::scoreMax());
+    m_score = jt::MathHelper::clamp(m_score, 0, Game::GameProperties::scoreMax());
 
     jt::SystemHelper::erase_if(
         shots, [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime() || !s._alive; });
@@ -203,7 +207,7 @@ void GameServer::update()
         payload.predictionId = playerPredictionId[kvp.first];
         payload.shots = shots;
         payload.enemies = enemies;
-        payload.score = score;
+        payload.score = m_score;
         m_networkServer.sendToClient(kvp.first, payload);
     }
 
