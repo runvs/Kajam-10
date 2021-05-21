@@ -37,6 +37,10 @@ struct GameProperties {
 
     static int scoreEnemyKillBonus() { return 1; }
     static int scorePlayerDeathMalus() { return 50; }
+    static jt::Vector2 playerHalfSize()
+    {
+        return jt::Vector2 { playerSizeInPixel() / 2.0f, playerSizeInPixel() / 2.0f };
+    }
 };
 } // namespace Game
 

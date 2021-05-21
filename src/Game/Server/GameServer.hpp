@@ -1,5 +1,6 @@
 ﻿#ifndef GAMESERVER_HPP_GUARD
 #define GAMESERVER_HPP_GUARD
+
 #include "CircularBuffer.hpp"
 #include "EnemySpawner.hpp"
 #include "NetworkServer.hpp"
@@ -28,12 +29,13 @@ private:
     void removeInactivePlayers();
     jt::Vector2 getRandomNewPlayerPosition() const;
     void createNewPlayerIfNotKnownToServer(int currentPlayerId);
-    void performShotEnemyCollision(ShotState& s, EnemyState& enemy);
+    void performShotEnemyCollision(ShotState& shot, EnemyState& enemy);
     bool checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId);
     void performShotPlayerCollision(PlayerState& player, ShotState& shot);
-    void performPlayerEnemyCollision();
-    void sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server> dataForPlayer);
-    ShotState createPlayerShot(jt::Vector2 const& playerPosition);
+    void performPlayerEnemyCollision(EnemyState& enemy, PlayerState& player);
+    void performAllPlayerEnemyCollision();
+    void sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server> dataForPlayer) const;
+    ShotState createPlayerShot(jt::Vector2 const& playerPosition) const;
     void handlePlayerShooting(int currentPlayerId, PayloadClient2Server payload);
     bool handleSinglePayloadForSinglePlayer(
         int currentPlayerId, PayloadClient2Server const& payload);

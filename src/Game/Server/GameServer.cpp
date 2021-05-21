@@ -1,7 +1,6 @@
 ﻿#include "GameServer.hpp"
 #include "SystemHelper.hpp"
 #include "common.hpp"
-
 #include <iostream>
 
 void GameServer::removeInactivePlayers()
@@ -43,20 +42,22 @@ bool GameServer::checkForDuplicatedMessages(int currentPlayerId, std::size_t con
     return hasDuplicateMessage;
 }
 
-void GameServer::performShotEnemyCollision(ShotState& s, EnemyState& enemy)
+bool overlaps(jt::Vector2 const& aPos, jt::Vector2 const& aHalfSize, jt::Vector2 const& bPos,
+    jt::Vector2 const& bHalfSize)
 {
-    auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
-    auto const shotHalfSize = Game::GameProperties::shotHalfSize();
-    auto const centerPositionEnemy = enemy.position + enemyHalfSize;
-    auto const centerPositionShot = s.position + shotHalfSize;
-    auto const diff = centerPositionShot - centerPositionEnemy;
+    auto const aCenterPosition = aPos + aHalfSize;
+    auto const bCenterPosition = bPos + bHalfSize;
+    auto const diff = aCenterPosition - bCenterPosition;
     auto const lSquared = jt::MathHelper::lengthSquared(diff);
+    return (lSquared < (aHalfSize.x() + bHalfSize.x()) * (aHalfSize.y() + bHalfSize.y()));
+}
 
-    bool isOverlapping = lSquared
-        < (enemyHalfSize.x() + shotHalfSize.x()) * (enemyHalfSize.y() + shotHalfSize.y());
-    if (isOverlapping) {
-        s._alive = false;
-        enemyTakeDamage(enemy, s);
+void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
+{
+    if (overlaps(shot.position, Game::GameProperties::shotHalfSize(), enemy.position,
+            Game::GameProperties::enemyHalfSize())) {
+        shot._alive = false;
+        enemyTakeDamage(enemy, shot);
         if (!enemy._alive) {
             m_score += Game::GameProperties::scoreEnemyKillBonus();
         }
@@ -68,17 +69,9 @@ void GameServer::performShotPlayerCollision(PlayerState& player, ShotState& shot
     if (player.health <= 0) {
         return;
     }
-    auto const playerHalfSize = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
-        Game::GameProperties::playerSizeInPixel() / 2.0f };
-    auto const shotHalfSize = Game::GameProperties::shotHalfSize();
-    auto const centerPositionPlayer = player.position + playerHalfSize;
-    auto const centerPositionShot = shot.position + shotHalfSize;
-    auto const diff = centerPositionShot - centerPositionPlayer;
-    auto const lSquared = jt::MathHelper::lengthSquared(diff);
 
-    bool isOverlapping = lSquared
-        <= (playerHalfSize.x() + shotHalfSize.x()) * (playerHalfSize.y() + shotHalfSize.y());
-    if (isOverlapping) {
+    if (overlaps(shot.position, Game::GameProperties::shotHalfSize(), player.position,
+            Game::GameProperties::playerHalfSize())) {
         shot._alive = false;
         playerTakeDamage(player, shot);
 
@@ -88,7 +81,19 @@ void GameServer::performShotPlayerCollision(PlayerState& player, ShotState& shot
     }
 }
 
-void GameServer::performPlayerEnemyCollision()
+void GameServer::performPlayerEnemyCollision(EnemyState& enemy, PlayerState& player)
+{
+    if (overlaps(player.position, Game::GameProperties::playerHalfSize(), enemy.position,
+            Game::GameProperties::enemyHalfSize())) {
+        enemy._alive = false;
+        playerTakeDamage(player, enemy);
+        if (player.health <= 0) {
+            m_score -= Game::GameProperties::scorePlayerDeathMalus();
+        }
+    }
+}
+
+void GameServer::performAllPlayerEnemyCollision()
 {
     for (auto& enemy : m_enemies) {
         for (auto& p : m_playerStates) {
@@ -96,30 +101,14 @@ void GameServer::performPlayerEnemyCollision()
             if (player.health <= 0) {
                 continue;
             }
-            auto const playerHalfSize
-                = jt::Vector2 { Game::GameProperties::playerSizeInPixel() / 2.0f,
-                      Game::GameProperties::playerSizeInPixel() / 2.0f };
-            auto const enemyHalfSize = Game::GameProperties::enemyHalfSize();
-            auto const centerPositionPlayer = player.position + playerHalfSize;
-            auto const centerPositionEnemy = enemy.position + enemyHalfSize;
 
-            auto const diff = centerPositionPlayer - centerPositionEnemy;
-            auto const lSquared = jt::MathHelper::lengthSquared(diff);
-
-            bool isOverlapping = lSquared <= (playerHalfSize.x() + enemyHalfSize.x())
-                    * (playerHalfSize.y() + enemyHalfSize.y());
-            if (isOverlapping) {
-                enemy._alive = false;
-                playerTakeDamage(player, enemy);
-                if (player.health <= 0) {
-                    m_score -= Game::GameProperties::scorePlayerDeathMalus();
-                }
-            }
+            performPlayerEnemyCollision(enemy, player);
         }
     }
 }
 
-void GameServer::sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server> dataForPlayer)
+void GameServer::sortIncomingPayloadsForPlayer(
+    std::vector<PayloadClient2Server> dataForPlayer) const
 {
     std::sort(
         dataForPlayer.begin(), dataForPlayer.end(), [](auto const& payloadA, auto const& payloadB) {
@@ -127,7 +116,7 @@ void GameServer::sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server>
         });
 }
 
-ShotState GameServer::createPlayerShot(jt::Vector2 const& playerPosition)
+ShotState GameServer::createPlayerShot(jt::Vector2 const& playerPosition) const
 {
     auto const shotOffset
         = jt::Vector2 { static_cast<float>(Game::GameProperties::playerSizeInPixel()) / 2.0f - 4.0f,
@@ -277,9 +266,9 @@ void GameServer::sendPayloadToPlayers()
 
 void GameServer::update()
 {
-    auto now = std::chrono::steady_clock::now();
+    auto const now = std::chrono::steady_clock::now();
 
-    auto next = now
+    auto const next = now
         + std::chrono::milliseconds { static_cast<long long>(
             Network::NetworkProperties::serverTickTime() * 1000) };
 
@@ -293,7 +282,7 @@ void GameServer::update()
 
     updateAllEnemies();
 
-    performPlayerEnemyCollision();
+    performAllPlayerEnemyCollision();
 
     updateAllShots();
     handleAllShotCollisions();
