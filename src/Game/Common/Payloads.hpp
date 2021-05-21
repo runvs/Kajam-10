@@ -5,6 +5,7 @@
 #include "EnemyState.hpp"
 #include "InputState.hpp"
 #include "PlayerState.hpp"
+#include "PowerupState.hpp"
 #include "ShotState.hpp"
 #include <SFML/Network.hpp>
 #include <map>
@@ -26,11 +27,12 @@ struct PayloadServer2Client {
 
     int playerID { -1 };
     PlayerMap playerStates {};
-    std::size_t prediction_id { 0 };
+    std::size_t predictionId { 0 };
     std::size_t messageId { 0 };
 
     std::vector<ShotState> shots {};
     std::vector<EnemyState> enemies {};
+    std::vector<PowerupState> powerups {};
 
     int score { 0 };
 };

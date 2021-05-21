@@ -145,17 +145,17 @@ void StateGame::doInternalUpdate(float const elapsed)
             m_localPlayer->setHealth(payload.playerStates.at(m_localPlayerId).health);
             m_currentPlayerState.health = payload.playerStates.at(m_localPlayerId).health;
 
-            auto const diff = m_predictedMoveResults[payload.prediction_id].position
+            auto const diff = m_predictedMoveResults[payload.predictionId].position
                 - payload.playerStates[m_localPlayerId].position;
 
             if (jt::MathHelper::lengthSquared(diff)
                 > Game::GameProperties::playerMaxAllowedPredictionError()) {
-                std::cout << "prediction error for prediction id " << payload.prediction_id
+                std::cout << "prediction error for prediction id " << payload.predictionId
                           << "with local current prediction id: " << m_currentPredictionId
                           << std::endl;
                 m_currentPlayerState = payload.playerStates[m_localPlayerId];
 
-                for (std::size_t replayingPredictionId = payload.prediction_id + 1;
+                for (std::size_t replayingPredictionId = payload.predictionId + 1;
                      replayingPredictionId < m_currentPredictionId; ++replayingPredictionId) {
 
                     updatePlayerState(m_currentPlayerState,
