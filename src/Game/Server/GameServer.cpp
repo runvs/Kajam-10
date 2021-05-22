@@ -234,15 +234,57 @@ void GameServer::handleAllShotCollisions()
     }
 }
 
+void GameServer::removeDeadEnemies()
+{
+    jt::SystemHelper::erase_if(m_enemies, [](auto& e) { return !e._alive; });
+}
+
 void GameServer::removeDeadShots()
 {
     jt::SystemHelper::erase_if(m_shots,
         [](auto& s) { return s._age >= Game::GameProperties::shotLifeTime() || !s._alive; });
 }
 
-void GameServer::removeDeadEnemies()
+void GameServer::removeDeadPowerups()
 {
-    jt::SystemHelper::erase_if(m_enemies, [](auto& e) { return !e._alive; });
+    jt::SystemHelper::erase_if(m_powerups, [](auto& p) { return !p._alive; });
+}
+
+void GameServer::handlePowerupEffect(
+    std::vector<PowerupState>::value_type& powerup, PlayerState& player)
+{
+    powerup._alive = false;
+    // TODO other powerup types
+    if (powerup.type == static_cast<int>(PowerupType::POWERUP_HEALTH)) {
+        player.health += Game::GameProperties::powerupHealthAmount();
+        player.health
+            = jt::MathHelper::clamp(player.health, 0, Game::GameProperties::playerMaxHealth());
+    }
+}
+
+bool GameServer::performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player)
+{
+    if (player.health <= 0) {
+        return true;
+    }
+    if (overlaps(powerup.position, Game::GameProperties::powerupHalfSize(), player.position,
+            Game::GameProperties::playerHalfSize())) {
+        handlePowerupEffect(powerup, player);
+    }
+    return false;
+}
+
+void GameServer::updateAllPowerups()
+{
+    for (auto& powerup : m_powerups) {
+        if (powerup._alive) {
+            continue;
+        }
+        for (auto& p : m_playerStates) {
+            if (performPlayerPowerupCollision(powerup, p.second))
+                continue;
+        }
+    }
 }
 
 void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kvp)
@@ -289,6 +331,8 @@ void GameServer::update()
 
     removeDeadShots();
     removeDeadEnemies();
+
+    updateAllPowerups();
 
     m_score = jt::MathHelper::clamp(m_score, 0, Game::GameProperties::scoreMax());
 

@@ -1,9 +1,7 @@
 ﻿#ifndef GAMEPROPERTIES_GUARD_HPP
 #define GAMEPROPERTIES_GUARD_HPP
 
-#include "PlayerState.hpp"
 #include "Vector.hpp"
-#include <cstdint>
 
 namespace Game {
 struct GameProperties {
@@ -41,6 +39,13 @@ struct GameProperties {
     {
         return jt::Vector2 { playerSizeInPixel() / 2.0f, playerSizeInPixel() / 2.0f };
     }
+
+    static jt::Vector2 powerupHalfSize()
+    {
+        return jt::Vector2 { playerSizeInPixel() / 2.0f, playerSizeInPixel() / 2.0f };
+    }
+
+    static int powerupHealthAmount() { return 4; }
 };
 } // namespace Game
 

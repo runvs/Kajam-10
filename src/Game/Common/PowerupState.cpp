@@ -27,5 +27,5 @@ void updatePowerupState(PowerupState& powerup, float elapsed)
 {
     powerup.position.y() += elapsed * Game::GameProperties::scrollSpeed();
 
-    powerup._isAlive = (powerup.position.y() < Game::GameProperties::displayScreenSize().y() + 32);
+    powerup._alive = (powerup.position.y() < Game::GameProperties::displayScreenSize().y() + 32);
 }
