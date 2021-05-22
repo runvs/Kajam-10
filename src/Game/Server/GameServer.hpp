@@ -4,6 +4,8 @@
 #include "CircularBuffer.hpp"
 #include "EnemySpawner.hpp"
 #include "NetworkServer.hpp"
+#include "ShotPattern.hpp"
+#include <vector>
 
 class GameServer {
 public:
@@ -48,7 +50,6 @@ private:
     void performPlayerEnemyCollision(EnemyState& enemy, PlayerState& player);
     void performAllPlayerEnemyCollision();
 
-    ShotState createPlayerShot(jt::Vector2 const& playerPosition) const;
     void handlePlayerShooting(int currentPlayerId, PayloadClient2Server payload);
 
     void handleEnemySpawning();

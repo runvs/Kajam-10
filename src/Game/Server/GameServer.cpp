@@ -1,4 +1,5 @@
 ﻿#include "GameServer.hpp"
+#include "PlayerShotSpawner.hpp"
 #include "SystemHelper.hpp"
 #include "common.hpp"
 #include <iostream>
@@ -28,6 +29,7 @@ void GameServer::createNewPlayerIfNotKnownToServer(int currentPlayerId)
     }
 
     m_playerStates[currentPlayerId].position = getRandomNewPlayerPosition();
+    m_playerStates[currentPlayerId]._shotPattern = Shots::ShotPattern::SINGLE();
 }
 
 bool GameServer::checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId)
@@ -116,25 +118,20 @@ void GameServer::sortIncomingPayloadsForPlayer(
         });
 }
 
-ShotState GameServer::createPlayerShot(jt::Vector2 const& playerPosition) const
-{
-    auto const shotOffset
-        = jt::Vector2 { static_cast<float>(Game::GameProperties::playerSizeInPixel()) / 2.0f - 4.0f,
-              0.0f };
-    auto const shotPosition = playerPosition + shotOffset;
-    auto const shotDirection = getShotJitterDirection(
-        jt::Vector2 { 0, -1 }, Game::GameProperties::shotBaseJitterAmount());
-    auto shotState = ShotState { shotPosition, shotDirection };
-    return shotState;
-}
-
 void GameServer::handlePlayerShooting(int currentPlayerId, PayloadClient2Server payload)
 {
     bool const hasPlayerPressedShootKey = payload.input.at(jt::KeyCode::Space);
     if (hasPlayerPressedShootKey) {
-        bool const hasPlayerShootTimerExpired = m_playerStates[currentPlayerId]._shootTimer <= 0;
-        if (hasPlayerShootTimerExpired) {
-            m_shots.emplace_back(createPlayerShot(m_playerStates[currentPlayerId].position));
+        bool const isPlayerShootTimerExpired = m_playerStates[currentPlayerId]._shootTimer <= 0;
+
+        if (isPlayerShootTimerExpired) {
+            auto shots = PlayerShotSpawner::createShotFromPattern(
+                m_playerStates[currentPlayerId]._shotPattern,
+                m_playerStates[currentPlayerId].position);
+            std::cout << "Shots count: " << shots.size() << std::endl;
+            for (auto const& s : shots) {
+                m_shots.emplace_back(s);
+            }
             m_playerStates[currentPlayerId]._shootTimer
                 = Game::GameProperties::playerShootCooldown();
         }

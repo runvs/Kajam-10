@@ -4,6 +4,7 @@
 #include "GameProperties.hpp"
 #include "InputState.hpp"
 #include "SFML/Network/Packet.hpp"
+#include "ShotPattern.hpp"
 #include "Vector.hpp"
 #include <map>
 
@@ -14,8 +15,11 @@ struct PlayerState {
     jt::Vector2 position { 0, 0 };
     int health { 12 };
 
-    float _shootTimer { 0 };
+    float _shootTimer { 0.0f };
     float _respawnTimer { 0.0f };
+    // TODO remove the following shot pattern test button timer
+    float _patternToggleTimer { 0.0f };
+    int _shotPattern;
 };
 
 void updatePlayerState(PlayerState& playerState, float dt, InputState const& input);
