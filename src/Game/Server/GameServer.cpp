@@ -250,8 +250,7 @@ void GameServer::removeDeadPowerups()
     jt::SystemHelper::erase_if(m_powerups, [](auto& p) { return !p._alive; });
 }
 
-void GameServer::handlePowerupEffect(
-    std::vector<PowerupState>::value_type& powerup, PlayerState& player)
+void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
 {
     powerup._alive = false;
     // TODO other powerup types

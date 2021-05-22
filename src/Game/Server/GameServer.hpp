@@ -60,8 +60,7 @@ private:
     void handleAllShotCollisions();
 
     void handlePowerupEffect(PowerupState& powerup, PlayerState& player);
-    bool performPlayerPowerupCollision(
-        std::vector<PowerupState>::value_type& powerup, PlayerState& player);
+    bool performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player);
 
     void updateAllPowerups();
 
