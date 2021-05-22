@@ -128,7 +128,6 @@ void GameServer::handlePlayerShooting(int currentPlayerId, PayloadClient2Server 
             auto shots = PlayerShotSpawner::createShotFromPattern(
                 m_playerStates[currentPlayerId]._shotPattern,
                 m_playerStates[currentPlayerId].position);
-            std::cout << "Shots count: " << shots.size() << std::endl;
             for (auto const& s : shots) {
                 m_shots.emplace_back(s);
             }
