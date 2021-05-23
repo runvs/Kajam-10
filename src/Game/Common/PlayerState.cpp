@@ -68,23 +68,19 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState const
         if (playerState._patternToggleTimer <= 0.0f) {
             const float patternTimerMax = 0.2f;
             if (input.at(jt::KeyCode::Num1)) {
+                // TODO move into GameServer handlepowerup
                 playerState._patternToggleTimer = patternTimerMax;
-                if (playerState._shotPattern == Shots::ShotPattern::SINGLE()) {
-                    playerState._shotPattern = Shots::ShotPattern::TRIPLE_WIDE();
-                } else if (playerState._shotPattern == Shots::ShotPattern::TRIPLE_WIDE()) {
-                    playerState._shotPattern = Shots::ShotPattern::TRIPLE_NARROW();
-                } else if (playerState._shotPattern == Shots::ShotPattern::TRIPLE_NARROW()) {
-                    playerState._shotPattern
-                        = Shots::ShotPattern::TRIPLE_NARROW() | Shots::ShotPattern::BEHIND();
-                } else if (playerState._shotPattern == Shots::ShotPattern::TRIPLE_NARROW()
-                    | Shots::ShotPattern::BEHIND()) {
-                    playerState._shotPattern = Shots::ShotPattern::TRIPLE_NARROW()
-                        | Shots::ShotPattern::BEHIND() | Shots::ShotPattern::SIDE();
-                } else if (playerState._shotPattern == Shots::ShotPattern::TRIPLE_NARROW()
-                    | Shots::ShotPattern::BEHIND() | Shots::ShotPattern::SIDE()) {
-                    playerState._shotPattern = Shots::ShotPattern::TRIPLE_NARROW()
-                        | Shots::ShotPattern::TRIPLE_WIDE() | Shots::ShotPattern::BEHIND()
-                        | Shots::ShotPattern::SIDE();
+
+                if (playerState._shotPattern == Shots::ShotPattern::level1()) {
+                    playerState._shotPattern = Shots::ShotPattern::level2();
+                } else if (playerState._shotPattern == Shots::ShotPattern::level2()) {
+                    playerState._shotPattern = Shots::ShotPattern::level3();
+                } else if (playerState._shotPattern == Shots::ShotPattern::level3()) {
+                    playerState._shotPattern = Shots::ShotPattern::level4();
+                } else if (playerState._shotPattern == Shots::ShotPattern::level4()) {
+                    playerState._shotPattern = Shots::ShotPattern::level5();
+                } else if (playerState._shotPattern == Shots::ShotPattern::level5()) {
+                    playerState._shotPattern = Shots::ShotPattern::level6();
                 }
             }
         }
