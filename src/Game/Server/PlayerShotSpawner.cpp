@@ -1,7 +1,9 @@
 ﻿#include "PlayerShotSpawner.hpp"
+#include "Random.hpp"
 #include "ShotPattern.hpp"
 #include "ShotState.hpp"
 #include <array>
+#include <iostream>
 
 std::vector<ShotState> PlayerShotSpawner::createShotFromPattern(
     int pattern, jt::Vector2 const& playerPosition)
@@ -42,7 +44,9 @@ void PlayerShotSpawner::createShotSingle(
     auto const shotDirection = getShotJitterDirection(
         jt::Vector2 { 0, -1 }, Game::GameProperties::shotBaseJitterAmount());
 
-    auto shotState = ShotState { shotPosition, shotDirection };
+    auto shotSpeed = jt::Random::getFloat(0.9f, 1.1f);
+    std::cout << "shotSpeed: " << shotSpeed << std::endl;
+    auto shotState = ShotState { shotPosition, shotDirection, shotSpeed };
     shotStates.emplace_back(shotState);
 }
 

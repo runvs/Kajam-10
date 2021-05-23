@@ -22,7 +22,7 @@ sf::Packet& operator>>(sf::Packet& packet, ShotState& shotState)
 
 void updateShotState(ShotState& s, float elapsed)
 {
-    s.position += s.direction * elapsed * Game::GameProperties::shotVelocity();
+    s.position += s.direction * elapsed * Game::GameProperties::shotVelocity() * s._speed;
     float const margin = 32.0f;
     bool const outTop = s.position.y() <= -margin;
     bool const outLeft = s.position.x() <= -margin;
