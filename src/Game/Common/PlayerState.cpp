@@ -30,7 +30,7 @@ sf::Packet& operator>>(sf::Packet& packet, PlayerState& playerState)
 void respawnPlayer(PlayerState& playerState)
 {
     playerState._respawnTimer = 0;
-    playerState._shotPattern = Shots::ShotPattern::SINGLE();
+    playerState._shotPattern = Shots::ShotPattern::level1();
     playerState.health = Game::GameProperties::playerMaxHealth();
 }
 
