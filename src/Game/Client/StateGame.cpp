@@ -49,7 +49,9 @@ void StateGame::doInternalCreate()
     m_vignette->setIgnoreCamMovement(true);
     m_vignette->setColor({ 255, 255, 255, 100 });
 
-    m_shotShape = jt::dh::createRectShape(Game::GameProperties::shotSize());
+    m_shotSprite = std::make_shared<jt::Animation>();
+    m_shotSprite->add("assets/shots.jpg", "idle", { 16, 16 }, { 0, 1 }, 0.1f);
+    m_shotSprite->play("idle");
     m_enemyShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Red);
 
     m_localPlayer = std::make_shared<Player>(true);
@@ -70,7 +72,7 @@ void StateGame::updateActivePlayerPositionFromServer(
     std::shared_ptr<Player> player, PlayerMap playerPositions)
 {
     m_currentPlayerState = playerPositions.at(m_localPlayerId);
-    player->m_shape->setPosition(m_currentPlayerState.position);
+    player->m_sprite->setPosition(m_currentPlayerState.position);
 }
 
 void StateGame::spawnNewPlayer(int newPlayerId)
@@ -89,7 +91,7 @@ void StateGame::updateRemotePlayers(PayloadServer2Client payload)
             if (m_remotePlayers.count(kvp.first) == 0) {
                 spawnNewPlayer(kvp.first);
             }
-            m_remotePlayers[kvp.first]->m_shape->setPosition(kvp.second.position);
+            m_remotePlayers[kvp.first]->m_sprite->setPosition(kvp.second.position);
             m_remotePlayers[kvp.first]->setHealth(kvp.second.health);
         }
     }
@@ -168,7 +170,7 @@ void StateGame::doInternalUpdate(float const elapsed)
             updateRemotePlayers(payload);
         }
     }
-    m_localPlayer->m_shape->setPosition(m_currentPlayerState.position);
+    m_localPlayer->m_sprite->setPosition(m_currentPlayerState.position);
     m_background->update(elapsed);
     m_vignette->update(elapsed);
     m_overlay->update(elapsed);
@@ -185,11 +187,11 @@ void StateGame::doInternalDraw() const
 
     for (auto& s : m_shots) {
         auto angleInDegrees = jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
-        m_shotShape->setOrigin(Game::GameProperties::shotHalfSize());
-        m_shotShape->setRotation(angleInDegrees);
-        m_shotShape->setPosition(s.position + Game::GameProperties::shotHalfSize());
-        m_shotShape->update(0.1f);
-        m_shotShape->draw(getGame()->getRenderTarget());
+        m_shotSprite->setOrigin(Game::GameProperties::shotHalfSize());
+        m_shotSprite->setRotation(angleInDegrees);
+        m_shotSprite->setPosition(s.position + Game::GameProperties::shotHalfSize());
+        m_shotSprite->update(0.1f);
+        m_shotSprite->draw(getGame()->getRenderTarget());
     }
 
     for (auto& e : m_enemies) {

@@ -14,7 +14,7 @@ struct GameProperties {
 
     static float shotVelocity() { return 200.0f; }
     static float shotLifeTime() { return 5.0f; }
-    static float shotBaseJitterAmount() { return 0.1f; }
+    static float shotBaseJitterAmount() { return 0.01f; }
     static float shotJitterSigma() { return 0.25f; }
     static jt::Vector2 shotHalfSize() { return jt::Vector2 { 4, 4 }; }
     static jt::Vector2 shotSize() { return 2.0f * shotHalfSize(); }

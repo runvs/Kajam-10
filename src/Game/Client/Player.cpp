@@ -1,7 +1,6 @@
 ﻿#include "Player.hpp"
 #include "DrawableHelpers.hpp"
 #include "GameInterface.hpp"
-#include "GameProperties.hpp"
 #include "common.hpp"
 
 std::vector<jt::KeyCode> getNeededKeys()
@@ -23,9 +22,13 @@ std::vector<jt::KeyCode> getNeededKeys()
 // TODO load sprite instead of create shape
 void Player::doCreate()
 {
-    m_shape
-        = jt::dh::createRectShape({ static_cast<float>(Game::GameProperties::playerSizeInPixel()),
-            static_cast<float>(Game::GameProperties::playerSizeInPixel()) });
+    m_sprite = std::make_shared<jt::Animation>();
+    if (m_isLocalPlayer) {
+        m_sprite->add("assets/turtle1.jpg", "idle", jt::Vector2u { 16, 16 }, { 0, 1 }, 0.15f);
+    } else {
+        m_sprite->add("assets/turtle2.jpg", "idle", jt::Vector2u { 16, 16 }, { 0, 1 }, 0.15f);
+    }
+    m_sprite->play("idle");
 }
 
 void Player::updateInput()
@@ -36,13 +39,7 @@ void Player::updateInput()
     }
 }
 
-void Player::setColorBasedOnLocalOrRemote()
-{
-    if (m_isLocalPlayer) {
-        m_shape->setColor(jt::colors::Green);
-    } else
-        m_shape->setColor(jt::colors::White);
-}
+void Player::setColorBasedOnLocalOrRemote() { m_sprite->setColor(jt::colors::White); }
 
 void Player::flashPlayerIfDead(float const elapsed)
 {
@@ -50,8 +47,8 @@ void Player::flashPlayerIfDead(float const elapsed)
         m_flickerTimer -= elapsed;
         if (m_flickerTimer <= 0) {
             m_flickerTimer = 0.1f;
-            if (m_shape->getColor().a() == 255) {
-                m_shape->setColor(jt::colors::Transparent);
+            if (m_sprite->getColor().a() == 255) {
+                m_sprite->setColor(jt::colors::Transparent);
             } else {
                 setColorBasedOnLocalOrRemote();
             }
@@ -68,9 +65,9 @@ void Player::doUpdate(float const elapsed)
         updateInput();
     }
     flashPlayerIfDead(elapsed);
-    m_shape->update(elapsed);
+    m_sprite->update(elapsed);
 }
-void Player::doDraw() const { m_shape->draw(getGame()->getRenderTarget()); }
+void Player::doDraw() const { m_sprite->draw(getGame()->getRenderTarget()); }
 
 void Player::doKill() { }
 void Player::doDestroy() { }

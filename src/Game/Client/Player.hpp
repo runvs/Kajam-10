@@ -1,14 +1,15 @@
 ﻿#ifndef PLAYER_HPP_GUARD
 #define PLAYER_HPP_GUARD
+#include "Animation.hpp"
 #include "GameObject.hpp"
 #include "KeyCodes.hpp"
-#include "Shape.hpp"
+
 class Player : public jt::GameObject {
 public:
     Player(bool isLocal);
     std::map<jt::KeyCode, bool> getInput();
     void setHealth(int health);
-    std::shared_ptr<jt::Shape> m_shape;
+    std::shared_ptr<jt::Animation> m_sprite;
 
 private:
     void doUpdate(float const /*elapsed*/) override;

@@ -1,7 +1,7 @@
-#include "PlayerShotSpawner.hpp"
+﻿#include "PlayerShotSpawner.hpp"
+#include "ShotPattern.hpp"
 #include "ShotState.hpp"
 #include <array>
-#include <memory>
 
 std::vector<ShotState> PlayerShotSpawner::createShotFromPattern(
     int pattern, jt::Vector2 const& playerPosition)

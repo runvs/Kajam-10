@@ -15,6 +15,7 @@
 namespace jt {
 class Shape;
 class Sprite;
+class Animation;
 } // namespace jt
 
 class b2World;
@@ -36,7 +37,7 @@ private:
 
     std::vector<ShotState> m_shots;
     std::vector<EnemyState> m_enemies;
-    std::shared_ptr<jt::Shape> mutable m_shotShape;
+    std::shared_ptr<jt::Animation> mutable m_shotSprite;
     std::shared_ptr<jt::Shape> mutable m_enemyShape;
 
     bool m_running { false };

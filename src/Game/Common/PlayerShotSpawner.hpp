@@ -1,8 +1,7 @@
-#ifndef PLAYERSHOTSPAWNER_GUARD_HPP
+﻿#ifndef PLAYERSHOTSPAWNER_GUARD_HPP
 #define PLAYERSHOTSPAWNER_GUARD_HPP
 
 #include "PlayerState.hpp"
-#include "ShotPattern.hpp"
 #include "ShotState.hpp"
 #include <vector>
 
