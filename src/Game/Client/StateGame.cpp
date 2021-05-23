@@ -53,6 +53,7 @@ void StateGame::doInternalCreate()
     m_shotSprite->add("assets/shots.png", "idle", { 16, 16 }, { 0, 1 }, 0.1f);
     m_shotSprite->play("idle");
     m_enemyShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Red);
+    m_powerupShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Cyan);
 
     m_localPlayer = std::make_shared<Player>(true);
     add(m_localPlayer);
@@ -141,6 +142,7 @@ void StateGame::doInternalUpdate(float const elapsed)
             checkLocalPlayerId(payload.playerID);
             m_shots = payload.shots;
             m_enemies = payload.enemies;
+            m_powerups = payload.powerups;
 
             m_hud->setHealth(payload.playerStates.at(m_localPlayerId).health);
             m_hud->setScore(payload.score);
@@ -196,12 +198,17 @@ void StateGame::doInternalDraw() const
         m_shotSprite->draw(getGame()->getRenderTarget());
     }
 
+    for (auto& p : m_powerups) {
+        m_powerupShape->setPosition(p.position);
+        m_powerupShape->update(0.1f);
+        m_powerupShape->draw(getGame()->getRenderTarget());
+    }
+
     for (auto& e : m_enemies) {
         m_enemyShape->setPosition(e.position);
         m_enemyShape->update(0.1f);
         m_enemyShape->draw(getGame()->getRenderTarget());
     }
-
     for (auto p : m_remotePlayers) {
         p.second->draw();
     }

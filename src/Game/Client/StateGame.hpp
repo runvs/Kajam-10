@@ -6,6 +6,7 @@
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
 #include "Player.hpp"
+#include "PowerupState.hpp"
 #include "PredictedMove.hpp"
 #include "common.hpp"
 #include <cstddef>
@@ -37,8 +38,10 @@ private:
 
     std::vector<ShotState> m_shots;
     std::vector<EnemyState> m_enemies;
+    std::vector<PowerupState> m_powerups;
     std::shared_ptr<jt::Animation> mutable m_shotSprite;
     std::shared_ptr<jt::Shape> mutable m_enemyShape;
+    std::shared_ptr<jt::Shape> mutable m_powerupShape;
 
     bool m_running { false };
     bool m_hasEnded { false };
