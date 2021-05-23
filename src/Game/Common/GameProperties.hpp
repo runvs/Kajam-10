@@ -22,6 +22,7 @@ struct GameProperties {
     static int enemyDefaultHealth() { return 3; }
     static jt::Vector2 enemyHalfSize() { return jt::Vector2 { 8, 8 }; }
     static int spawnerEnemiesPerPlayer() { return 6; }
+    static int enemyKillsNeededForPowerup() { return 2; }
 
     static jt::Vector2 displayWindowSize() { return jt::Vector2 { 800, 600 }; }
     static float displayZoom() { return 2.0f; }
@@ -40,10 +41,7 @@ struct GameProperties {
         return jt::Vector2 { playerSizeInPixel() / 2.0f, playerSizeInPixel() / 2.0f };
     }
 
-    static jt::Vector2 powerupHalfSize()
-    {
-        return jt::Vector2 { playerSizeInPixel() / 2.0f, playerSizeInPixel() / 2.0f };
-    }
+    static jt::Vector2 powerupHalfSize() { return playerHalfSize(); }
 
     static int powerupHealthAmount() { return 4; }
 };
