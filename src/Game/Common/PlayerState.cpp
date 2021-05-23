@@ -63,30 +63,7 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState const
         playerState.position.y()
             = jt::MathHelper::clamp(playerState.position.y(), minYPos, maxYPos);
 
-        // TODO remove following pattern test code
-        // Set up some toggles for shot patterns
-        if (playerState._patternToggleTimer <= 0.0f) {
-            const float patternTimerMax = 0.2f;
-            if (input.at(jt::KeyCode::Num1)) {
-                // TODO move into GameServer handlepowerup
-                playerState._patternToggleTimer = patternTimerMax;
-
-                if (playerState._shotPattern == Shots::ShotPattern::level1()) {
-                    playerState._shotPattern = Shots::ShotPattern::level2();
-                } else if (playerState._shotPattern == Shots::ShotPattern::level2()) {
-                    playerState._shotPattern = Shots::ShotPattern::level3();
-                } else if (playerState._shotPattern == Shots::ShotPattern::level3()) {
-                    playerState._shotPattern = Shots::ShotPattern::level4();
-                } else if (playerState._shotPattern == Shots::ShotPattern::level4()) {
-                    playerState._shotPattern = Shots::ShotPattern::level5();
-                } else if (playerState._shotPattern == Shots::ShotPattern::level5()) {
-                    playerState._shotPattern = Shots::ShotPattern::level6();
-                }
-            }
-        }
-
         playerState._shootTimer -= elapsed;
-        playerState._patternToggleTimer -= elapsed;
     } else {
         playerState._respawnTimer -= elapsed;
         if (playerState._respawnTimer <= 0) {

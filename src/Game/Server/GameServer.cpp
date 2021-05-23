@@ -249,6 +249,23 @@ void GameServer::removeDeadPowerups()
     jt::SystemHelper::erase_if(m_powerups, [](auto& p) { return !p._alive; });
 }
 
+namespace {
+void increasePlayerShotLevel(PlayerState& player)
+{
+    if (player._shotPattern == Shots::ShotPattern::level1()) {
+        player._shotPattern = Shots::ShotPattern::level2();
+    } else if (player._shotPattern == Shots::ShotPattern::level2()) {
+        player._shotPattern = Shots::ShotPattern::level3();
+    } else if (player._shotPattern == Shots::ShotPattern::level3()) {
+        player._shotPattern = Shots::ShotPattern::level4();
+    } else if (player._shotPattern == Shots::ShotPattern::level4()) {
+        player._shotPattern = Shots::ShotPattern::level5();
+    } else if (player._shotPattern == Shots::ShotPattern::level5()) {
+        player._shotPattern = Shots::ShotPattern::level6();
+    }
+}
+} // namespace
+
 void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
 {
     powerup._alive = false;
@@ -257,8 +274,8 @@ void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
         player.health += Game::GameProperties::powerupHealthAmount();
         player.health
             = jt::MathHelper::clamp(player.health, 0, Game::GameProperties::playerMaxHealth());
-    } else if (powerup.type == static_cast<int>(PowerupType::POWERUP_HEALTH)) {
-        // TODO copy from updatePlayerState in PlayerState.hpp
+    } else if (powerup.type == static_cast<int>(PowerupType::POWERUP_SHOT)) {
+        increasePlayerShotLevel(player);
     }
 }
 
@@ -269,8 +286,6 @@ bool GameServer::performPlayerPowerupCollision(PowerupState& powerup, PlayerStat
     }
     if (overlaps(powerup.position, Game::GameProperties::powerupHalfSize(), player.position,
             Game::GameProperties::playerHalfSize())) {
-        std::cout << "Player collision with powerup" << std::endl;
-
         handlePowerupEffect(powerup, player);
     }
     return false;

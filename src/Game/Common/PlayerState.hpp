@@ -17,8 +17,6 @@ struct PlayerState {
 
     float _shootTimer { 0.0f };
     float _respawnTimer { 0.0f };
-    // TODO remove the following shot pattern test button timer
-    float _patternToggleTimer { 0.0f };
     int _shotPattern;
 };
 
