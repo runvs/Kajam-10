@@ -27,6 +27,7 @@ private:
 
     int m_score { 0 };
     float m_elapsed = 0.0f;
+    int m_enemyKillCount { 0 };
     std::vector<int> m_playersToDisconnect {};
 
     void removeInactivePlayers();
@@ -63,6 +64,7 @@ private:
     void handlePowerupEffect(PowerupState& powerup, PlayerState& player);
     bool performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player);
 
+    void spawnNewPowerups(jt::Vector2 const& enemyPosition);
     void updateAllPowerups();
 
     void removeDeadEnemies();

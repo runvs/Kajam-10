@@ -63,6 +63,8 @@ void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
         enemyTakeDamage(enemy, shot);
         if (!enemy._alive) {
             m_score += Game::GameProperties::scoreEnemyKillBonus();
+            m_enemyKillCount++;
+            spawnNewPowerups(enemy.position);
         }
     }
 }
@@ -267,15 +269,28 @@ bool GameServer::performPlayerPowerupCollision(PowerupState& powerup, PlayerStat
     }
     if (overlaps(powerup.position, Game::GameProperties::powerupHalfSize(), player.position,
             Game::GameProperties::playerHalfSize())) {
+        std::cout << "Player collision with powerup" << std::endl;
+
         handlePowerupEffect(powerup, player);
     }
     return false;
 }
 
+void GameServer::spawnNewPowerups(jt::Vector2 const& enemyPosition)
+{
+    if (m_enemyKillCount == Game::GameProperties::enemyKillsNeededForPowerup()) {
+        m_enemyKillCount = 0;
+        PowerupState p;
+        p.position = enemyPosition;
+        p.type = jt::Random::getInt(0, static_cast<int>(PowerupType::POWERUP_MAXNUMBER) - 1);
+        m_powerups.push_back(p);
+    }
+}
+
 void GameServer::updateAllPowerups()
 {
     for (auto& powerup : m_powerups) {
-        if (powerup._alive) {
+        if (!powerup._alive) {
             continue;
         }
         for (auto& p : m_playerStates) {
@@ -294,6 +309,7 @@ void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kv
     payload.shots = m_shots;
     payload.enemies = m_enemies;
     payload.score = m_score;
+    payload.powerups = m_powerups;
     m_networkServer.sendToClient(kvp.first, payload);
 }
 
@@ -327,10 +343,11 @@ void GameServer::update()
     updateAllShots();
     handleAllShotCollisions();
 
+    updateAllPowerups();
+
     removeDeadShots();
     removeDeadEnemies();
-
-    updateAllPowerups();
+    removeDeadPowerups();
 
     m_score = jt::MathHelper::clamp(m_score, 0, Game::GameProperties::scoreMax());
 
