@@ -45,7 +45,6 @@ void PlayerShotSpawner::createShotSingle(
         jt::Vector2 { 0, -1 }, Game::GameProperties::shotBaseJitterAmount());
 
     auto shotSpeed = jt::Random::getFloat(0.9f, 1.1f);
-    std::cout << "shotSpeed: " << shotSpeed << std::endl;
     auto shotState = ShotState { shotPosition, shotDirection, shotSpeed };
     shotStates.emplace_back(shotState);
 }
