@@ -50,7 +50,7 @@ void StateGame::doInternalCreate()
     m_vignette->setColor({ 255, 255, 255, 100 });
 
     m_shotSprite = std::make_shared<jt::Animation>();
-    m_shotSprite->add("assets/shots.jpg", "idle", { 16, 16 }, { 0, 1 }, 0.1f);
+    m_shotSprite->add("assets/shots.png", "idle", { 16, 16 }, { 0, 1 }, 0.1f);
     m_shotSprite->play("idle");
     m_enemyShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Red);
 
@@ -186,10 +186,12 @@ void StateGame::doInternalDraw() const
     drawObjects();
 
     for (auto& s : m_shots) {
-        auto angleInDegrees = jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
-        m_shotSprite->setOrigin(Game::GameProperties::shotHalfSize());
+        auto angleInDegrees = -jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
+        // std::cout << angleInDegrees << std::endl;
+        m_shotSprite->setOrigin(Game::GameProperties::shotHalfSizeRotation());
+
         m_shotSprite->setRotation(angleInDegrees);
-        m_shotSprite->setPosition(s.position + Game::GameProperties::shotHalfSize());
+        m_shotSprite->setPosition(s.position);
         m_shotSprite->update(0.1f);
         m_shotSprite->draw(getGame()->getRenderTarget());
     }

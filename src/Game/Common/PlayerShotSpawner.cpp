@@ -6,13 +6,8 @@
 std::vector<ShotState> PlayerShotSpawner::createShotFromPattern(
     int pattern, jt::Vector2 const& playerPosition)
 {
-    auto const shotOffset
-        = jt::Vector2 { static_cast<float>(Game::GameProperties::playerSizeInPixel()) / 2.0f - 4.0f,
-              0.0f };
+    auto const shotOffset = jt::Vector2 { Game::GameProperties::playerHalfSize().x(), 0.0f };
     auto const shotPosition = playerPosition + shotOffset;
-    // auto shotState = ShotState { shotPosition, shotDirection };
-    // return shotState;
-
     auto shotStates = std::vector<ShotState> {};
 
     if ((pattern & Shots::ShotPattern::SINGLE()) == Shots::ShotPattern::SINGLE()) {
@@ -32,9 +27,9 @@ std::vector<ShotState> PlayerShotSpawner::createShotFromPattern(
     }
 
     if ((pattern & Shots::ShotPattern::BEHIND()) == Shots::ShotPattern::BEHIND()) {
-        auto shotBehindOffset = jt::Vector2 { shotOffset.x(),
-            static_cast<float>(Game::GameProperties::playerSizeInPixel()) / 2.0f };
-        auto shotBehindPosition = playerPosition + shotBehindOffset;
+        auto const shotBehindOffset
+            = jt::Vector2 { shotOffset.x(), Game::GameProperties::playerHalfSize().y() };
+        auto const shotBehindPosition = playerPosition + shotBehindOffset;
         createShotBehind(shotStates, shotBehindPosition);
     }
 

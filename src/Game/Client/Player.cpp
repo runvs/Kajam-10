@@ -24,9 +24,9 @@ void Player::doCreate()
 {
     m_sprite = std::make_shared<jt::Animation>();
     if (m_isLocalPlayer) {
-        m_sprite->add("assets/turtle1.jpg", "idle", jt::Vector2u { 16, 16 }, { 0, 1 }, 0.15f);
+        m_sprite->add("assets/turtle1.png", "idle", jt::Vector2u { 16, 16 }, { 0, 1 }, 0.15f);
     } else {
-        m_sprite->add("assets/turtle2.jpg", "idle", jt::Vector2u { 16, 16 }, { 0, 1 }, 0.15f);
+        m_sprite->add("assets/turtle2.png", "idle", jt::Vector2u { 16, 16 }, { 0, 1 }, 0.15f);
     }
     m_sprite->play("idle");
 }

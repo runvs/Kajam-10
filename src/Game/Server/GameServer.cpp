@@ -56,7 +56,8 @@ bool overlaps(jt::Vector2 const& aPos, jt::Vector2 const& aHalfSize, jt::Vector2
 
 void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
 {
-    if (overlaps(shot.position, Game::GameProperties::shotHalfSize(), enemy.position,
+    if (overlaps(shot.position - Game::GameProperties::shotHalfSizeCollision(),
+            Game::GameProperties::shotHalfSizeCollision(), enemy.position,
             Game::GameProperties::enemyHalfSize())) {
         shot._alive = false;
         enemyTakeDamage(enemy, shot);
@@ -72,7 +73,7 @@ void GameServer::performShotPlayerCollision(PlayerState& player, ShotState& shot
         return;
     }
 
-    if (overlaps(shot.position, Game::GameProperties::shotHalfSize(), player.position,
+    if (overlaps(shot.position, Game::GameProperties::shotHalfSizeCollision(), player.position,
             Game::GameProperties::playerHalfSize())) {
         shot._alive = false;
         playerTakeDamage(player, shot);

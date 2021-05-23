@@ -45,7 +45,7 @@ void EnemyAIMine::doUpdate(EnemyState& state, std::vector<ShotState>& shots, flo
                 shot.position = state.position
                     + jt::Vector2 { Game::GameProperties::enemyHalfSize().x(),
                           Game::GameProperties::enemyHalfSize().y() * 2 }
-                    - Game::GameProperties::shotHalfSize();
+                    - Game::GameProperties::shotHalfSizeCollision();
                 shot.direction = 0.25f * jt::Vector2 { sin(angle), cos(angle) };
                 shots.push_back(shot);
             }
@@ -77,7 +77,7 @@ void EnemyAICircle::doUpdate(EnemyState& state, std::vector<ShotState>& shots, f
         shot.position = state.position
             + jt::Vector2 { Game::GameProperties::enemyHalfSize().x(),
                   Game::GameProperties::enemyHalfSize().y() * 2 }
-            - Game::GameProperties::shotHalfSize();
+            - Game::GameProperties::shotHalfSizeCollision();
         shot.direction = jt::Vector2 { 0.0f, 0.25f };
         shots.push_back(shot);
     }
