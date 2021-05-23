@@ -23,6 +23,14 @@ sf::Packet& operator>>(sf::Packet& packet, ShotState& shotState)
 void updateShotState(ShotState& s, float elapsed)
 {
     s.position += s.direction * elapsed * Game::GameProperties::shotVelocity();
+    float const margin = 32.0f;
+    bool const outTop = s.position.y() <= -margin;
+    bool const outLeft = s.position.x() <= -margin;
+    bool const outBot = s.position.y() >= Game::GameProperties::displayScreenSize().y() + margin;
+    bool const outRight = s.position.x() >= Game::GameProperties::displayScreenSize().x() + margin;
+    if (outTop || outLeft || outBot || outRight) {
+        s._alive = false;
+    }
     s._age += elapsed;
 }
 
