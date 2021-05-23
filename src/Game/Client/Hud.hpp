@@ -21,6 +21,8 @@ private:
 
     std::shared_ptr<jt::Bar> m_healthBar;
 
+    std::shared_ptr<jt::Shape> mutable m_barBackgroundShape;
+
     void doUpdate(float const elapsed) override;
 
     void doDraw() const override;

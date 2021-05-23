@@ -1,5 +1,6 @@
 ﻿#include "Hud.hpp"
 #include "Color.hpp"
+#include "DrawableHelpers.hpp"
 #include "GameInterface.hpp"
 #include "GameProperties.hpp"
 
@@ -26,6 +27,11 @@ void Hud::doCreate()
             - Game::GameProperties::hudBarWidth(),
         margin });
     m_scoreBar->setMaxValue(static_cast<float>(Game::GameProperties::scoreMax()));
+
+    m_barBackgroundShape
+        = jt::dh::createRectShape({ Game::GameProperties::hudBarWidth() * 2.0f,
+                                      Game::GameProperties::displayScreenSize().y() },
+            jt::Color { 32, 32, 32, 255 });
 }
 
 void Hud::setScore(int i)
@@ -52,6 +58,19 @@ void Hud::doDraw() const
     if (m_score >= 0) {
         m_scoreText->draw(getGame()->getRenderTarget());
     }
+
+    // Draw bar background on the left
+    m_barBackgroundShape->setPosition(jt::Vector2 { 0, 0 });
+    m_barBackgroundShape->update(0.1f);
+    m_barBackgroundShape->draw(getGame()->getRenderTarget());
+
+    // Draw bar background on the right
+    m_barBackgroundShape->setPosition(jt::Vector2 { Game::GameProperties::displayScreenSize().x()
+            - (Game::GameProperties::hudBarWidth() * 2.0f),
+        0 });
+    m_barBackgroundShape->update(0.1f);
+    m_barBackgroundShape->draw(getGame()->getRenderTarget());
+
     m_healthBar->draw(getGame()->getRenderTarget());
     m_scoreBar->draw(getGame()->getRenderTarget());
 }
