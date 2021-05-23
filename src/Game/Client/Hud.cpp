@@ -1,4 +1,5 @@
 ﻿#include "Hud.hpp"
+#include "ClientProperties.hpp"
 #include "Color.hpp"
 #include "DrawableHelpers.hpp"
 #include "GameInterface.hpp"
@@ -32,6 +33,17 @@ void Hud::doCreate()
         = jt::dh::createRectShape({ Game::GameProperties::hudBarWidth() * 2.0f,
                                       Game::GameProperties::displayScreenSize().y() },
             jt::Color { 32, 32, 32, 255 });
+
+    createTextNotConnectedToServer();
+}
+
+void Hud::createTextNotConnectedToServer()
+{
+    float half_width = Game::GameProperties::displayScreenSize().x() / 2;
+    m_textNotConnectedToServer = jt::dh::createText(
+        getGame()->getRenderTarget(), "Not connected to Server!", 16U, GP::PaletteFontDanger());
+    m_textNotConnectedToServer->setPosition({ half_width, 20 });
+    m_textNotConnectedToServer->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 3, 3 });
 }
 
 void Hud::setScore(int i)
@@ -51,6 +63,7 @@ void Hud::doUpdate(float const elapsed)
     m_scoreText->update(elapsed);
     m_scoreBar->update(elapsed);
     m_healthBar->update(elapsed);
+    m_textNotConnectedToServer->update(elapsed);
 }
 
 void Hud::doDraw() const
@@ -73,4 +86,8 @@ void Hud::doDraw() const
 
     m_healthBar->draw(getGame()->getRenderTarget());
     m_scoreBar->draw(getGame()->getRenderTarget());
+
+    if (!m_connectedToServer) {
+        m_textNotConnectedToServer->draw(getGame()->getRenderTarget());
+    }
 }

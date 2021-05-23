@@ -124,6 +124,11 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         auto inputState = m_localPlayer->getInput();
 
+        m_secondsSincelastDataReceived += elapsed;
+        if (m_secondsSincelastDataReceived >= GP::ClientToServerTimeout()) {
+            m_hud->m_connectedToServer = false;
+        }
+
         const PayloadClient2Server payload { m_localPlayerId, inputState, elapsed,
             m_currentPredictionId, false };
         m_client->send(payload);
@@ -136,6 +141,9 @@ void StateGame::doInternalUpdate(float const elapsed)
         updatePlayerState(m_currentPlayerState, elapsed, inputState);
 
         if (m_client->isNewDataAvailable()) {
+            m_secondsSincelastDataReceived = 0.0f;
+            m_hud->m_connectedToServer = true;
+
             auto payload = m_client->getData();
             removeLocalOnlyPlayers(payload);
 

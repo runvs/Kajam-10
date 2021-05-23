@@ -15,6 +15,7 @@ public:
 
     static jt::Color PaletteBackground() { return GP::PaletteColor6(); }
     static jt::Color PaletteFontFront() { return GP::PaletteColor4(); }
+    static jt::Color PaletteFontDanger() { return GP::PaletteColor5(); }
     static jt::Color PaletteFontShadow() { return GP::PaletteColor7(); }
 
     static jt::Color PaletteColor1() { return jt::Color { 5, 64, 71 }; }
@@ -28,6 +29,8 @@ public:
 
     static int PhysicVelocityIterations() { return 6; }
     static int PhysicPositionIterations() { return 2; }
+
+    static float ClientToServerTimeout() { return 2.0f; }
 };
 
 #endif

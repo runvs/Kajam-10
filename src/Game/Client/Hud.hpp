@@ -13,6 +13,8 @@ public:
     void setScore(int i);
     void setHealth(int health);
 
+    bool m_connectedToServer { false };
+
 private:
     int m_score { -1 };
 
@@ -23,11 +25,15 @@ private:
 
     std::shared_ptr<jt::Shape> mutable m_barBackgroundShape;
 
+    std::shared_ptr<jt::Text> m_textNotConnectedToServer;
+
     void doUpdate(float const elapsed) override;
 
     void doDraw() const override;
 
     void doCreate() override;
+
+    void createTextNotConnectedToServer();
 };
 
 #endif

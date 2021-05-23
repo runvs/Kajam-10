@@ -45,6 +45,7 @@ private:
 
     bool m_running { false };
     bool m_hasEnded { false };
+    float m_secondsSincelastDataReceived { 0.0f };
 
     int m_localPlayerId { -1 };
     PlayerState m_currentPlayerState;
