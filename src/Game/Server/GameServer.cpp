@@ -256,22 +256,7 @@ void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
         player.health
             = jt::MathHelper::clamp(player.health, 0, Game::GameProperties::playerMaxHealth());
     } else if (powerup.type == static_cast<int>(PowerupType::POWERUP_HEALTH)) {
-        if (player._shotPattern == Shots::ShotPattern::SINGLE()) {
-            player._shotPattern = Shots::ShotPattern::TRIPLE_WIDE();
-        } else if (player._shotPattern == Shots::ShotPattern::TRIPLE_WIDE()) {
-            player._shotPattern = Shots::ShotPattern::TRIPLE_NARROW();
-        } else if (player._shotPattern == Shots::ShotPattern::TRIPLE_NARROW()) {
-            player._shotPattern
-                = Shots::ShotPattern::TRIPLE_NARROW() | Shots::ShotPattern::BEHIND();
-        } else if (player._shotPattern == Shots::ShotPattern::TRIPLE_NARROW()
-            | Shots::ShotPattern::BEHIND()) {
-            player._shotPattern = Shots::ShotPattern::TRIPLE_NARROW() | Shots::ShotPattern::BEHIND()
-                | Shots::ShotPattern::SIDE();
-        } else {
-            player._shotPattern = Shots::ShotPattern::TRIPLE_NARROW()
-                | Shots::ShotPattern::TRIPLE_WIDE() | Shots::ShotPattern::BEHIND()
-                | Shots::ShotPattern::SIDE();
-        }
+        // TODO copy from updatePlayerState in PlayerState.hpp
     }
 }
 
