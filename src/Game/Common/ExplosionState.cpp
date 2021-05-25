@@ -26,5 +26,5 @@ void updateExplosionState(ExplosionState& state, float elapsed)
         = std::chrono::steady_clock::now() - state._begin;
 
     state._progress = (duration.count() / 1000.0f) / Game::GameProperties::explosionDuration();
-    state._alive = state._progress >= 1.0f;
+    state._alive = state._progress <= 1.0f;
 }
