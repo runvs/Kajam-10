@@ -16,6 +16,7 @@
 #include "SystemHelper.hpp"
 #include "TweenAlpha.hpp"
 #include <cmath>
+#include <iostream>
 
 void StateGame::doInternalCreate()
 {
@@ -64,6 +65,9 @@ void StateGame::doInternalCreate()
 
     m_hud = std::make_shared<Hud>();
     add(m_hud);
+
+    m_explosionManager = std::make_shared<ExplosionManager>();
+    add(m_explosionManager);
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
@@ -157,10 +161,10 @@ void StateGame::doInternalUpdate(float const elapsed)
             m_shots = payload.shots;
             m_enemies = payload.enemies;
             m_powerups = payload.powerups;
-            m_explosions = payload.explosions;
 
-            if (m_explosions.size() > 0)
-                std::cout << "Explosions spawned: " << m_explosions.size() << std::endl;
+            for (auto const& e : payload.explosions) {
+                m_explosionManager->add(e);
+            }
 
             m_hud->setHealth(payload.playerStates.at(m_localPlayerId).health);
             m_hud->setScore(payload.score);
@@ -228,6 +232,7 @@ void StateGame::doInternalDraw() const
         m_enemyShape->update(0.1f);
         m_enemyShape->draw(getGame()->getRenderTarget());
     }
+
     for (auto p : m_remotePlayers) {
         p.second->draw();
     }

@@ -44,6 +44,8 @@ struct GameProperties {
     static jt::Vector2 powerupHalfSize() { return playerHalfSize(); }
 
     static int powerupHealthAmount() { return 4; }
+
+    static float explosionDuration() { return 2.0f; }
 };
 } // namespace Game
 

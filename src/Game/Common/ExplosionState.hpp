@@ -9,6 +9,7 @@ struct ExplosionState {
     jt::Vector2 position { 0.0f, 0.0f };
 
     std::chrono::steady_clock::time_point _begin { std::chrono::steady_clock::now() };
+    float _progress { 0.0f };
     bool _alive { true };
 };
 
