@@ -44,8 +44,7 @@ void PlayerShotSpawner::createShotSingle(
     auto const shotDirection = getShotJitterDirection(
         jt::Vector2 { 0, -1 }, Game::GameProperties::shotBaseJitterAmount());
 
-    auto shotSpeed = jt::Random::getFloat(0.9f, 1.1f);
-    auto shotState = ShotState { shotPosition, shotDirection, shotSpeed };
+    auto shotState = ShotState { shotPosition, shotDirection };
     shotStates.emplace_back(shotState);
 }
 
