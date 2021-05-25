@@ -7,6 +7,7 @@
 #include "GameProperties.hpp"
 #include "Hud.hpp"
 #include "MathHelper.hpp"
+#include "Parallax.hpp"
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
 #include "Shape.hpp"
@@ -31,6 +32,9 @@ void StateGame::doInternalCreate()
     m_background->setColor(jt::Color { 25, 25, 25 });
     m_background->setIgnoreCamMovement(true);
     m_background->update(0.0f);
+
+    m_parallax = std::make_shared<Parallax>();
+    add(m_parallax);
 
     m_overlay = std::make_shared<Shape>();
     m_overlay->makeRect(jt::Vector2 { w, h });
@@ -129,6 +133,8 @@ void StateGame::doInternalUpdate(float const elapsed)
             m_hud->m_connectedToServer = false;
         }
 
+        m_parallax->update(elapsed);
+
         const PayloadClient2Server payload { m_localPlayerId, inputState, elapsed,
             m_currentPredictionId, false };
         m_client->send(payload);
@@ -193,8 +199,9 @@ void StateGame::doInternalUpdate(float const elapsed)
 void StateGame::doInternalDraw() const
 {
     m_background->draw(getGame()->getRenderTarget());
-    drawObjects();
 
+    drawObjects();
+    m_parallax->draw();
     for (auto& s : m_shots) {
         auto angleInDegrees = -jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
         // std::cout << angleInDegrees << std::endl;

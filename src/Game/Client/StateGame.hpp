@@ -5,6 +5,7 @@
 #include "EnemyState.hpp"
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
+#include "Parallax.hpp"
 #include "Player.hpp"
 #include "PowerupState.hpp"
 #include "PredictedMove.hpp"
@@ -42,6 +43,7 @@ private:
     std::shared_ptr<jt::Animation> mutable m_shotSprite;
     std::shared_ptr<jt::Shape> mutable m_enemyShape;
     std::shared_ptr<jt::Shape> mutable m_powerupShape;
+    std::shared_ptr<Parallax> m_parallax { nullptr };
 
     bool m_running { false };
     bool m_hasEnded { false };
