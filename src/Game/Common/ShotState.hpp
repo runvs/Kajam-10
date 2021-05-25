@@ -7,7 +7,7 @@
 struct ShotState {
     jt::Vector2 position { -200.0f, -200.0f };
     jt::Vector2 direction { 0.0f, 1.0f };
-    float _speed { 1.0f };
+    float _speedMultiplier { 1.0f };
     float _age { 0.0f };
     bool _alive { true };
     bool fromPlayer { true };
