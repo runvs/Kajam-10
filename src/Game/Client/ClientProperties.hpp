@@ -31,6 +31,9 @@ public:
     static int PhysicPositionIterations() { return 2; }
 
     static float ClientToServerTimeout() { return 2.0f; }
+
+    static float explosionShockwaveBaseSize() { return 1.0f; }
+    static float explosionShockwaveMaxSize() { return 4.0f; }
 };
 
 #endif
