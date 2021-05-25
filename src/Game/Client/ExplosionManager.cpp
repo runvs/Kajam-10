@@ -23,6 +23,7 @@ void ExplosionManager::doCreate()
 void ExplosionManager::add(ExplosionState const& explosionState)
 {
     m_explosions.emplace_back(explosionState);
+    getGame()->getCamera()->shake(0.3f, 1.5f);
 }
 
 void ExplosionManager::removeDeadExplosions()
