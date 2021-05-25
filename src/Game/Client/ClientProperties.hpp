@@ -31,6 +31,8 @@ public:
     static int PhysicPositionIterations() { return 2; }
 
     static float ClientToServerTimeout() { return 2.0f; }
+
+    static float ExplosionDuration() { return 2.0f; }
 };
 
 #endif

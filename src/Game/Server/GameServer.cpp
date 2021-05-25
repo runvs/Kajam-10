@@ -65,6 +65,7 @@ void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
             m_score += Game::GameProperties::scoreEnemyKillBonus();
             m_enemyKillCount++;
             spawnNewPowerups(enemy.position);
+            spawnNewExplosion(enemy.position);
         }
     }
 }
@@ -249,6 +250,8 @@ void GameServer::removeDeadPowerups()
     jt::SystemHelper::erase_if(m_powerups, [](auto& p) { return !p._alive; });
 }
 
+void GameServer::clearExplosions() { m_explosions.clear(); }
+
 namespace {
 void increasePlayerShotLevel(PlayerState& player)
 {
@@ -315,6 +318,12 @@ void GameServer::updateAllPowerups()
     }
 }
 
+void GameServer::spawnNewExplosion(jt::Vector2 const& enemyPosition)
+{
+    auto explosion = ExplosionState { enemyPosition };
+    m_explosions.emplace_back(explosion);
+}
+
 void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kvp)
 {
     PayloadServer2Client payload;
@@ -325,6 +334,7 @@ void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kv
     payload.enemies = m_enemies;
     payload.score = m_score;
     payload.powerups = m_powerups;
+    payload.explosions = m_explosions;
     m_networkServer.sendToClient(kvp.first, payload);
 }
 
@@ -344,6 +354,7 @@ void GameServer::update()
             Network::NetworkProperties::serverTickTime() * 1000) };
 
     removeInactivePlayers();
+    clearExplosions();
 
     handleAllPayloadsForAllPlayers();
 

@@ -3,6 +3,7 @@
 
 #include "EnemyAI.hpp"
 #include "EnemyState.hpp"
+#include "ExplosionState.hpp"
 #include "InputState.hpp"
 #include "PlayerState.hpp"
 #include "PowerupState.hpp"
@@ -33,6 +34,7 @@ struct PayloadServer2Client {
     std::vector<ShotState> shots {};
     std::vector<EnemyState> enemies {};
     std::vector<PowerupState> powerups {};
+    std::vector<ExplosionState> explosions {};
 
     int score { 0 };
 };

@@ -157,6 +157,10 @@ void StateGame::doInternalUpdate(float const elapsed)
             m_shots = payload.shots;
             m_enemies = payload.enemies;
             m_powerups = payload.powerups;
+            m_explosions = payload.explosions;
+
+            if (m_explosions.size() > 0)
+                std::cout << "Explosions spawned: " << m_explosions.size() << std::endl;
 
             m_hud->setHealth(payload.playerStates.at(m_localPlayerId).health);
             m_hud->setScore(payload.score);

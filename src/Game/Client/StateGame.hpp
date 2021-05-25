@@ -3,6 +3,7 @@
 
 #include "CircularBuffer.hpp"
 #include "EnemyState.hpp"
+#include "ExplosionState.hpp"
 #include "GameState.hpp"
 #include "NetworkClient.hpp"
 #include "Parallax.hpp"
@@ -40,6 +41,7 @@ private:
     std::vector<ShotState> m_shots;
     std::vector<EnemyState> m_enemies;
     std::vector<PowerupState> m_powerups;
+    std::vector<ExplosionState> m_explosions;
     std::shared_ptr<jt::Animation> mutable m_shotSprite;
     std::shared_ptr<jt::Shape> mutable m_enemyShape;
     std::shared_ptr<jt::Shape> mutable m_powerupShape;

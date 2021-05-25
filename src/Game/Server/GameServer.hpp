@@ -3,6 +3,7 @@
 
 #include "CircularBuffer.hpp"
 #include "EnemySpawner.hpp"
+#include "ExplosionState.hpp"
 #include "NetworkServer.hpp"
 #include "ShotPattern.hpp"
 #include <vector>
@@ -21,6 +22,7 @@ private:
 
     std::vector<ShotState> m_shots;
     std::vector<EnemyState> m_enemies;
+    std::vector<ExplosionState> m_explosions;
 
     EnemySpawner m_enemySpawner { m_enemies };
     std::vector<PowerupState> m_powerups;
@@ -67,9 +69,12 @@ private:
     void spawnNewPowerups(jt::Vector2 const& enemyPosition);
     void updateAllPowerups();
 
+    void spawnNewExplosion(jt::Vector2 const& enemyPosition);
+
     void removeDeadEnemies();
     void removeDeadShots();
     void removeDeadPowerups();
+    void clearExplosions();
 };
 
 #endif
