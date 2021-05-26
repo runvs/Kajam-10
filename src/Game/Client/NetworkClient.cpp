@@ -73,17 +73,16 @@ bool NetworkClient::isNewDataAvailable()
     return m_newDataReceived;
 }
 
-PayloadServer2Client NetworkClient::getData()
+std::vector<PayloadServer2Client> NetworkClient::getData()
 {
     std::lock_guard const lock { m_dataMutex };
     if (m_newDataReceived) {
         m_newDataReceived = false;
-        auto temp = m_received_data;
-        m_received_data.playerStates.clear();
-        m_received_data.shots.clear();
+        auto temp = m_receivedData;
+        m_receivedData.clear();
         return temp;
     }
-    return PayloadServer2Client { -1, {} };
+    return std::vector<PayloadServer2Client> {};
 }
 
 void NetworkClient::send(PayloadClient2Server const& payload)
@@ -108,7 +107,9 @@ void NetworkClient::internalReceiveData()
         // std::cout << "received data\n";
         std::lock_guard const lockData { m_dataMutex };
         m_newDataReceived = true;
-        packet >> m_received_data;
+        PayloadServer2Client received;
+        packet >> received;
+        m_receivedData.emplace_back(std::move(received));
     } else if (status == sf::Socket::Status::Error) {
         std::cout << "network error\n";
     }

@@ -12,7 +12,7 @@ public:
     ~NetworkClient();
 
     bool isNewDataAvailable();
-    PayloadServer2Client getData();
+    std::vector<PayloadServer2Client> getData();
     void send(PayloadClient2Server const&);
 
 private:
@@ -25,7 +25,7 @@ private:
 
     std::mutex m_dataMutex;
     bool m_newDataReceived;
-    PayloadServer2Client m_received_data;
+    std::vector<PayloadServer2Client> m_receivedData;
 
     bool m_newDataToSend;
     PayloadClient2Server m_dataToSend;

@@ -154,34 +154,37 @@ void StateGame::doInternalUpdate(float const elapsed)
             m_secondsSincelastDataReceived = 0.0f;
             m_hud->m_connectedToServer = true;
 
-            auto payload = m_client->getData();
-            removeLocalOnlyPlayers(payload);
+            auto payloads = m_client->getData();
+            auto lastPayload = *payloads.rbegin();
 
-            checkLocalPlayerId(payload.playerID);
-            m_shots = payload.shots;
-            m_enemies = payload.enemies;
-            m_powerups = payload.powerups;
+            for (auto const& payload : payloads) {
+                removeLocalOnlyPlayers(payload);
+                checkLocalPlayerId(payload.playerID);
 
-            for (auto const& e : payload.explosions) {
-                m_explosionManager->add(e);
+                for (auto const& e : payload.explosions) {
+                    m_explosionManager->add(e);
+                }
             }
 
-            m_hud->setHealth(payload.playerStates.at(m_localPlayerId).health);
-            m_hud->setScore(payload.score);
-            m_localPlayer->setHealth(payload.playerStates.at(m_localPlayerId).health);
-            m_currentPlayerState.health = payload.playerStates.at(m_localPlayerId).health;
+            m_shots = lastPayload.shots;
+            m_enemies = lastPayload.enemies;
+            m_powerups = lastPayload.powerups;
+            m_hud->setHealth(lastPayload.playerStates.at(m_localPlayerId).health);
+            m_hud->setScore(lastPayload.score);
+            m_localPlayer->setHealth(lastPayload.playerStates.at(m_localPlayerId).health);
+            m_currentPlayerState.health = lastPayload.playerStates.at(m_localPlayerId).health;
 
-            auto const diff = m_predictedMoveResults[payload.predictionId].position
-                - payload.playerStates[m_localPlayerId].position;
+            auto const diff = m_predictedMoveResults[lastPayload.predictionId].position
+                - lastPayload.playerStates[m_localPlayerId].position;
 
             if (jt::MathHelper::lengthSquared(diff)
                 > Game::GameProperties::playerMaxAllowedPredictionError()) {
-                std::cout << "prediction error for prediction id " << payload.predictionId
+                std::cout << "prediction error for prediction id " << lastPayload.predictionId
                           << "with local current prediction id: " << m_currentPredictionId
                           << std::endl;
-                m_currentPlayerState = payload.playerStates[m_localPlayerId];
+                m_currentPlayerState = lastPayload.playerStates[m_localPlayerId];
 
-                for (std::size_t replayingPredictionId = payload.predictionId + 1;
+                for (std::size_t replayingPredictionId = lastPayload.predictionId + 1;
                      replayingPredictionId < m_currentPredictionId; ++replayingPredictionId) {
 
                     updatePlayerState(m_currentPlayerState,
@@ -191,7 +194,7 @@ void StateGame::doInternalUpdate(float const elapsed)
                     m_predictedMoveResults[replayingPredictionId] = m_currentPlayerState;
                 }
             }
-            updateRemotePlayers(payload);
+            updateRemotePlayers(lastPayload);
         }
     }
     m_localPlayer->m_sprite->setPosition(m_currentPlayerState.position);
