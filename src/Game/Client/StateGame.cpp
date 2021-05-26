@@ -222,7 +222,9 @@ void StateGame::doInternalDraw() const
     }
 
     for (auto& p : m_powerups) {
-        m_powerupShape->setPosition(p.position);
+        float const sinOffset = p.position.x() + p.position.y();
+        float const offset = sin(getAge() * 1.1f + sinOffset) * 8.0f;
+        m_powerupShape->setPosition(p.position + jt::Vector2 { 0.0f, offset });
         m_powerupShape->update(0.1f);
         m_powerupShape->draw(getGame()->getRenderTarget());
     }
