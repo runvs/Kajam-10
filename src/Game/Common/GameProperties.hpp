@@ -19,7 +19,7 @@ struct GameProperties {
     static jt::Vector2 shotHalfSizeCollision() { return jt::Vector2 { 4.0f, 8.0f }; }
     static jt::Vector2 shotHalfSizeRotation() { return jt::Vector2 { 8.0f, 4.0f }; }
 
-    static int enemyDefaultHealth() { return 3; }
+    static int enemyDefaultHealth() { return 4; }
     static jt::Vector2 enemyHalfSize() { return jt::Vector2 { 8, 8 }; }
     static int spawnerEnemiesPerPlayer() { return 6; }
     static int enemyKillsNeededForPowerup() { return 2; }
@@ -48,6 +48,7 @@ struct GameProperties {
     static float explosionDuration() { return 2.0f; }
     static jt::Vector2 explosionHalfSize() { return explosionSize() / 2.0f; }
     static jt::Vector2 explosionSize() { return jt::Vector2 { 16.0f, 16.0f }; }
+    static float enemyHealthIncrease() { return 5.0f; }
 };
 } // namespace Game
 

@@ -196,7 +196,10 @@ void GameServer::handleEnemySpawning()
 {
     m_enemySpawner.setActivePlayerCount(static_cast<int>(m_playerStates.size()));
     // TODO increase difficulty
-    m_enemySpawner.setDifficulty(1.0f);
+    float const v = jt::MathHelper::clamp(static_cast<float>(m_score)
+            / Game::GameProperties::scoreMax() * Game::GameProperties::enemyHealthIncrease(),
+        1.0f, Game::GameProperties::enemyHealthIncrease());
+    m_enemySpawner.setDifficulty(v);
     m_enemySpawner.update(m_elapsed);
 }
 

@@ -24,9 +24,12 @@ void EnemySpawner::update(float elapsed)
     }
     m_timer += elapsed;
     m_sah.update(elapsed);
+
     auto const maxTimer = getMaxTimer();
-    if (m_timer >= m_timerMax) {
-        m_timer -= m_timerMax;
+    // std::cout << maxTimer << " " << m_timer << std::endl;
+    if (m_timer >= maxTimer) {
+        // std::cout << "spawn\n\n\n";
+        m_timer -= maxTimer;
         spawnEnemyGroup();
     }
 }
@@ -44,9 +47,9 @@ int EnemySpawner::getGroupSize() { return 2; }
 
 float EnemySpawner::getMaxTimer() const
 {
-    float const exponent = 1.2f;
+    float const exponent = 1.3f;
     auto const currentEnemies = static_cast<float>(m_enemies.size());
-    auto const targetEnemies = static_cast<float>(getEnemyNumberTarget());
+    auto const targetEnemies = static_cast<float>(getEnemyNumberTarget() * m_difficulty);
     return std::pow(currentEnemies / targetEnemies, exponent) * m_timerMax;
 }
 
