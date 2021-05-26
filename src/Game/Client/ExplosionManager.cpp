@@ -70,9 +70,9 @@ void ExplosionManager::prepareShapesByProgress(ExplosionState const& explosionSt
     m_spriteShockwave->setScale(jt::Vector2 { shockwaveScale, shockwaveScale });
 
     if (explosionState._progress <= 0.1f) {
-        m_spriteShockwave->play("idle");
+        m_spriteShockwave->play("fade0");
     } else if (explosionState._progress <= 0.2f) {
-        m_spriteShockwave->play("fade2");
+        m_spriteShockwave->play("fade1");
     } else if (explosionState._progress <= 0.3f) {
         m_spriteShockwave->play("fade2");
     } else if (explosionState._progress <= 0.35f) {
