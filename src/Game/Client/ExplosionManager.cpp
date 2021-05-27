@@ -111,17 +111,54 @@ void ExplosionManager::prepareShapesByProgress(ExplosionState const& explosionSt
 
 namespace {
 const std::map<int, std::pair<float, jt::Vector2>> smokeBasePositions {
-    { 0, { 15.0f, jt::Vector2 { 0.66f, 0.75f } } },
-    { 1, { 15.0f, jt::Vector2 { -0.3f, 0.95f } } },
-    { 2, { 15.0f, jt::Vector2 { -0.96f, -0.3f } } },
-    { 3, { 15.0f, jt::Vector2 { -0.46f, -0.89f } } },
-    { 4, { 15.0f, jt::Vector2 { -0.87f, -0.49f } } },
-    { 5, { 15.0f, jt::Vector2 { -0.87f, 0.5f } } },
-    { 6, { 15.0f, jt::Vector2 { 0.21f, -0.98f } } },
-    { 7, { 15.0f, jt::Vector2 { 0.42f, 0.91f } } },
-    { 8, { 15.8f, jt::Vector2 { -1.0f, 0.07f } } },
-    { 9, { 15.3f, jt::Vector2 { 1.0f, 0.07f } } },
+    { 0, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { 0.66f, 0.75f } } },
+    { 1, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { -0.3f, 0.95f } } },
+    { 2, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { -0.96f, -0.3f } } },
+    { 3, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { -0.46f, -0.89f } } },
+    { 4, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { -0.87f, -0.49f } } },
+    { 5, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { -0.87f, 0.5f } } },
+    { 6, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { 0.21f, -0.98f } } },
+    { 7, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { 0.42f, 0.91f } } },
+    { 8, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { -1.0f, 0.07f } } },
+    { 9, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { 1.0f, 0.07f } } },
 };
+
+jt::Color getSmokeColorByProgress(float progress)
+{
+    jt::Color color;
+    if (progress < 0.05f) {
+        return jt::colors::White;
+    } else if (progress < 0.1f) {
+        return jt::Color { 168, 128, 128 };
+    }
+
+    float variation = jt::Random::getFloat(0.0f, 0.3f);
+    color.r() = static_cast<uint8_t>(jt::Lerp::cubic(70.0f, 0.0f, progress * variation));
+    color.g() = static_cast<uint8_t>(jt::Lerp::cubic(62.0f, 0.0f, progress * variation));
+    color.b() = static_cast<uint8_t>(jt::Lerp::cubic(60.0f, 0.0f, progress * variation));
+    color.a() = static_cast<uint8_t>(255.0f * (1.0f - progress));
+
+    return color;
+}
+
+jt::Color getFireColorByProgress(float progress)
+{
+    jt::Color color;
+    if (progress < 0.05f) {
+        return jt::colors::White;
+    } else if (progress < 0.1f) {
+        return jt::Color { 168, 128, 128 };
+    }
+    jt::Color { 180, 32, 32, 255 };
+
+    float variation = jt::Random::getFloat(0.0f, 0.3f);
+    color.r() = static_cast<uint8_t>(jt::Lerp::cubic(180.0f, 0.0f, progress * variation));
+    color.g() = static_cast<uint8_t>(jt::Lerp::cubic(32.0f, 0.0f, progress * variation));
+    color.b() = static_cast<uint8_t>(jt::Lerp::cubic(32.0f, 0.0f, progress * variation));
+    color.a() = static_cast<uint8_t>(jt::Lerp::linear(255.0f, 0.0f, progress));
+
+    return color;
+}
 } // namespace
 
 void ExplosionManager::prepareSmokeShapesByProgress(ExplosionState const& explosionState) const
@@ -132,6 +169,7 @@ void ExplosionManager::prepareSmokeShapesByProgress(ExplosionState const& explos
         auto offset = jt::MathHelper::rotateBy(
             distance * smokeBasePositions.at(i).second, explosionState._rotation);
         m_shapesSmoke.at(i)->setPosition(explosionState.position + offset);
+        m_shapesSmoke.at(i)->setColor(getSmokeColorByProgress(explosionState._progress));
     }
 }
 
@@ -139,14 +177,16 @@ void ExplosionManager::doDraw() const
 {
     for (auto& e : m_explosions) {
         prepareShapesByProgress(e);
-        prepareSmokeShapesByProgress(e);
 
         m_spriteShockwave->update(0.1f);
         m_spriteShockwave->draw(getGame()->getRenderTarget());
 
+        auto fireColor = getFireColorByProgress(e._progress);
+        m_shapeFire->setColor(fireColor);
         m_shapeFire->update(0.1f);
         m_shapeFire->draw(getGame()->getRenderTarget());
 
+        prepareSmokeShapesByProgress(e);
         for (auto& s : m_shapesSmoke) {
             s->update(0.1f);
             s->draw(getGame()->getRenderTarget());
