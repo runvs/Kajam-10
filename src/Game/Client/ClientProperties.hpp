@@ -33,7 +33,7 @@ public:
     static float ClientToServerTimeout() { return 2.0f; }
 
     static float explosionShockwaveBaseSize() { return 1.0f; }
-    static float explosionShockwaveMaxSize() { return 4.0f; }
+    static float explosionShockwaveMaxSize() { return 2.5f; }
 };
 
 #endif

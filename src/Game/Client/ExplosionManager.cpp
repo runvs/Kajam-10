@@ -88,19 +88,20 @@ void ExplosionManager::prepareShapesByProgress(ExplosionState const& explosionSt
     m_spriteShockwave->setPosition(explosionState.position + Game::GameProperties::enemyHalfSize());
     m_spriteShockwave->setOrigin(jt::Vector2 { 8.0f, 8.0f });
 
-    auto shockwaveScale = GP::explosionShockwaveBaseSize()
-        + GP::explosionShockwaveMaxSize() * explosionState._progress;
+    auto shockwaveScale = jt::Lerp::cubicInvers(GP::explosionShockwaveMaxSize(),
+        GP::explosionShockwaveBaseSize(), explosionState._progress);
     m_spriteShockwave->setScale(jt::Vector2 { shockwaveScale, shockwaveScale });
 
-    if (explosionState._progress <= 0.1f) {
+    if (explosionState._progress <= 0.05f) {
+        m_spriteShockwave->flash(0.1f);
         m_spriteShockwave->play("fade0");
-    } else if (explosionState._progress <= 0.2f) {
+    } else if (explosionState._progress <= 0.13f) {
         m_spriteShockwave->play("fade1");
-    } else if (explosionState._progress <= 0.3f) {
+    } else if (explosionState._progress <= 0.18f) {
         m_spriteShockwave->play("fade2");
-    } else if (explosionState._progress <= 0.35f) {
+    } else if (explosionState._progress <= 0.25f) {
         m_spriteShockwave->play("fade3");
-    } else if (explosionState._progress <= 0.4f) {
+    } else if (explosionState._progress <= 0.35f) {
         m_spriteShockwave->play("fade4");
     } else if (explosionState._progress <= 0.43f) {
         m_spriteShockwave->play("fade5");

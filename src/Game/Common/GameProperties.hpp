@@ -22,7 +22,7 @@ struct GameProperties {
     static int enemyDefaultHealth() { return 4; }
     static jt::Vector2 enemyHalfSize() { return jt::Vector2 { 8, 8 }; }
     static int spawnerEnemiesPerPlayer() { return 6; }
-    static int enemyKillsNeededForPowerup() { return 2; }
+    static int enemyKillsNeededForPowerup() { return 10; }
 
     static jt::Vector2 displayWindowSize() { return jt::Vector2 { 800, 600 }; }
     static float displayZoom() { return 2.0f; }
