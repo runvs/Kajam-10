@@ -123,7 +123,7 @@ const std::map<int, std::pair<float, jt::Vector2>> smokeBasePositions {
     { 9, { jt::Random::getFloat(20.0f, 30.f), jt::Vector2 { 1.0f, 0.07f } } },
 };
 
-jt::Color getSmokeColorByProgress(float progress)
+jt::Color getColorByProgress(jt::Color const& baseColor, float progress)
 {
     jt::Color color;
     if (progress < 0.05f) {
@@ -132,30 +132,14 @@ jt::Color getSmokeColorByProgress(float progress)
         return jt::Color { 168, 128, 128 };
     }
 
-    float variation = jt::Random::getFloat(0.0f, 0.3f);
-    color.r() = static_cast<uint8_t>(jt::Lerp::cubic(70.0f, 0.0f, progress * variation));
-    color.g() = static_cast<uint8_t>(jt::Lerp::cubic(62.0f, 0.0f, progress * variation));
-    color.b() = static_cast<uint8_t>(jt::Lerp::cubic(60.0f, 0.0f, progress * variation));
-    color.a() = static_cast<uint8_t>(255.0f * (1.0f - progress));
-
-    return color;
-}
-
-jt::Color getFireColorByProgress(float progress)
-{
-    jt::Color color;
-    if (progress < 0.05f) {
-        return jt::colors::White;
-    } else if (progress < 0.1f) {
-        return jt::Color { 168, 128, 128 };
-    }
-    jt::Color { 180, 32, 32, 255 };
-
-    float variation = jt::Random::getFloat(0.0f, 0.3f);
-    color.r() = static_cast<uint8_t>(jt::Lerp::cubic(180.0f, 0.0f, progress * variation));
-    color.g() = static_cast<uint8_t>(jt::Lerp::cubic(32.0f, 0.0f, progress * variation));
-    color.b() = static_cast<uint8_t>(jt::Lerp::cubic(32.0f, 0.0f, progress * variation));
-    color.a() = static_cast<uint8_t>(jt::Lerp::linear(255.0f, 0.0f, progress));
+    color.r()
+        = static_cast<uint8_t>(jt::Lerp::cubic(static_cast<float>(baseColor.r()), 0.0f, progress));
+    color.g()
+        = static_cast<uint8_t>(jt::Lerp::cubic(static_cast<float>(baseColor.g()), 0.0f, progress));
+    color.b()
+        = static_cast<uint8_t>(jt::Lerp::cubic(static_cast<float>(baseColor.b()), 0.0f, progress));
+    color.a()
+        = static_cast<uint8_t>(jt::Lerp::linear(static_cast<float>(baseColor.a()), 0.0f, progress));
 
     return color;
 }
@@ -169,7 +153,8 @@ void ExplosionManager::prepareSmokeShapesByProgress(ExplosionState const& explos
         auto offset = jt::MathHelper::rotateBy(
             distance * smokeBasePositions.at(i).second, explosionState._rotation);
         m_shapesSmoke.at(i)->setPosition(explosionState.position + offset);
-        m_shapesSmoke.at(i)->setColor(getSmokeColorByProgress(explosionState._progress));
+        m_shapesSmoke.at(i)->setColor(
+            getColorByProgress(jt::Color { 70, 62, 60, 200 }, explosionState._progress));
     }
 }
 
@@ -181,7 +166,7 @@ void ExplosionManager::doDraw() const
         m_spriteShockwave->update(0.1f);
         m_spriteShockwave->draw(getGame()->getRenderTarget());
 
-        auto fireColor = getFireColorByProgress(e._progress);
+        auto fireColor = getColorByProgress(jt::Color { 180, 32, 32, 255 }, e._progress);
         m_shapeFire->setColor(fireColor);
         m_shapeFire->update(0.1f);
         m_shapeFire->draw(getGame()->getRenderTarget());
