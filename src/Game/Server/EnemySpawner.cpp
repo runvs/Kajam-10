@@ -26,9 +26,7 @@ void EnemySpawner::update(float elapsed)
     m_sah.update(elapsed);
 
     auto const maxTimer = getMaxTimer();
-    // std::cout << maxTimer << " " << m_timer << std::endl;
     if (m_timer >= maxTimer) {
-        // std::cout << "spawn\n\n\n";
         m_timer -= maxTimer;
         spawnEnemyGroup();
     }

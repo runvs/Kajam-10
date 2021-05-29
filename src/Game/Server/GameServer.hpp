@@ -32,10 +32,10 @@ private:
     int m_enemyKillCount { 0 };
     std::vector<int> m_playersToDisconnect {};
 
+    void resetServerState();
     void removeInactivePlayers();
     void removeDisconnectedPlayers();
 
-    jt::Vector2 getRandomNewPlayerPosition() const;
     void createNewPlayerIfNotKnownToServer(int currentPlayerId);
 
     bool checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId);
@@ -63,11 +63,11 @@ private:
     void handleSingleShotCollision(ShotState& s);
     void handleAllShotCollisions();
 
-    void handlePowerupEffect(PowerupState& powerup, PlayerState& player);
-    bool performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player);
-
     void spawnNewPowerups(jt::Vector2 const& enemyPosition);
     void updateAllPowerups();
+    void handlePowerupEffect(PowerupState& powerup, PlayerState& player);
+
+    bool performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player);
 
     void spawnNewExplosion(jt::Vector2 const& enemyPosition);
 
@@ -75,6 +75,7 @@ private:
     void removeDeadShots();
     void removeDeadPowerups();
     void clearExplosions();
+    int getPowerupType();
 };
 
 #endif

@@ -32,8 +32,8 @@ struct GameProperties {
 
     static float scrollSpeed() { return 25.0f; }
 
-    static int scoreMax() { return 500; }
-
+    static int scoreMax() { return 700; }
+    static int scorePowerupBoostAmount() { return 75; }
     static int scoreEnemyKillBonus() { return 1; }
     static int scorePlayerDeathMalus() { return 50; }
     static jt::Vector2 playerHalfSize()

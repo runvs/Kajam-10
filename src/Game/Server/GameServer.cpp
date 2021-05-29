@@ -4,15 +4,19 @@
 #include "common.hpp"
 #include <iostream>
 
-void GameServer::removeInactivePlayers()
+namespace {
+
+bool overlaps(jt::Vector2 const& aPos, jt::Vector2 const& aHalfSize, jt::Vector2 const& bPos,
+    jt::Vector2 const& bHalfSize)
 {
-    auto const playerIds = m_networkServer.getAllPlayerIds();
-    jt::SystemHelper::erase_if(m_playerStates, [&playerIds](auto const& kvp) {
-        return std::find(playerIds.cbegin(), playerIds.cend(), kvp.first) == playerIds.cend();
-    });
+    auto const aCenterPosition = aPos + aHalfSize;
+    auto const bCenterPosition = bPos + bHalfSize;
+    auto const diff = aCenterPosition - bCenterPosition;
+    auto const lSquared = jt::MathHelper::lengthSquared(diff);
+    return (lSquared < (aHalfSize.x() + bHalfSize.x()) * (aHalfSize.y() + bHalfSize.y()));
 }
 
-jt::Vector2 GameServer::getRandomNewPlayerPosition() const
+jt::Vector2 getRandomNewPlayerPosition()
 {
     auto const minXPos
         = Game::GameProperties::hudBarMargin() * 2.0f + Game::GameProperties::hudBarWidth();
@@ -21,9 +25,48 @@ jt::Vector2 GameServer::getRandomNewPlayerPosition() const
     return jt::Vector2 { xPos, yPos };
 }
 
+void increasePlayerShotLevel(PlayerState& player)
+{
+    if (player._shotPattern == Shots::ShotPattern::level1()) {
+        player._shotPattern = Shots::ShotPattern::level2();
+    } else if (player._shotPattern == Shots::ShotPattern::level2()) {
+        player._shotPattern = Shots::ShotPattern::level3();
+    } else if (player._shotPattern == Shots::ShotPattern::level3()) {
+        player._shotPattern = Shots::ShotPattern::level4();
+    } else if (player._shotPattern == Shots::ShotPattern::level4()) {
+        player._shotPattern = Shots::ShotPattern::level5();
+    } else if (player._shotPattern == Shots::ShotPattern::level5()) {
+        player._shotPattern = Shots::ShotPattern::level6();
+    }
+}
+
+} // namespace
+
+void GameServer::resetServerState()
+{
+    if (m_playerStates.empty()) {
+        // std::cout << "no players connected, reset server\n";
+        m_score = 0;
+        m_enemies.clear();
+        m_powerups.clear();
+        m_enemyKillCount = 0;
+        m_shots.clear();
+    }
+}
+
+void GameServer::removeInactivePlayers()
+{
+    auto const playerIds = m_networkServer.getAllPlayerIds();
+    jt::SystemHelper::erase_if(m_playerStates, [&playerIds](auto const& kvp) {
+        return std::find(playerIds.cbegin(), playerIds.cend(), kvp.first) == playerIds.cend();
+    });
+
+    resetServerState();
+}
+
 void GameServer::createNewPlayerIfNotKnownToServer(int currentPlayerId)
 {
-    bool isPlayerKnownToServer = (m_playerStates.count(currentPlayerId) != 0);
+    const bool isPlayerKnownToServer = (m_playerStates.count(currentPlayerId) != 0);
     if (isPlayerKnownToServer) {
         return;
     }
@@ -34,7 +77,7 @@ void GameServer::createNewPlayerIfNotKnownToServer(int currentPlayerId)
 
 bool GameServer::checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId)
 {
-    bool hasDuplicateMessage = m_receivedMessageIdsMap[currentPlayerId].contains(messageId);
+    const bool hasDuplicateMessage = m_receivedMessageIdsMap[currentPlayerId].contains(messageId);
     if (hasDuplicateMessage) {
         std::cout << "skip duplicated message for player " << currentPlayerId << std::endl;
     } else {
@@ -42,16 +85,6 @@ bool GameServer::checkForDuplicatedMessages(int currentPlayerId, std::size_t con
     }
 
     return hasDuplicateMessage;
-}
-
-bool overlaps(jt::Vector2 const& aPos, jt::Vector2 const& aHalfSize, jt::Vector2 const& bPos,
-    jt::Vector2 const& bHalfSize)
-{
-    auto const aCenterPosition = aPos + aHalfSize;
-    auto const bCenterPosition = bPos + bHalfSize;
-    auto const diff = aCenterPosition - bCenterPosition;
-    auto const lSquared = jt::MathHelper::lengthSquared(diff);
-    return (lSquared < (aHalfSize.x() + bHalfSize.x()) * (aHalfSize.y() + bHalfSize.y()));
 }
 
 void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
@@ -195,9 +228,9 @@ void GameServer::removeDisconnectedPlayers()
 void GameServer::handleEnemySpawning()
 {
     m_enemySpawner.setActivePlayerCount(static_cast<int>(m_playerStates.size()));
-    // TODO increase difficulty
     float const v = jt::MathHelper::clamp(static_cast<float>(m_score)
-            / Game::GameProperties::scoreMax() * Game::GameProperties::enemyHealthIncrease(),
+            / static_cast<float>(Game::GameProperties::scoreMax())
+            * Game::GameProperties::enemyHealthIncrease(),
         1.0f, Game::GameProperties::enemyHealthIncrease());
     m_enemySpawner.setDifficulty(v);
     m_enemySpawner.update(m_elapsed);
@@ -255,46 +288,17 @@ void GameServer::removeDeadPowerups()
 
 void GameServer::clearExplosions() { m_explosions.clear(); }
 
-namespace {
-void increasePlayerShotLevel(PlayerState& player)
+int GameServer::getPowerupType()
 {
-    if (player._shotPattern == Shots::ShotPattern::level1()) {
-        player._shotPattern = Shots::ShotPattern::level2();
-    } else if (player._shotPattern == Shots::ShotPattern::level2()) {
-        player._shotPattern = Shots::ShotPattern::level3();
-    } else if (player._shotPattern == Shots::ShotPattern::level3()) {
-        player._shotPattern = Shots::ShotPattern::level4();
-    } else if (player._shotPattern == Shots::ShotPattern::level4()) {
-        player._shotPattern = Shots::ShotPattern::level5();
-    } else if (player._shotPattern == Shots::ShotPattern::level5()) {
-        player._shotPattern = Shots::ShotPattern::level6();
-    }
-}
-} // namespace
 
-void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
-{
-    powerup._alive = false;
-    // TODO other powerup types
-    if (powerup.type == static_cast<int>(PowerupType::POWERUP_HEALTH)) {
-        player.health += Game::GameProperties::powerupHealthAmount();
-        player.health
-            = jt::MathHelper::clamp(player.health, 0, Game::GameProperties::playerMaxHealth());
-    } else if (powerup.type == static_cast<int>(PowerupType::POWERUP_SHOT)) {
-        increasePlayerShotLevel(player);
+    auto const allPlayersHaveFullHp
+        = std::all_of(m_playerStates.cbegin(), m_playerStates.cend(), [](auto const& kvp) {
+              return kvp.second.health == Game::GameProperties::playerMaxHealth();
+          });
+    if (allPlayersHaveFullHp) {
+        return jt::Random::getInt(1, static_cast<int>(PowerupType::POWERUP_MAXNUMBER) - 1);
     }
-}
-
-bool GameServer::performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player)
-{
-    if (player.health <= 0) {
-        return true;
-    }
-    if (overlaps(powerup.position, Game::GameProperties::powerupHalfSize(), player.position,
-            Game::GameProperties::playerHalfSize())) {
-        handlePowerupEffect(powerup, player);
-    }
-    return false;
+    return jt::Random::getInt(0, static_cast<int>(PowerupType::POWERUP_MAXNUMBER) - 1);
 }
 
 void GameServer::spawnNewPowerups(jt::Vector2 const& enemyPosition)
@@ -303,7 +307,7 @@ void GameServer::spawnNewPowerups(jt::Vector2 const& enemyPosition)
         m_enemyKillCount = 0;
         PowerupState p;
         p.position = enemyPosition;
-        p.type = jt::Random::getInt(0, static_cast<int>(PowerupType::POWERUP_MAXNUMBER) - 1);
+        p.type = getPowerupType();
         m_powerups.push_back(p);
     }
 }
@@ -319,6 +323,33 @@ void GameServer::updateAllPowerups()
                 continue;
         }
     }
+}
+
+void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
+{
+    powerup._alive = false;
+    // TODO other powerup types
+    if (powerup.type == static_cast<int>(PowerupType::POWERUP_HEALTH)) {
+        player.health += Game::GameProperties::powerupHealthAmount();
+        player.health
+            = jt::MathHelper::clamp(player.health, 0, Game::GameProperties::playerMaxHealth());
+    } else if (powerup.type == static_cast<int>(PowerupType::POWERUP_SHOT)) {
+        increasePlayerShotLevel(player);
+    } else if (powerup.type == static_cast<int>(PowerupType::POWERUP_POINTS)) {
+        m_score += Game::GameProperties::scorePowerupBoostAmount();
+    }
+}
+
+bool GameServer::performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player)
+{
+    if (player.health <= 0) {
+        return true;
+    }
+    if (overlaps(powerup.position, Game::GameProperties::powerupHalfSize(), player.position,
+            Game::GameProperties::playerHalfSize())) {
+        handlePowerupEffect(powerup, player);
+    }
+    return false;
 }
 
 void GameServer::spawnNewExplosion(jt::Vector2 const& enemyPosition)
@@ -383,7 +414,8 @@ void GameServer::update()
     sendPayloadToPlayers();
 
     std::this_thread::sleep_until(next);
-    auto after = std::chrono::steady_clock::now();
-    m_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(after - now).count() / 1000.0f
-        / 1000.0f;
+    const auto after = std::chrono::steady_clock::now();
+    m_elapsed = static_cast<float>(
+                    std::chrono::duration_cast<std::chrono::microseconds>(after - now).count())
+        / 1000.0f / 1000.0f;
 }
