@@ -1,4 +1,4 @@
-#include "ExplosionManager.hpp"
+﻿#include "ExplosionManager.hpp"
 #include "ClientProperties.hpp"
 #include "Color.hpp"
 #include "DrawableHelpers.hpp"
@@ -7,6 +7,7 @@
 #include "Lerp.hpp"
 #include "MathHelper.hpp"
 #include "Random.hpp"
+#include "Soundgroup.hpp"
 #include "SystemHelper.hpp"
 #include <iostream>
 #include <memory>
@@ -22,6 +23,13 @@ void ExplosionManager::doCreate()
 
     createShockwave();
     createSmokeSprites();
+    createSoundgroup();
+}
+
+void ExplosionManager::createSoundgroup()
+{
+    m_sounds = std::make_shared<jt::SoundGroup>(std::vector<std::string> {
+        "assets/sfx/explosion1.ogg", "assets/sfx/explosion2.ogg", "assets/sfx/explosion3.ogg" });
 }
 
 void ExplosionManager::createSmokeSprites()
@@ -61,6 +69,7 @@ void ExplosionManager::add(ExplosionState const& explosionState)
     explosionState._rotation = jt::Random::getFloat(0.0f, 360.0f);
     m_explosions.emplace_back(explosionState);
     getGame()->getCamera()->shake(0.3f, 1.5f);
+    m_sounds->play();
 }
 
 void ExplosionManager::removeDeadExplosions()

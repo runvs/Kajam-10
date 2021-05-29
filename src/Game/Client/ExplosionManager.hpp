@@ -1,4 +1,4 @@
-#ifndef EXPLOSION_GUARD_HPP
+﻿#ifndef EXPLOSION_GUARD_HPP
 #define EXPLOSION_GUARD_HPP
 
 #include "Animation.hpp"
@@ -9,9 +9,14 @@
 #include <memory>
 #include <vector>
 
+namespace jt {
+class SoundGroup;
+}
+
 class ExplosionManager : public jt::GameObject {
 public:
     ExplosionManager();
+    void createSoundgroup();
     void add(ExplosionState const& explosionState);
 
 private:
@@ -32,6 +37,7 @@ private:
     std::shared_ptr<jt::Shape> m_shapeFire;
     std::vector<std::shared_ptr<jt::Shape>> m_shapesSmoke;
     std::shared_ptr<jt::Animation> m_spriteShockwave;
+    std::shared_ptr<jt::SoundGroup> m_sounds;
 };
 
 #endif // EXPLOSION_GUARD_HPP
