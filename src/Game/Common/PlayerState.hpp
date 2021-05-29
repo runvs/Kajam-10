@@ -14,6 +14,7 @@ struct EnemyState;
 struct PlayerState {
     jt::Vector2 position { 0, 0 };
     int health { 12 };
+    bool pickedUpPowerup { false };
 
     float _shootTimer { 0.0f };
     float _respawnTimer { 0.0f };

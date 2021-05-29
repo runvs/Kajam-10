@@ -10,6 +10,7 @@ sf::Packet& operator<<(sf::Packet& packet, PlayerState& playerState)
 {
     packet << playerState.position;
     packet << playerState.health;
+    packet << playerState.pickedUpPowerup;
     return packet;
 }
 sf::Packet& operator<<(sf::Packet& packet, PlayerState const& playerState)
@@ -17,6 +18,7 @@ sf::Packet& operator<<(sf::Packet& packet, PlayerState const& playerState)
 
     packet << playerState.position;
     packet << playerState.health;
+    packet << playerState.pickedUpPowerup;
     return packet;
 }
 
@@ -24,6 +26,7 @@ sf::Packet& operator>>(sf::Packet& packet, PlayerState& playerState)
 {
     packet >> playerState.position;
     packet >> playerState.health;
+    packet >> playerState.pickedUpPowerup;
     return packet;
 }
 

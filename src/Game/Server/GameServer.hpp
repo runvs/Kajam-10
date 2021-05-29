@@ -68,7 +68,7 @@ private:
     void updateAllPowerups();
     void handlePowerupEffect(PowerupState& powerup, PlayerState& player);
 
-    bool performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player);
+    void performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player);
 
     void spawnNewExplosion(jt::Vector2 const& enemyPosition);
 

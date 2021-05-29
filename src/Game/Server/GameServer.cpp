@@ -291,7 +291,6 @@ void GameServer::clearExplosions() { m_explosions.clear(); }
 
 int GameServer::getPowerupType()
 {
-
     auto const allPlayersHaveFullHp
         = std::all_of(m_playerStates.cbegin(), m_playerStates.cend(), [](auto const& kvp) {
               return kvp.second.health == Game::GameProperties::playerMaxHealth();
@@ -315,13 +314,16 @@ void GameServer::spawnNewPowerups(jt::Vector2 const& enemyPosition)
 
 void GameServer::updateAllPowerups()
 {
+    for (auto& p : m_playerStates) {
+        p.second.pickedUpPowerup = false;
+    }
+
     for (auto& powerup : m_powerups) {
         if (!powerup._alive) {
             continue;
         }
         for (auto& p : m_playerStates) {
-            if (performPlayerPowerupCollision(powerup, p.second))
-                continue;
+            performPlayerPowerupCollision(powerup, p.second);
         }
     }
 }
@@ -329,6 +331,7 @@ void GameServer::updateAllPowerups()
 void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
 {
     powerup._alive = false;
+    player.pickedUpPowerup = true;
     // TODO other powerup types
     if (powerup.type == static_cast<int>(PowerupType::POWERUP_HEALTH)) {
         player.health += Game::GameProperties::powerupHealthAmount();
@@ -341,16 +344,15 @@ void GameServer::handlePowerupEffect(PowerupState& powerup, PlayerState& player)
     }
 }
 
-bool GameServer::performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player)
+void GameServer::performPlayerPowerupCollision(PowerupState& powerup, PlayerState& player)
 {
     if (player.health <= 0) {
-        return true;
+        return;
     }
     if (overlaps(powerup.position, Game::GameProperties::powerupHalfSize(), player.position,
             Game::GameProperties::playerHalfSize())) {
         handlePowerupEffect(powerup, player);
     }
-    return false;
 }
 
 void GameServer::spawnNewExplosion(jt::Vector2 const& enemyPosition)

@@ -17,6 +17,7 @@
 
 // fwd decls
 namespace jt {
+class Sound;
 class Shape;
 class Sprite;
 class Animation;
@@ -48,6 +49,7 @@ private:
     std::shared_ptr<ExplosionManager> m_explosionManager { nullptr };
     std::shared_ptr<Parallax> m_parallax { nullptr };
     std::shared_ptr<jt::SoundGroup> m_shotSounds { nullptr };
+    std::shared_ptr<jt::Sound> m_powerupSound { nullptr };
     bool m_running { false };
     bool m_hasEnded { false };
     float m_secondsSincelastDataReceived { 0.0f };

@@ -11,6 +11,7 @@
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
 #include "Shape.hpp"
+#include "Sound.hpp"
 #include "Soundgroup.hpp"
 #include "Sprite.hpp"
 #include "StateMenu.hpp"
@@ -80,6 +81,9 @@ void StateGame::doInternalCreate()
     m_shotSounds = std::make_shared<jt::SoundGroup>(std::vector<std::string> {
         "assets/sfx/shoot1.ogg", "assets/sfx/shoot2.ogg", "assets/sfx/shoot3.ogg" });
     m_shotSounds->setVolume(50);
+
+    m_powerupSound = std::make_shared<jt::Sound>();
+    m_powerupSound->load("assets/sfx/powerup1.ogg");
 }
 
 void StateGame::updateActivePlayerPositionFromServer(
@@ -167,6 +171,9 @@ void StateGame::doInternalUpdate(float const elapsed)
                 checkLocalPlayerId(payload.playerID);
                 if (payload.shotFired) {
                     m_shotSounds->play();
+                }
+                if (payload.playerStates.at(payload.playerID).pickedUpPowerup) {
+                    m_powerupSound->play();
                 }
                 for (auto const& e : payload.explosions) {
                     m_explosionManager->add(e);
