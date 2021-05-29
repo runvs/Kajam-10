@@ -31,6 +31,7 @@ private:
     float m_elapsed = 0.0f;
     int m_enemyKillCount { 0 };
     std::vector<int> m_playersToDisconnect {};
+    bool m_shotFired { false };
 
     void resetServerState();
     void removeInactivePlayers();

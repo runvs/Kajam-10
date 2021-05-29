@@ -162,6 +162,7 @@ void GameServer::handlePlayerShooting(int currentPlayerId, PayloadClient2Server 
         bool const isPlayerShootTimerExpired = m_playerStates[currentPlayerId]._shootTimer <= 0;
 
         if (isPlayerShootTimerExpired) {
+            m_shotFired = true;
             auto shots = PlayerShotSpawner::createShotFromPattern(
                 m_playerStates[currentPlayerId]._shotPattern,
                 m_playerStates[currentPlayerId].position);
@@ -369,6 +370,7 @@ void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kv
     payload.score = m_score;
     payload.powerups = m_powerups;
     payload.explosions = m_explosions;
+    payload.shotFired = m_shotFired;
     m_networkServer.sendToClient(kvp.first, payload);
 }
 
@@ -381,6 +383,7 @@ void GameServer::sendPayloadToPlayers()
 
 void GameServer::update()
 {
+    m_shotFired = false;
     auto const now = std::chrono::steady_clock::now();
 
     auto const next = now

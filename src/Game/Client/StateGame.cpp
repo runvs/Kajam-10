@@ -11,6 +11,7 @@
 #include "Payloads.hpp"
 #include "PlayerState.hpp"
 #include "Shape.hpp"
+#include "Soundgroup.hpp"
 #include "Sprite.hpp"
 #include "StateMenu.hpp"
 #include "SystemHelper.hpp"
@@ -75,6 +76,10 @@ void StateGame::doInternalCreate()
     m_client
         = std::make_shared<NetworkClient>(sf::IpAddress { Network::NetworkProperties::serverIp() });
     m_client->send(PayloadClient2Server { 0, {} });
+
+    m_shotSounds = std::make_shared<jt::SoundGroup>(std::vector<std::string> {
+        "assets/sfx/shoot1.ogg", "assets/sfx/shoot2.ogg", "assets/sfx/shoot3.ogg" });
+    m_shotSounds->setVolume(50);
 }
 
 void StateGame::updateActivePlayerPositionFromServer(
@@ -160,7 +165,9 @@ void StateGame::doInternalUpdate(float const elapsed)
             for (auto const& payload : payloads) {
                 removeLocalOnlyPlayers(payload);
                 checkLocalPlayerId(payload.playerID);
-
+                if (payload.shotFired) {
+                    m_shotSounds->play();
+                }
                 for (auto const& e : payload.explosions) {
                     m_explosionManager->add(e);
                 }

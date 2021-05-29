@@ -35,6 +35,7 @@ struct PayloadServer2Client {
     std::vector<EnemyState> enemies {};
     std::vector<PowerupState> powerups {};
     std::vector<ExplosionState> explosions {};
+    bool shotFired { false };
 
     int score { 0 };
 };

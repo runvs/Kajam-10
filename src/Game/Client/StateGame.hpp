@@ -42,12 +42,12 @@ private:
     std::vector<ShotState> m_shots;
     std::vector<EnemyState> m_enemies;
     std::vector<PowerupState> m_powerups;
-    std::shared_ptr<jt::Animation> mutable m_shotSprite;
-    std::shared_ptr<jt::Shape> mutable m_enemyShape;
-    std::shared_ptr<jt::Shape> mutable m_powerupShape;
-    std::shared_ptr<ExplosionManager> m_explosionManager;
+    std::shared_ptr<jt::Animation> mutable m_shotSprite { nullptr };
+    std::shared_ptr<jt::Shape> mutable m_enemyShape { nullptr };
+    std::shared_ptr<jt::Shape> mutable m_powerupShape { nullptr };
+    std::shared_ptr<ExplosionManager> m_explosionManager { nullptr };
     std::shared_ptr<Parallax> m_parallax { nullptr };
-
+    std::shared_ptr<jt::SoundGroup> m_shotSounds { nullptr };
     bool m_running { false };
     bool m_hasEnded { false };
     float m_secondsSincelastDataReceived { 0.0f };
