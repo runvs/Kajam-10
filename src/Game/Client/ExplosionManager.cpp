@@ -68,7 +68,7 @@ void ExplosionManager::add(ExplosionState const& explosionState)
 {
     explosionState._rotation = jt::Random::getFloat(0.0f, 360.0f);
     m_explosions.emplace_back(explosionState);
-    getGame()->getCamera()->shake(0.3f, 1.5f);
+    getGame()->getCamera()->shake(0.1f, 1.0f);
     m_sounds->play();
 }
 
