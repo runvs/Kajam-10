@@ -11,6 +11,7 @@ struct GameProperties {
     static int playerSizeInPixel() { return 16; }
     static int playerMaxHealth() { return 12; }
     static float playerRespawnTime() { return 5.0f; }
+    static float playerGracePeriodAfterDeath() { return 2.0f; }
 
     static float shotVelocity() { return 200.0f; }
     static float shotLifeTime() { return 5.0f; }

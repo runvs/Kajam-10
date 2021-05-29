@@ -18,6 +18,7 @@ struct PlayerState {
 
     float _shootTimer { 0.0f };
     float _respawnTimer { 0.0f };
+    float _gracePeriod { 0.0f };
     int _shotPattern;
 };
 

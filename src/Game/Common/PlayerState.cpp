@@ -32,6 +32,7 @@ sf::Packet& operator>>(sf::Packet& packet, PlayerState& playerState)
 
 void respawnPlayer(PlayerState& playerState)
 {
+    playerState._gracePeriod = Game::GameProperties::playerGracePeriodAfterDeath();
     playerState._respawnTimer = 0;
     playerState._shotPattern = Shots::ShotPattern::level1();
     playerState.health = Game::GameProperties::playerMaxHealth();
@@ -67,6 +68,7 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState const
             = jt::MathHelper::clamp(playerState.position.y(), minYPos, maxYPos);
 
         playerState._shootTimer -= elapsed;
+        playerState._gracePeriod -= elapsed;
     } else {
         playerState._respawnTimer -= elapsed;
         if (playerState._respawnTimer <= 0) {
@@ -89,7 +91,7 @@ void checkPlayerDeath(PlayerState& playerState)
 
 void playerTakeDamage(PlayerState& playerState, ShotState& shot)
 {
-    if (playerState.health <= 0) {
+    if (playerState.health <= 0 || playerState._gracePeriod >= 0.0f) {
         return;
     }
     playerState.health -= shot._damage;
@@ -99,7 +101,7 @@ void playerTakeDamage(PlayerState& playerState, ShotState& shot)
 // TODO take enemy size into account
 void playerTakeDamage(PlayerState& playerState, EnemyState& enemy)
 {
-    if (playerState.health <= 0) {
+    if (playerState.health <= 0 || playerState._gracePeriod >= 0.0f) {
         return;
     }
     playerState.health -= 4;
