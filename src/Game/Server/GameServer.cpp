@@ -91,7 +91,8 @@ void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
 {
     if (overlaps(shot.position - Game::GameProperties::shotHalfSizeCollision(),
             Game::GameProperties::shotHalfSizeCollision(), enemy.position,
-            Game::GameProperties::enemyHalfSize())) {
+            Game::GameProperties::enemyHalfSize())
+        && enemy.position.y() >= Game::GameProperties::enemyHalfSize().y()) {
         shot._alive = false;
         enemyTakeDamage(enemy, shot);
         if (!enemy._alive) {
