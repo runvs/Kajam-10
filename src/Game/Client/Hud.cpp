@@ -20,6 +20,7 @@ void Hud::doCreate()
     m_healthBar = std::make_shared<jt::Bar>(Game::GameProperties::hudBarWidth(),
         Game::GameProperties::displayScreenSize().y() - 2.0f * margin, false);
     m_healthBar->setPosition({ margin, margin });
+    m_healthBar->setFrontColor(jt::Color { 102, 165, 35, 255 });
     m_healthBar->setMaxValue(static_cast<float>(Game::GameProperties::playerMaxHealth()));
 
     m_scoreBar = std::make_shared<jt::Bar>(Game::GameProperties::hudBarWidth(),
@@ -52,7 +53,18 @@ void Hud::setScore(int i)
     m_scoreBar->setCurrentValue(static_cast<float>(m_score));
 }
 
-void Hud::setHealth(int health) { m_healthBar->setCurrentValue(static_cast<float>(health)); }
+void Hud::setHealth(int health)
+{
+    m_healthBar->setCurrentValue(static_cast<float>(health));
+
+    if (health < Game::GameProperties::playerMaxHealth() * 0.33f) {
+        m_healthBar->setFrontColor(jt::Color { 168, 0, 0, 255 });
+    } else if (health < Game::GameProperties::playerMaxHealth() * 0.67f) {
+        m_healthBar->setFrontColor(jt::Color { 205, 192, 43, 255 });
+    } else {
+        m_healthBar->setFrontColor(jt::Color { 102, 165, 35, 255 });
+    }
+}
 
 void Hud::doUpdate(float const elapsed)
 {
