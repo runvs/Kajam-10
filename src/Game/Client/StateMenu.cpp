@@ -51,7 +51,7 @@ void StateMenu::createMenuText()
 void StateMenu::createTextCredits()
 {
     m_text_Credits = jt::dh::createText(getGame()->getRenderTarget(),
-        "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\n" + GP::JamDate()
+        "Created by " + GP::AuthorName() + " for " + "\n" + GP::JamName() + " in " + GP::JamDate()
             + "\nThis game uses OpenAl, licensed under LGPL v2.\nPlease see https://openal.org/ "
               "for details",
         10U, GP::PaletteColor5());

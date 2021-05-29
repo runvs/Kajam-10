@@ -9,9 +9,9 @@ public:
     GP() = delete;
 
     static std::string GameName() { return "MyAwesomeGame"; }
-    static std::string AuthorName() { return "TODO"; }
-    static std::string JamName() { return "TODO"; }
-    static std::string JamDate() { return "TODO"; }
+    static std::string AuthorName() { return "Thunraz, oOBloodyOrangeOo and Laguna"; }
+    static std::string JamName() { return "The Multiplayer Kajam"; }
+    static std::string JamDate() { return "May 2021"; }
 
     static jt::Color PaletteBackground() { return GP::PaletteColor6(); }
     static jt::Color PaletteFontFront() { return GP::PaletteColor4(); }
