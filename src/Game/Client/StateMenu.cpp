@@ -25,6 +25,7 @@ void StateMenu::doInternalCreate()
     createVignette();
 
     createTweens();
+    getGame()->getMusicPlayer()->PlayMusic("assets/music.ogg");
 }
 
 void StateMenu::createVignette()
@@ -53,10 +54,12 @@ void StateMenu::createTextCredits()
     m_text_Credits = jt::dh::createText(getGame()->getRenderTarget(),
         "Created by " + GP::AuthorName() + " for " + "\n" + GP::JamName() + " in " + GP::JamDate()
             + "\nThis game uses OpenAl, licensed under LGPL v2.\nPlease see https://openal.org/ "
-              "for details",
-        10U, GP::PaletteColor5());
+              "for details"
+            + "\nThe Soundtrack 'Tomorrow Belongs to Cats' belongs to Doxent Zsigmond (c)\n"
+              "copyright 2020 Licensed under a Creative Commons Attribution (3.0) license. ",
+        8U, GP::PaletteColor5());
     m_text_Credits->SetTextAlign(jt::Text::TextAlign::LEFT);
-    m_text_Credits->setPosition({ 10, Game::GameProperties::displayScreenSize().y() - 53 });
+    m_text_Credits->setPosition({ 8, Game::GameProperties::displayScreenSize().y() - 75 });
     m_text_Credits->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 1, 1 });
 }
 

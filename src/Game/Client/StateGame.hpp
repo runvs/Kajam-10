@@ -71,6 +71,8 @@ private:
     void removeLocalOnlyPlayers(PayloadServer2Client payload);
     void checkLocalPlayerId(int payloadPlayerId);
     void doInternalUpdate(float const elapsed) override;
+    void drawPlayerShots() const;
+    void drawEnemyShots() const;
     void doInternalDraw() const override;
 
     void endGame();

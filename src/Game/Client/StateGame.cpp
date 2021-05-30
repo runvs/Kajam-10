@@ -224,22 +224,44 @@ void StateGame::doInternalUpdate(float const elapsed)
     }
 }
 
+void StateGame::drawPlayerShots() const
+{
+    for (auto& s : m_shots) {
+        auto angleInDegrees = -jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
+        m_shotSprite->setOrigin(Game::GameProperties::shotHalfSizeRotation());
+        if (s.fromPlayer) {
+            m_shotSprite->setColor(jt::Color { 255, 255, 255 });
+            m_shotSprite->setRotation(angleInDegrees);
+            m_shotSprite->setPosition(s.position);
+            m_shotSprite->update(0.1f);
+            m_shotSprite->draw(getGame()->getRenderTarget());
+        }
+    }
+}
+
+void StateGame::drawEnemyShots() const
+{
+    for (auto& s : m_shots) {
+        auto angleInDegrees = -jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
+        m_shotSprite->setOrigin(Game::GameProperties::shotHalfSizeRotation());
+        if (!s.fromPlayer) {
+            m_shotSprite->setColor(jt::Color { 255, 150, 150 });
+            m_shotSprite->setRotation(angleInDegrees);
+            m_shotSprite->setPosition(s.position);
+            m_shotSprite->update(0.1f);
+            m_shotSprite->draw(getGame()->getRenderTarget());
+        }
+    }
+}
+
 void StateGame::doInternalDraw() const
 {
     m_background->draw(getGame()->getRenderTarget());
 
     drawObjects();
     m_parallax->draw();
-    for (auto& s : m_shots) {
-        auto angleInDegrees = -jt::MathHelper::rad2deg(atan2(s.direction.y(), s.direction.x()));
-        // std::cout << angleInDegrees << std::endl;
-        m_shotSprite->setOrigin(Game::GameProperties::shotHalfSizeRotation());
-
-        m_shotSprite->setRotation(angleInDegrees);
-        m_shotSprite->setPosition(s.position);
-        m_shotSprite->update(0.1f);
-        m_shotSprite->draw(getGame()->getRenderTarget());
-    }
+    drawPlayerShots();
+    drawEnemyShots();
 
     for (auto& p : m_powerups) {
         float const sinOffset = p.position.x() + p.position.y();
