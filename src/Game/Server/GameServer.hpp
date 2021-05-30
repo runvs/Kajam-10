@@ -28,6 +28,7 @@ private:
     std::vector<PowerupState> m_powerups;
 
     int m_score { 0 };
+    int m_level { 0 };
     float m_elapsed = 0.0f;
     int m_enemyKillCount { 0 };
     std::vector<int> m_playersToDisconnect {};
@@ -40,6 +41,7 @@ private:
     void createNewPlayerIfNotKnownToServer(int currentPlayerId);
 
     bool checkForDuplicatedMessages(int currentPlayerId, std::size_t const messageId);
+    void increaseLevel();
     void sortIncomingPayloadsForPlayer(std::vector<PayloadClient2Server> dataForPlayer) const;
     bool handleSinglePayloadForSinglePlayer(
         int currentPlayerId, PayloadClient2Server const& payload);
@@ -48,6 +50,7 @@ private:
 
     void sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kvp);
     void sendPayloadToPlayers();
+    void resetPlayerStatesForThisFrame();
 
     void performShotEnemyCollision(ShotState& shot, EnemyState& enemy);
     void performShotPlayerCollision(PlayerState& player, ShotState& shot);

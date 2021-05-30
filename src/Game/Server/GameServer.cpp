@@ -47,6 +47,7 @@ void GameServer::resetServerState()
     if (m_playerStates.empty()) {
         // std::cout << "no players connected, reset server\n";
         m_score = 0;
+        m_level = 0;
         m_enemies.clear();
         m_powerups.clear();
         m_enemyKillCount = 0;
@@ -87,6 +88,12 @@ bool GameServer::checkForDuplicatedMessages(int currentPlayerId, std::size_t con
     return hasDuplicateMessage;
 }
 
+void GameServer::increaseLevel()
+{
+    m_level++;
+    m_score = 0;
+}
+
 void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
 {
     if (overlaps(shot.position - Game::GameProperties::shotHalfSizeCollision(),
@@ -97,6 +104,9 @@ void GameServer::performShotEnemyCollision(ShotState& shot, EnemyState& enemy)
         enemyTakeDamage(enemy, shot);
         if (!enemy._alive) {
             m_score += Game::GameProperties::scoreEnemyKillBonus();
+            if (m_score >= Game::GameProperties::scoreMax()) {
+                increaseLevel();
+            }
             m_enemyKillCount++;
             spawnNewPowerups(enemy.position);
             spawnNewExplosion(enemy.position);
@@ -231,9 +241,10 @@ void GameServer::handleEnemySpawning()
 {
     m_enemySpawner.setActivePlayerCount(static_cast<int>(m_playerStates.size()));
     float const v = jt::MathHelper::clamp(static_cast<float>(m_score)
-            / static_cast<float>(Game::GameProperties::scoreMax())
-            * Game::GameProperties::enemyHealthIncrease(),
-        1.0f, Game::GameProperties::enemyHealthIncrease());
+                            / static_cast<float>(Game::GameProperties::scoreMax())
+                            * Game::GameProperties::enemyHealthIncrease(),
+                        1.0f, Game::GameProperties::enemyHealthIncrease())
+        + m_level;
     m_enemySpawner.setDifficulty(v);
     m_enemySpawner.update(m_elapsed);
 }
@@ -315,10 +326,6 @@ void GameServer::spawnNewPowerups(jt::Vector2 const& enemyPosition)
 
 void GameServer::updateAllPowerups()
 {
-    for (auto& p : m_playerStates) {
-        p.second.pickedUpPowerup = false;
-    }
-
     for (auto& powerup : m_powerups) {
         if (!powerup._alive) {
             continue;
@@ -371,6 +378,7 @@ void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kv
     payload.shots = m_shots;
     payload.enemies = m_enemies;
     payload.score = m_score;
+    payload.level = m_level;
     payload.powerups = m_powerups;
     payload.explosions = m_explosions;
     payload.shotFired = m_shotFired;
@@ -381,6 +389,15 @@ void GameServer::sendPayloadToPlayers()
 {
     for (auto& kvp : m_playerStates) {
         sendSinglePayloadToPlayer(kvp);
+    }
+}
+
+void GameServer::resetPlayerStatesForThisFrame()
+{
+    for (auto& p : m_playerStates) {
+        auto& player = p.second;
+        player.takenDamage = false;
+        player.pickedUpPowerup = false;
     }
 }
 
@@ -403,6 +420,8 @@ void GameServer::update()
     handleEnemySpawning();
 
     updateAllEnemies();
+
+    resetPlayerStatesForThisFrame();
 
     performAllPlayerEnemyCollision();
 

@@ -11,6 +11,7 @@ sf::Packet& operator<<(sf::Packet& packet, PlayerState& playerState)
     packet << playerState.position;
     packet << playerState.health;
     packet << playerState.pickedUpPowerup;
+    packet << playerState.takenDamage;
     return packet;
 }
 sf::Packet& operator<<(sf::Packet& packet, PlayerState const& playerState)
@@ -19,6 +20,7 @@ sf::Packet& operator<<(sf::Packet& packet, PlayerState const& playerState)
     packet << playerState.position;
     packet << playerState.health;
     packet << playerState.pickedUpPowerup;
+    packet << playerState.takenDamage;
     return packet;
 }
 
@@ -27,6 +29,7 @@ sf::Packet& operator>>(sf::Packet& packet, PlayerState& playerState)
     packet >> playerState.position;
     packet >> playerState.health;
     packet >> playerState.pickedUpPowerup;
+    packet >> playerState.takenDamage;
     return packet;
 }
 
@@ -88,22 +91,23 @@ void checkPlayerDeath(PlayerState& playerState)
         killPlayer(playerState);
     }
 }
-
-void playerTakeDamage(PlayerState& playerState, ShotState& shot)
+void playerTakeDamageImpl(PlayerState& playerState, int damage)
 {
     if (playerState.health <= 0 || playerState._gracePeriod >= 0.0f) {
         return;
     }
-    playerState.health -= shot._damage;
+    playerState.health -= damage;
+    playerState.takenDamage = true;
     checkPlayerDeath(playerState);
+}
+
+void playerTakeDamage(PlayerState& playerState, ShotState& shot)
+{
+    playerTakeDamageImpl(playerState, shot._damage);
 }
 
 // TODO take enemy size into account
 void playerTakeDamage(PlayerState& playerState, EnemyState& enemy)
 {
-    if (playerState.health <= 0 || playerState._gracePeriod >= 0.0f) {
-        return;
-    }
-    playerState.health -= 4;
-    checkPlayerDeath(playerState);
+    playerTakeDamageImpl(playerState, Game::GameProperties::playerEnemyCollisionDamage());
 }

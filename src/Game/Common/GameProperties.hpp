@@ -50,6 +50,7 @@ struct GameProperties {
     static jt::Vector2 explosionHalfSize() { return explosionSize() / 2.0f; }
     static jt::Vector2 explosionSize() { return jt::Vector2 { 16.0f, 16.0f }; }
     static float enemyHealthIncrease() { return 5.0f; }
+    static int playerEnemyCollisionDamage() { return 4; }
 };
 } // namespace Game
 
