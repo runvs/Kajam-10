@@ -45,7 +45,7 @@ private:
     std::vector<PowerupState> m_powerups;
     std::shared_ptr<jt::Animation> mutable m_shotSprite { nullptr };
     std::shared_ptr<jt::Sprite> mutable m_enemySprite { nullptr };
-    std::shared_ptr<jt::Shape> mutable m_powerupShape { nullptr };
+    std::shared_ptr<jt::Animation> mutable m_powerupAnimation { nullptr };
     std::shared_ptr<ExplosionManager> m_explosionManager { nullptr };
     std::shared_ptr<Parallax> m_parallax { nullptr };
     std::shared_ptr<jt::SoundGroup> m_shotSounds { nullptr };

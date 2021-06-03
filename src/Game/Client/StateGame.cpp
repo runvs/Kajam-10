@@ -61,7 +61,11 @@ void StateGame::doInternalCreate()
     m_shotSprite->play("idle");
     m_enemySprite = std::make_shared<jt::Sprite>();
     m_enemySprite->loadSprite("assets/enemy.png");
-    m_powerupShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Cyan);
+
+    m_powerupAnimation = std::make_shared<jt::Animation>();
+    m_powerupAnimation->add("assets/powerup_repair.png", "repair", { 16, 16 }, { 0 }, 0.1f);
+    m_powerupAnimation->add("assets/powerup_points.png", "points", { 16, 16 }, { 0 }, 0.1f);
+    m_powerupAnimation->add("assets/powerup_shot.png", "shot", { 16, 16 }, { 0 }, 0.1f);
 
     m_localPlayer = std::make_shared<Player>(true);
     add(m_localPlayer);
@@ -267,9 +271,15 @@ void StateGame::doInternalDraw() const
     for (auto& p : m_powerups) {
         float const sinOffset = p.position.x() + p.position.y();
         float const offset = sin(getAge() * 1.1f + sinOffset) * 8.0f;
-        m_powerupShape->setPosition(p.position + jt::Vector2 { 0.0f, offset });
-        m_powerupShape->update(0.1f);
-        m_powerupShape->draw(getGame()->getRenderTarget());
+        m_powerupAnimation->setPosition(p.position + jt::Vector2 { 0.0f, offset });
+        if (p.type == static_cast<int>(PowerupType::POWERUP_HEALTH)) {
+            m_powerupAnimation->play("repair", 0, true);
+        } else if (p.type == static_cast<int>(PowerupType::POWERUP_POINTS)) {
+            m_powerupAnimation->play("points", 0, true);
+        } else
+            m_powerupAnimation->play("shot", 0, true);
+        m_powerupAnimation->update(0.1f);
+        m_powerupAnimation->draw(getGame()->getRenderTarget());
     }
 
     for (auto& e : m_enemies) {
