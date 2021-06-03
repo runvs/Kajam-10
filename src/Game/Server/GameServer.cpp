@@ -307,8 +307,17 @@ int GameServer::getPowerupType()
         = std::all_of(m_playerStates.cbegin(), m_playerStates.cend(), [](auto const& kvp) {
               return kvp.second.health == Game::GameProperties::playerMaxHealth();
           });
+    auto const allPlayersHaveFullShot = std::all_of(m_playerStates.cbegin(), m_playerStates.cend(),
+        [](auto const& kvp) { return kvp.second._shotPattern == Shots::ShotPattern::level6(); });
+
+    if (allPlayersHaveFullHp && allPlayersHaveFullShot) {
+        return static_cast<int>(PowerupType::POWERUP_POINTS);
+    }
     if (allPlayersHaveFullHp) {
         return jt::Random::getInt(1, static_cast<int>(PowerupType::POWERUP_MAXNUMBER) - 1);
+    }
+    if (allPlayersHaveFullShot) {
+        return jt::Random::getInt(0, static_cast<int>(PowerupType::POWERUP_MAXNUMBER) - 2);
     }
     return jt::Random::getInt(0, static_cast<int>(PowerupType::POWERUP_MAXNUMBER) - 1);
 }

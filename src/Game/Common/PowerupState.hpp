@@ -4,7 +4,7 @@
 
 #include <SFML/Network/Packet.hpp>
 
-enum class PowerupType : int { POWERUP_HEALTH, POWERUP_SHOT, POWERUP_POINTS, POWERUP_MAXNUMBER };
+enum class PowerupType : int { POWERUP_HEALTH, POWERUP_POINTS, POWERUP_SHOT, POWERUP_MAXNUMBER };
 
 struct PowerupState {
     jt::Vector2 position { 0.0f, 0.0f };
