@@ -59,7 +59,8 @@ void StateGame::doInternalCreate()
     m_shotSprite = std::make_shared<jt::Animation>();
     m_shotSprite->add("assets/shots.png", "idle", { 16, 16 }, { 0, 1 }, 0.1f);
     m_shotSprite->play("idle");
-    m_enemyShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Red);
+    m_enemySprite = std::make_shared<jt::Sprite>();
+    m_enemySprite->loadSprite("assets/enemy.png");
     m_powerupShape = jt::dh::createRectShape({ 16, 16 }, jt::colors::Cyan);
 
     m_localPlayer = std::make_shared<Player>(true);
@@ -272,9 +273,9 @@ void StateGame::doInternalDraw() const
     }
 
     for (auto& e : m_enemies) {
-        m_enemyShape->setPosition(e.position);
-        m_enemyShape->update(0.1f);
-        m_enemyShape->draw(getGame()->getRenderTarget());
+        m_enemySprite->setPosition(e.position);
+        m_enemySprite->update(0.1f);
+        m_enemySprite->draw(getGame()->getRenderTarget());
     }
 
     for (auto p : m_remotePlayers) {
