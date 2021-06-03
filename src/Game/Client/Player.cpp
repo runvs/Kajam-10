@@ -62,7 +62,9 @@ void Player::flashPlayerIfDead(float const elapsed)
 void Player::doUpdate(float const elapsed)
 {
     if (m_isLocalPlayer) {
-        updateInput();
+        if (m_canMove) {
+            updateInput();
+        }
     }
     flashPlayerIfDead(elapsed);
     m_sprite->update(elapsed);

@@ -146,12 +146,12 @@ void StateGame::doInternalUpdate(float const elapsed)
         // update game logic here
         auto inputState = m_localPlayer->getInput();
 
+        m_parallax->update(elapsed);
+
         m_secondsSincelastDataReceived += elapsed;
         if (m_secondsSincelastDataReceived >= GP::ClientToServerTimeout()) {
             m_hud->m_connectedToServer = false;
         }
-
-        m_parallax->update(elapsed);
 
         const PayloadClient2Server payload { m_localPlayerId, inputState, elapsed,
             m_currentPredictionId, false };
@@ -222,6 +222,7 @@ void StateGame::doInternalUpdate(float const elapsed)
         }
     }
     m_localPlayer->m_sprite->setPosition(m_currentPlayerState.position);
+    m_localPlayer->m_canMove = m_hud->m_connectedToServer;
     m_background->update(elapsed);
     m_vignette->update(elapsed);
     m_overlay->update(elapsed);

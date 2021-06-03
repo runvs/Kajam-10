@@ -10,6 +10,7 @@ public:
     std::map<jt::KeyCode, bool> getInput();
     void setHealth(int health);
     std::shared_ptr<jt::Animation> m_sprite;
+    bool m_canMove;
 
 private:
     void doUpdate(float const /*elapsed*/) override;
