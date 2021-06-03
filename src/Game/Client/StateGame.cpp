@@ -178,10 +178,12 @@ void StateGame::doInternalUpdate(float const elapsed)
                     m_shotSounds->play();
                 }
                 if (payload.playerStates.at(payload.playerID).pickedUpPowerup) {
+                    m_localPlayer->m_sprite->flash(0.25f);
                     m_powerupSound->play();
                 }
                 if (payload.playerStates.at(payload.playerID).takenDamage) {
                     m_overlay->flash(0.25f, jt::colors::Red);
+                    m_localPlayer->m_sprite->flash(0.55f, jt::colors::Red);
                 }
                 for (auto const& e : payload.explosions) {
                     m_explosionManager->add(e);
