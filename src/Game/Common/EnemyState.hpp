@@ -3,7 +3,6 @@
 
 #include "GameProperties.hpp"
 #include "Vector.hpp"
-
 #include <SFML/Network/Packet.hpp>
 #include <memory>
 

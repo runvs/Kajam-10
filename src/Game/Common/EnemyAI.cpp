@@ -34,7 +34,8 @@ void EnemyAIMine::doUpdate(EnemyState& state, std::vector<ShotState>& shots, flo
         removeScrollMovement(state, elapsed);
         m_shotTimer -= elapsed;
         if (m_shotTimer <= 0) {
-            m_shotTimer = 4.5;
+            m_shotTimer = jt::Random::getFloat(0.8f * Game::GameProperties::enemyShotInterval(),
+                1.2f * Game::GameProperties::enemyShotInterval());
             int const shotCount = 8;
             for (int i = 0; i != shotCount; ++i) {
                 float angle = jt::MathHelper::deg2rad(
@@ -70,7 +71,8 @@ void EnemyAICircle::doUpdate(EnemyState& state, std::vector<ShotState>& shots, f
     }
     m_shotTimer -= elapsed;
     if (m_shotTimer <= 0) {
-        m_shotTimer = 4.5f;
+        m_shotTimer = jt::Random::getFloat(0.8f * Game::GameProperties::enemyShotInterval(),
+            1.2f * Game::GameProperties::enemyShotInterval());
 
         ShotState shot;
         shot.fromPlayer = false;

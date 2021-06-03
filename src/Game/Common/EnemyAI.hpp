@@ -3,6 +3,7 @@
 #include "EnemyState.hpp"
 #include "Random.hpp"
 #include "ShotState.hpp"
+
 class EnemyAI {
 public:
     EnemyAI() = default;

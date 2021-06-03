@@ -13,8 +13,8 @@ void Parallax::doCreate()
         auto shape = jt::dh::createRectShape(
             jt::Vector2 { 2, v }, jt::Color { 255, 255, 255, static_cast<std::uint8_t>(alpha) });
         shape->setPosition(jt::Random::getRandomPointin(
-            jt::Rect { 0, 0, Game::GameProperties::displayScreenSize().x(),
-                Game::GameProperties::displayScreenSize().y() }));
+            jt::Rect { 0, -m_margin, Game::GameProperties::displayScreenSize().x(),
+                Game::GameProperties::displayScreenSize().y() + m_margin }));
         m_shapes.emplace(std::make_pair(v * 0.15f, shape));
     }
 }
@@ -26,8 +26,8 @@ void Parallax::doUpdate(float const elapsed)
         jt::Vector2 const delta
             = { 0.0f, elapsed * Game::GameProperties::scrollSpeed() * kvp.first };
         auto newpos = pos + delta;
-        if (newpos.y() >= Game::GameProperties::displayScreenSize().y() + 64.0f) {
-            newpos.y() = -64.0f;
+        if (newpos.y() >= Game::GameProperties::displayScreenSize().y() + m_margin) {
+            newpos.y() = -m_margin;
         }
         kvp.second->setPosition(newpos);
 
