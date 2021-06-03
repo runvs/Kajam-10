@@ -34,6 +34,14 @@ void StateMenu::createVignette()
     m_vignette->setColor({ 255, 255, 255, 110 });
 }
 
+void StateMenu::createLogo()
+{
+    float half_width = Game::GameProperties::displayScreenSize().x() / 2 - 77;
+    m_logo = std::make_shared<jt::Sprite>();
+    m_logo->loadSprite("assets/logo.png");
+    m_logo->setPosition({ half_width, 20 });
+}
+
 void StateMenu::createShapes()
 {
     m_background
@@ -44,7 +52,7 @@ void StateMenu::createShapes()
 
 void StateMenu::createMenuText()
 {
-    createTextTitle();
+    createLogo();
     createTextExplanation();
     createTextCredits();
 }
@@ -69,22 +77,12 @@ void StateMenu::createTextExplanation()
     m_text_Explanation = jt::dh::createText(
         getGame()->getRenderTarget(), "Press Space to start the game", 16U, GP::PaletteColor8());
     m_text_Explanation->setPosition({ half_width, 150 });
-    m_text_Explanation->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 3, 3 });
-}
-
-void StateMenu::createTextTitle()
-{
-    float half_width = Game::GameProperties::displayScreenSize().x() / 2;
-    m_text_Title = jt::dh::createText(
-        getGame()->getRenderTarget(), GP::GameName(), 32U, GP::PaletteFontFront());
-    m_text_Title->setPosition({ half_width, 20 });
-    m_text_Title->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 3, 3 });
+    m_text_Explanation->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 1, 1 });
 }
 
 void StateMenu::createTweens()
 {
     createTweenOverlayAlpha();
-    createTweenTitleAlpha();
     createTweenCreditsPosition();
     createTweenExplanationScale();
 }
@@ -107,14 +105,6 @@ void StateMenu::createTweenExplanationScale()
         });
         add(ts);
     });
-    add(tween);
-}
-
-void StateMenu::createTweenTitleAlpha()
-{
-    auto tween = jt::TweenAlpha<jt::Text>::create(m_text_Title, 0.55f, 0, 255);
-    tween->setStartDelay(0.2f);
-    tween->setSkipFrames();
     add(tween);
 }
 
@@ -146,11 +136,11 @@ void StateMenu::doInternalUpdate(float const elapsed)
 void StateMenu::updateDrawables(const float& elapsed)
 {
     m_background->update(elapsed);
-    m_text_Title->update(elapsed);
     m_text_Explanation->update(elapsed);
     m_text_Credits->update(elapsed);
     m_overlay->update(elapsed);
     m_vignette->update(elapsed);
+    m_logo->update(elapsed);
 }
 
 void StateMenu::checkForTransitionToStateGame()
@@ -185,10 +175,10 @@ void StateMenu::doInternalDraw() const
 {
     m_background->draw(getGame()->getRenderTarget());
 
-    m_text_Title->draw(getGame()->getRenderTarget());
     m_text_Explanation->draw(getGame()->getRenderTarget());
     m_text_Credits->draw(getGame()->getRenderTarget());
 
     m_overlay->draw(getGame()->getRenderTarget());
     m_vignette->draw(getGame()->getRenderTarget());
+    m_logo->draw(getGame()->getRenderTarget());
 }

@@ -21,27 +21,26 @@ public:
 private:
     std::shared_ptr<jt::Shape> m_background;
 
-    std::shared_ptr<jt::Text> m_text_Title;
     std::shared_ptr<jt::Text> m_text_Explanation;
     std::shared_ptr<jt::Text> m_text_Credits;
 
     std::shared_ptr<jt::Shape> m_overlay;
     std::shared_ptr<jt::Sprite> m_vignette;
+    std::shared_ptr<jt::Sprite> m_logo;
 
     bool m_started { false };
 
     void doInternalCreate() override;
 
     void createVignette();
+    void createLogo();
     void createShapes();
 
     void createMenuText();
     void createTextCredits();
     void createTextExplanation();
-    void createTextTitle();
 
     void createTweens();
-    void createTweenTitleAlpha();
     void createTweenOverlayAlpha();
     void createTweenCreditsPosition();
     void createTweenExplanationScale();
