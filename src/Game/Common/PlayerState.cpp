@@ -43,16 +43,21 @@ void respawnPlayer(PlayerState& playerState)
 
 void updatePlayerState(PlayerState& playerState, float elapsed, InputState const& input)
 {
+    float const factor = input.at(jt::KeyCode::Space)
+        ? Game::GameProperties::playerMovementSpeedSlowdownIfShooting()
+        : 1.0f;
+    const float movementSpeed = elapsed * Game::GameProperties::playerMovementSpeed() * factor;
+
     if (playerState.health > 0) {
         if (input.at(jt::KeyCode::D))
-            playerState.position.x() += elapsed * Game::GameProperties::playerMovementSpeed();
+            playerState.position.x() += movementSpeed;
         else if (input.at(jt::KeyCode::A))
-            playerState.position.x() -= elapsed * Game::GameProperties::playerMovementSpeed();
+            playerState.position.x() -= movementSpeed;
 
         if (input.at(jt::KeyCode::W))
-            playerState.position.y() -= elapsed * Game::GameProperties::playerMovementSpeed();
+            playerState.position.y() -= movementSpeed;
         else if (input.at(jt::KeyCode::S))
-            playerState.position.y() += elapsed * Game::GameProperties::playerMovementSpeed();
+            playerState.position.y() += movementSpeed;
 
         auto const minXPos
             = Game::GameProperties::hudBarMargin() * 2.0f + Game::GameProperties::hudBarWidth();

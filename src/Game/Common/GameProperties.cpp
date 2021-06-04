@@ -1,26 +1,19 @@
 ﻿#include "GameProperties.hpp"
 
 namespace Game {
-float GameProperties::playerMovementSpeed() { return 100.0f; }
 
+float GameProperties::playerMovementSpeed() { return 120.0f; }
+float GameProperties::playerMovementSpeedSlowdownIfShooting() { return 0.55f; }
 float GameProperties::playerMaxAllowedPredictionError() { return 4.0f * 4.0f; }
-
 float GameProperties::playerShootCooldown() { return 0.1f; }
-
 int GameProperties::playerSizeInPixel() { return 16; }
-
 int GameProperties::playerMaxHealth() { return 12; }
-
 float GameProperties::playerRespawnTime() { return 5.0f; }
-
 float GameProperties::playerGracePeriodAfterDeath() { return 2.0f; }
 
 float GameProperties::shotVelocity() { return 200.0f; }
-
 float GameProperties::shotLifeTime() { return 5.0f; }
-
 float GameProperties::shotBaseJitterAmount() { return 0.05f; }
-
 float GameProperties::shotJitterSigma() { return 0.25f; }
 
 jt::Vector2 GameProperties::shotHalfSizeCollision() { return jt::Vector2 { 4.0f, 8.0f }; }

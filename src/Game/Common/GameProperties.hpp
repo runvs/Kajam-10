@@ -50,6 +50,7 @@ struct GameProperties {
     static jt::Vector2 explosionSize();
     static float enemyHealthIncrease();
     static int playerEnemyCollisionDamage();
+    static float playerMovementSpeedSlowdownIfShooting();
 };
 
 } // namespace Game
