@@ -43,6 +43,9 @@ void respawnPlayer(PlayerState& playerState)
 
 void updatePlayerState(PlayerState& playerState, float elapsed, InputState const& input)
 {
+    if (input.empty()) {
+        return;
+    }
     float const factor = input.at(jt::KeyCode::Space)
         ? Game::GameProperties::playerMovementSpeedSlowdownIfShooting()
         : 1.0f;

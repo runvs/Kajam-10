@@ -169,6 +169,9 @@ void GameServer::sortIncomingPayloadsForPlayer(
 
 void GameServer::handlePlayerShooting(int currentPlayerId, PayloadClient2Server payload)
 {
+    if (payload.input.empty()) {
+        return;
+    }
     bool const hasPlayerPressedShootKey = payload.input.at(jt::KeyCode::Space);
     if (hasPlayerPressedShootKey) {
         bool const isPlayerShootTimerExpired = m_playerStates[currentPlayerId]._shootTimer <= 0;
@@ -190,6 +193,10 @@ void GameServer::handlePlayerShooting(int currentPlayerId, PayloadClient2Server 
 bool GameServer::handleSinglePayloadForSinglePlayer(
     int currentPlayerId, PayloadClient2Server const& payload)
 {
+    if (payload.input.empty()) {
+        return false;
+    }
+
     std::size_t const messageId = payload.messageId;
     if (checkForDuplicatedMessages(currentPlayerId, messageId)) {
         return false;
