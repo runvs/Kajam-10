@@ -62,13 +62,11 @@ void updatePlayerState(PlayerState& playerState, float elapsed, InputState const
         auto const minXPos
             = Game::GameProperties::hudBarMargin() * 2.0f + Game::GameProperties::hudBarWidth();
         auto const maxXPos = Game::GameProperties::displayScreenSize().x()
-            - static_cast<float>(Game::GameProperties::playerSizeInPixel())
             - Game::GameProperties::hudBarWidth() - Game::GameProperties::hudBarMargin() * 2.0f;
 
         auto const minYPos = Game::GameProperties::hudBarMargin();
         auto const maxYPos = Game::GameProperties::displayScreenSize().y()
-            - static_cast<float>(Game::GameProperties::playerSizeInPixel())
-            - Game::GameProperties::hudBarMargin();
+            - Game::GameProperties::playerSizeInPixel() - Game::GameProperties::hudBarMargin();
 
         playerState.position.x()
             = jt::MathHelper::clamp(playerState.position.x(), minXPos, maxXPos);

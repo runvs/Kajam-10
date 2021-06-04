@@ -8,7 +8,7 @@ struct GameProperties {
     static float playerMovementSpeed();
     static float playerMaxAllowedPredictionError();
     static float playerShootCooldown();
-    static int playerSizeInPixel();
+    static float playerSizeInPixel();
     static int playerMaxHealth();
     static float playerRespawnTime();
     static float playerGracePeriodAfterDeath();
@@ -48,7 +48,7 @@ struct GameProperties {
     static float explosionDuration();
     static jt::Vector2 explosionHalfSize();
     static jt::Vector2 explosionSize();
-    static float enemyHealthIncrease();
+    static float enemyHealthIncreasePerLevel();
     static int playerEnemyCollisionDamage();
     static float playerMovementSpeedSlowdownIfShooting();
 };

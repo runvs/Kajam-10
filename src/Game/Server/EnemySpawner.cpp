@@ -8,7 +8,7 @@
 EnemySpawner::EnemySpawner(std::vector<EnemyState>& enemies)
     : m_enemies { enemies }
     , m_timer { 0.0f }
-    , m_timerMax { 3.5f }
+    , m_timerMax { 4.5f }
     , m_difficulty { 1.0f }
     , m_activePlayerCount(0)
     , m_sah { 20.0f, 3.5f }
@@ -38,14 +38,14 @@ void EnemySpawner::setDifficulty(float difficulty) { m_difficulty = difficulty; 
 
 int EnemySpawner::getEnemyNumberTarget() const
 {
-    return 10 + m_activePlayerCount * Game::GameProperties::spawnerEnemiesPerPlayer();
+    return 8 + m_activePlayerCount * Game::GameProperties::spawnerEnemiesPerPlayer();
 }
 
 int EnemySpawner::getGroupSize() { return 2; }
 
 float EnemySpawner::getMaxTimer() const
 {
-    float const exponent = 1.3f;
+    float const exponent = 1.2f;
     auto const currentEnemies = static_cast<float>(m_enemies.size());
     auto const targetEnemies = static_cast<float>(getEnemyNumberTarget() * m_difficulty);
     return std::pow(currentEnemies / targetEnemies, exponent) * m_timerMax;
@@ -124,7 +124,7 @@ float getBasePosX()
     float const margin = 40.0f;
     return jt::Random::getFloat(margin,
         Game::GameProperties::displayScreenSize().x() - margin
-            - static_cast<float>(Game::GameProperties::playerSizeInPixel()));
+            - Game::GameProperties::playerSizeInPixel());
 }
 
 void EnemySpawner::spawnEnemyGroup()

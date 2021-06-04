@@ -16,9 +16,8 @@ ExplosionManager::ExplosionManager() = default;
 
 void ExplosionManager::doCreate()
 {
-    m_shapeFire = jt::dh::createRectShape(
-        { static_cast<float>(Game::GameProperties::playerSizeInPixel()),
-            static_cast<float>(Game::GameProperties::playerSizeInPixel()) },
+    m_shapeFire = jt::dh::createRectShape({ (Game::GameProperties::playerSizeInPixel()),
+                                              (Game::GameProperties::playerSizeInPixel()) },
         jt::Color { 180, 32, 32, 255 });
 
     createShockwave();
@@ -35,10 +34,10 @@ void ExplosionManager::createSoundgroup()
 void ExplosionManager::createSmokeSprites()
 {
     for (int i = 0; i != 10; ++i) {
-        auto shape = jt::dh::createRectShape(
-            jt::Vector2 { static_cast<float>(Game::GameProperties::playerSizeInPixel()),
-                static_cast<float>(Game::GameProperties::playerSizeInPixel()) },
-            jt::Color { 255, 255, 255, static_cast<std::uint8_t>(255) });
+        auto shape
+            = jt::dh::createRectShape(jt::Vector2 { (Game::GameProperties::playerSizeInPixel()),
+                                          (Game::GameProperties::playerSizeInPixel()) },
+                jt::Color { 255, 255, 255, static_cast<std::uint8_t>(255) });
         m_shapesSmoke.emplace_back(shape);
     }
 }
