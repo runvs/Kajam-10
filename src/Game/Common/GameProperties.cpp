@@ -7,7 +7,7 @@ float GameProperties::playerMovementSpeedSlowdownIfShooting() { return 0.55f; }
 float GameProperties::playerMaxAllowedPredictionError() { return 4.0f * 4.0f; }
 float GameProperties::playerShootCooldown() { return 0.1f; }
 float GameProperties::playerSizeInPixel() { return 16; }
-int GameProperties::playerMaxHealth() { return 12; }
+int GameProperties::playerMaxHealth() { return 13; }
 float GameProperties::playerRespawnTime() { return 5.0f; }
 float GameProperties::playerGracePeriodAfterDeath() { return 2.0f; }
 
@@ -28,6 +28,8 @@ jt::Vector2 GameProperties::explosionSize() { return jt::Vector2 { 16.0f, 16.0f 
 jt::Vector2 GameProperties::enemyHalfSize() { return jt::Vector2 { 8, 8 }; }
 
 int GameProperties::enemyDefaultHealth() { return 4; }
+float GameProperties::enemyHealthIncreasePerLevel() { return 4.0f; }
+float GameProperties::enemyShotInterval() { return 6.5f; }
 
 int GameProperties::spawnerEnemiesPerPlayer() { return 5; }
 
@@ -53,9 +55,6 @@ int GameProperties::scorePlayerDeathMalus() { return 60; }
 int GameProperties::powerupHealthAmount() { return 4; }
 
 float GameProperties::explosionDuration() { return 2.0f; }
-
-float GameProperties::enemyHealthIncreasePerLevel() { return 4.0f; }
-float GameProperties::enemyShotInterval() { return 5.5f; }
 
 int GameProperties::playerEnemyCollisionDamage() { return 4; }
 
