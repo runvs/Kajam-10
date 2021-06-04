@@ -47,6 +47,8 @@ private:
 
     void createTweenTransition();
 
+    void toggleMusicMuteOnButtonPress();
+
     void doInternalUpdate(float const elapsed) override;
     void updateDrawables(const float& elapsed);
     void checkForTransitionToStateGame();

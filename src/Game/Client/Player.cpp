@@ -11,11 +11,6 @@ std::vector<jt::KeyCode> getNeededKeys()
     keys.push_back(jt::KeyCode::A);
     keys.push_back(jt::KeyCode::D);
     keys.push_back(jt::KeyCode::Space);
-    keys.push_back(jt::KeyCode::Num1);
-    keys.push_back(jt::KeyCode::Num2);
-    keys.push_back(jt::KeyCode::Num3);
-    keys.push_back(jt::KeyCode::Num4);
-    keys.push_back(jt::KeyCode::Num5);
     return keys;
 }
 

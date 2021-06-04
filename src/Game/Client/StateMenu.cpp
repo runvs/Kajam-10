@@ -127,10 +127,24 @@ void StateMenu::createTweenCreditsPosition()
     add(tween);
 }
 
+void StateMenu::toggleMusicMuteOnButtonPress()
+{
+    if (getGame()->input()->keyboard()->justPressed(jt::KeyCode::M)) {
+        float volume = getGame()->getMusicPlayer()->GetMusicVolume();
+
+        if (volume == 0.0f) {
+            getGame()->getMusicPlayer()->SetMusicVolume(100.0f);
+        } else {
+            getGame()->getMusicPlayer()->SetMusicVolume(0.0f);
+        }
+    }
+}
+
 void StateMenu::doInternalUpdate(float const elapsed)
 {
     updateDrawables(elapsed);
     checkForTransitionToStateGame();
+    toggleMusicMuteOnButtonPress();
 }
 
 void StateMenu::updateDrawables(const float& elapsed)

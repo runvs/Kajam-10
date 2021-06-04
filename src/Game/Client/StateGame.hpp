@@ -73,6 +73,7 @@ private:
     void doInternalUpdate(float const elapsed) override;
     void drawPlayerShots() const;
     void drawEnemyShots() const;
+    void toggleMuteOnButtonPress();
     void doInternalDraw() const override;
 
     void endGame();

@@ -32,6 +32,8 @@ private:
     void prepareShapesByProgress(ExplosionState const& explosionState) const;
     void prepareSmokeShapesByProgress(ExplosionState const& explosionState) const;
 
+    void toggleMuteOnButtonPress();
+
     std::vector<ExplosionState> m_explosions;
 
     std::shared_ptr<jt::Shape> m_shapeFire;

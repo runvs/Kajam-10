@@ -85,10 +85,17 @@ void StateGame::doInternalCreate()
 
     m_shotSounds = std::make_shared<jt::SoundGroup>(std::vector<std::string> {
         "assets/sfx/shoot1.ogg", "assets/sfx/shoot2.ogg", "assets/sfx/shoot3.ogg" });
-    m_shotSounds->setVolume(50);
 
     m_powerupSound = std::make_shared<jt::Sound>();
     m_powerupSound->load("assets/sfx/powerup1.ogg");
+
+    if (getGame()->getMusicPlayer()->GetMusicVolume() == 0.0f) {
+        m_shotSounds->setVolume(0.0f);
+        m_powerupSound->setVolume(0.0f);
+    } else {
+        m_shotSounds->setVolume(50.0f);
+        m_powerupSound->setVolume(100.0f);
+    }
 }
 
 void StateGame::updateActivePlayerPositionFromServer(
@@ -134,6 +141,23 @@ void StateGame::checkLocalPlayerId(int const payloadPlayerId)
     } else {
         if (m_localPlayerId != payloadPlayerId) {
             std::cout << "Error: player id in payload does not match local player id\n";
+        }
+    }
+}
+
+void StateGame::toggleMuteOnButtonPress()
+{
+    if (getGame()->input()->keyboard()->justPressed(jt::KeyCode::M)) {
+        float currentVolume = getGame()->getMusicPlayer()->GetMusicVolume();
+
+        if (currentVolume == 0.0f) {
+            getGame()->getMusicPlayer()->SetMusicVolume(100.0f);
+            m_shotSounds->setVolume(50.0f);
+            m_powerupSound->setVolume(100.0f);
+        } else {
+            getGame()->getMusicPlayer()->SetMusicVolume(0.0f);
+            m_shotSounds->setVolume(0.0f);
+            m_powerupSound->setVolume(0.0f);
         }
     }
 }
@@ -230,6 +254,8 @@ void StateGame::doInternalUpdate(float const elapsed)
     for (auto p : m_remotePlayers) {
         p.second->update(elapsed);
     }
+
+    toggleMuteOnButtonPress();
 }
 
 void StateGame::drawPlayerShots() const

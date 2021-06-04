@@ -23,6 +23,12 @@ void ExplosionManager::doCreate()
     createShockwave();
     createSmokeSprites();
     createSoundgroup();
+
+    if (getGame()->getMusicPlayer()->GetMusicVolume() == 0.0f) {
+        m_sounds->setVolume(0.0f);
+    } else {
+        m_sounds->setVolume(100.0f);
+    }
 }
 
 void ExplosionManager::createSoundgroup()
@@ -76,6 +82,19 @@ void ExplosionManager::removeDeadExplosions()
     jt::SystemHelper::erase_if(m_explosions, [](auto& e) { return !e._alive; });
 }
 
+void ExplosionManager::toggleMuteOnButtonPress()
+{
+    if (getGame()->input()->keyboard()->justPressed(jt::KeyCode::M)) {
+        float volume = getGame()->getMusicPlayer()->GetMusicVolume();
+
+        if (volume == 0.0f) {
+            m_sounds->setVolume(100.0f);
+        } else {
+            m_sounds->setVolume(0.0f);
+        }
+    }
+}
+
 void ExplosionManager::doUpdate(float const elapsed)
 {
     for (auto& e : m_explosions) {
@@ -83,6 +102,7 @@ void ExplosionManager::doUpdate(float const elapsed)
     }
 
     removeDeadExplosions();
+    toggleMuteOnButtonPress();
 }
 
 void ExplosionManager::prepareShapesByProgress(ExplosionState const& explosionState) const
