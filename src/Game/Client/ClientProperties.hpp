@@ -18,14 +18,14 @@ public:
     static jt::Color PaletteFontDanger() { return GP::PaletteColor5(); }
     static jt::Color PaletteFontShadow() { return GP::PaletteColor7(); }
 
-    static jt::Color PaletteColor1() { return jt::Color { 151, 85, 85 }; }
+    static jt::Color PaletteColor1() { return jt::Color { 25, 25, 25 }; }
     static jt::Color PaletteColor2() { return jt::Color { 32, 142, 68 }; }
     static jt::Color PaletteColor3() { return jt::Color { 133, 225, 66 }; }
     static jt::Color PaletteColor4() { return jt::Color { 239, 255, 124 }; }
-    static jt::Color PaletteColor5() { return jt::Color { 251, 114, 48 }; }
+    static jt::Color PaletteColor5() { return jt::Color { 99, 155, 255 }; }
     static jt::Color PaletteColor6() { return jt::Color { 184, 39, 45 }; }
-    static jt::Color PaletteColor7() { return jt::Color { 64, 23, 58 }; }
-    static jt::Color PaletteColor8() { return jt::Color { 34, 49, 91 }; }
+    static jt::Color PaletteColor7() { return jt::Color { 35, 35, 35 }; }
+    static jt::Color PaletteColor8() { return jt::Color { 41, 58, 107 }; }
 
     static int PhysicVelocityIterations() { return 6; }
     static int PhysicPositionIterations() { return 2; }

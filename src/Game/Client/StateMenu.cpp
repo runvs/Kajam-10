@@ -65,17 +65,16 @@ void StateMenu::createTextCredits()
               "for details"
             + "\nThe Soundtrack 'Tomorrow Belongs to Cats' belongs to Doxent Zsigmond (c)\n"
               "copyright 2020 Licensed under a Creative Commons Attribution (3.0) license. ",
-        8U, GP::PaletteColor5());
+        8U, GP::PaletteColor8());
     m_text_Credits->SetTextAlign(jt::Text::TextAlign::LEFT);
     m_text_Credits->setPosition({ 8, Game::GameProperties::displayScreenSize().y() - 75 });
-    m_text_Credits->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 1, 1 });
 }
 
 void StateMenu::createTextExplanation()
 {
     float half_width = Game::GameProperties::displayScreenSize().x() / 2;
     m_text_Explanation = jt::dh::createText(
-        getGame()->getRenderTarget(), "Press Space to start the game", 16U, GP::PaletteColor8());
+        getGame()->getRenderTarget(), "Press Space to start the game", 16U, GP::PaletteColor5());
     m_text_Explanation->setPosition({ half_width, 150 });
     m_text_Explanation->setShadow(GP::PaletteFontShadow(), jt::Vector2 { 1, 1 });
 }
@@ -190,9 +189,9 @@ void StateMenu::doInternalDraw() const
     m_background->draw(getGame()->getRenderTarget());
 
     m_text_Explanation->draw(getGame()->getRenderTarget());
-    m_text_Credits->draw(getGame()->getRenderTarget());
 
-    m_overlay->draw(getGame()->getRenderTarget());
     m_vignette->draw(getGame()->getRenderTarget());
+    m_text_Credits->draw(getGame()->getRenderTarget());
     m_logo->draw(getGame()->getRenderTarget());
+    m_overlay->draw(getGame()->getRenderTarget());
 }
