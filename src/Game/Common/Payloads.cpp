@@ -37,6 +37,7 @@ sf::Packet& operator<<(sf::Packet& packet, PayloadServer2Client& payload)
     packet << payload.score;
     packet << payload.level;
     packet << payload.shotFired;
+    packet << payload.levelChanged;
     return packet;
 }
 
@@ -53,5 +54,6 @@ sf::Packet& operator>>(sf::Packet& packet, PayloadServer2Client& payload)
     packet >> payload.score;
     packet >> payload.level;
     packet >> payload.shotFired;
+    packet >> payload.levelChanged;
     return packet;
 }

@@ -29,6 +29,7 @@ private:
 
     int m_score { 0 };
     int m_level { 0 };
+    bool m_levelChanged { false };
     float m_elapsed = 0.0f;
     int m_enemyKillCount { 0 };
     std::vector<int> m_playersToDisconnect {};

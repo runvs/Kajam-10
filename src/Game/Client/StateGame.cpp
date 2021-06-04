@@ -212,6 +212,10 @@ void StateGame::doInternalUpdate(float const elapsed)
                 for (auto const& e : payload.explosions) {
                     m_explosionManager->add(e);
                 }
+
+                if (payload.levelChanged) {
+                    m_overlay->flash(0.5f, jt::colors::Cyan);
+                }
             }
 
             m_shots = lastPayload.shots;

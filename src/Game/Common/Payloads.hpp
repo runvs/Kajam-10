@@ -39,6 +39,7 @@ struct PayloadServer2Client {
 
     int score { 0 };
     int level { 0 };
+    bool levelChanged { false };
 };
 
 sf::Packet& operator<<(sf::Packet&, PayloadServer2Client&);

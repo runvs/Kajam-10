@@ -91,6 +91,7 @@ bool GameServer::checkForDuplicatedMessages(int currentPlayerId, std::size_t con
 void GameServer::increaseLevel()
 {
     m_level++;
+    m_levelChanged = true;
     m_score = 0;
 }
 
@@ -388,10 +389,13 @@ void GameServer::sendSinglePayloadToPlayer(std::pair<int, PlayerState> const& kv
     payload.enemies = m_enemies;
     payload.score = m_score;
     payload.level = m_level;
+    payload.levelChanged = m_levelChanged;
     payload.powerups = m_powerups;
     payload.explosions = m_explosions;
     payload.shotFired = m_shotFired;
     m_networkServer.sendToClient(kvp.first, payload);
+
+    m_levelChanged = false;
 }
 
 void GameServer::sendPayloadToPlayers()

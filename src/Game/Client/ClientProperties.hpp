@@ -8,7 +8,7 @@ class GP {
 public:
     GP() = delete;
 
-    static std::string GameName() { return "MyAwesomeGame"; }
+    static std::string GameName() { return "Space Turtles"; }
     static std::string AuthorName() { return "Thunraz, oOBloodyOrangeOo and Laguna"; }
     static std::string JamName() { return "The Multiplayer Kajam"; }
     static std::string JamDate() { return "May 2021"; }
